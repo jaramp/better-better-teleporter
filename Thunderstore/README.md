@@ -20,9 +20,9 @@ If [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig
 
 **General**
 
-| Option               | Value          | Default    | Description                                           |
-| -------------------- | -------------- | ---------- | ----------------------------------------------------- |
-| ResetCooldownOnOrbit | `true`/`false` | `true`[^1] | Resets the cooldown time on teleporters between days. |
+| Option               | Value          | Default | Description                                           |
+| -------------------- | -------------- | ------- | ----------------------------------------------------- |
+| ResetCooldownOnOrbit | `true`/`false` | `true`  | Resets the cooldown time on teleporters between days. |
 
 **Teleporter**
 
@@ -30,8 +30,8 @@ If [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig
 | -------------------- | ------------- | ------- | ----------------------------------------------------------------- |
 | TeleporterCooldown   | `Number`      | `10`    | Cooldown time (in seconds) for using the Teleporter.              |
 | TeleporterBehavior   | `Drop`/`Keep` | `Drop`  | Sets whether items are kept or dropped when using the Teleporter. |
-| TeleporterAlwaysKeep | `Text`[^2]    |         | Treat these items as `Keep` regardless of Teleporter behavior.    |
-| TeleporterAlwaysDrop | `Text`[^2]    |         | Treat these items as `Drop` regardless of Teleporter behavior.    |
+| TeleporterAlwaysKeep | `Text`        |         | Treat these items as `Keep` regardless of Teleporter behavior.    |
+| TeleporterAlwaysDrop | `Text`        |         | Treat these items as `Drop` regardless of Teleporter behavior.    |
 
 As an example, if you wanted a Teleporter that keeps all items except for the shovel, stop sign, and yield sign:
 
@@ -44,13 +44,13 @@ TeleporterAlwaysDrop = Shovel,StopSign,YieldSign
 
 **Inverse Teleporter**
 
-| Option                      | Value         | Default   | Description                                                               |
-| --------------------------- | ------------- | --------- | ------------------------------------------------------------------------- |
-| InverseTeleporterCooldown   | `Number`      | `210`     | Cooldown time (in seconds) for using the Inverse Teleporter.              |
-| InverseTeleporterBehavior   | `Drop`/`Keep` | `Drop`    | Sets whether items are kept or dropped when using the Inverse Teleporter. |
-| InverseTeleporterAlwaysKeep | `Text`[^2]    | `Key`[^3] | Treat these items as `Keep` regardless of Inverse Teleporter behavior.    |
-| InverseTeleporterAlwaysDrop | `Text`[^2]    |           | Treat these items as `Drop` regardless of Inverse Teleporter behavior.    |
-| BatteryDrainPercent         | `0.0`-`1.0`   | `0.0`     | Percent drain on held battery items when using the Inverse Teleporter.    |
+| Option                      | Value         | Default | Description                                                               |
+| --------------------------- | ------------- | ------- | ------------------------------------------------------------------------- |
+| InverseTeleporterCooldown   | `Number`      | `210`   | Cooldown time (in seconds) for using the Inverse Teleporter.              |
+| InverseTeleporterBehavior   | `Drop`/`Keep` | `Drop`  | Sets whether items are kept or dropped when using the Inverse Teleporter. |
+| InverseTeleporterAlwaysKeep | `Text`        | `Key`   | Treat these items as `Keep` regardless of Inverse Teleporter behavior.    |
+| InverseTeleporterAlwaysDrop | `Text`        |         | Treat these items as `Drop` regardless of Inverse Teleporter behavior.    |
+| BatteryDrainPercent         | `0.0`-`1.0`   | `0.0`   | Percent drain on held battery items when using the Inverse Teleporter.    |
 
 As an example, if you wanted an Inverse Teleporter that drops all items except for keys and walkie-talkies, and drains batteries by 50%:
 
@@ -61,10 +61,6 @@ InverseTeleporterAlwaysKeep = Key,WalkieTalkie
 InverseTeleporterAlwaysDrop =
 BatteryDrainPercent = 0.5
 ```
-
-[^1]: Differs from the base game, which does not reset cooldowns on orbit.
-[^2]: BetterBetterTeleporter will do its best to resolve items with inconsistent names (example: "clipboard" vs "Clipboard" vs "ClipboardItem" vs "ClipboardManual"). As long as you have a reasonable idea of what the item is called, it should work. See list below for additional reference on item names.
-[^3]: Differs from the base game, which does not allow any items to be kept.
 
 ## Item Names
 
@@ -97,16 +93,3 @@ Here are some example names that can be used for whitelisting/blacklisting items
 This is not an exhaustive list. Any item should work, including from other mods.
 Names are not case-sensitive. Using the in-game display name will also work,
 but it may have issues when playing with players that use different language settings.
-
-## Dependencies
-
-- [BepInExPack](https://thunderstore.io/c/lethal-company/p/BepInEx/BepInExPack/)
-- (Optional) [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/) for in-game configuration.
-
-## Installation
-
-It's recommended to install through a mod manager such as [Gale](https://github.com/Kesomannen/gale).
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for information on how to contribute to the mod.
