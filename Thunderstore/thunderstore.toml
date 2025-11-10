@@ -1,0 +1,21 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "jaramp"
+name = "BetterBetterTeleporter"
+versionNumber = "1.0.0"
+description = "A simple example mod built with BepInEx and LethalConfig."
+websiteUrl = "https://example.com"
+dependencies = [
+    "BepInEx-BepInExPack-5.4.2100"
+]
+
+[build]
+icon = "icon.png"
+readme = "README.md"
+outdir = "build"
+
+[upload]
+community = "lethal-company"
+categories = ["Mods"]

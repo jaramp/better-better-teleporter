@@ -1,0 +1,9 @@
+<Project>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Message Text="Copying $(TargetPath) to dev profile..." Importance="high" />
+    <Copy
+      SourceFiles="$(TargetPath)"
+      DestinationFolder="$(AppData)\com.kesomannen.gale\lethal-company\profiles\dev\BepInEx\plugins\BetterBetterTeleporter"
+      OverwriteReadOnlyFiles="true" />
+  </Target>
+</Project>
