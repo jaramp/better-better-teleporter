@@ -28,7 +28,7 @@ public static class InverseTeleporterBatteryDrainPatch
             var battery = item?.insertedBattery;
             if (battery != null)
             {
-                battery.charge = Math.Max(0, battery.charge - drainAmount);
+                battery.charge = Mathf.Max(0, battery.charge - drainAmount);
                 item.SyncBatteryServerRpc((int)(battery.charge * 100));
             }
         }

@@ -1,6 +1,7 @@
 using HarmonyLib;
 using System;
 using System.Reflection;
+using UnityEngine;
 
 namespace BetterBetterTeleporter.Patches;
 
@@ -48,7 +49,7 @@ public static class TeleporterCooldownPatch
             if (cooldownTimeField != null)
             {
                 var currentCooldownTime = (float)(cooldownTimeField.GetValue(teleporter) ?? 0);
-                cooldownTimeField.SetValue(teleporter, Math.Min(currentCooldownTime, teleporter.cooldownAmount));
+                cooldownTimeField.SetValue(teleporter, Mathf.Min(currentCooldownTime, teleporter.cooldownAmount));
             }
         }
     }

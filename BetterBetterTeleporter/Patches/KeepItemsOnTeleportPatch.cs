@@ -82,7 +82,7 @@ public static class KeepItemsOnTeleporterPatch
             __instance.ItemSlots[i] = itemsToKeep[i];
             carryWeight += itemsToKeep[i].itemProperties.weight - 1f;
         }
-        __instance.carryWeight = Math.Clamp(__instance.carryWeight + carryWeight, 1f, 10f);
+        __instance.carryWeight = Mathf.Clamp(__instance.carryWeight + carryWeight, 1f, 10f);
 
         // Force reselect current item slot to fix issues with the player appearing to not have an item equipped
         __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
