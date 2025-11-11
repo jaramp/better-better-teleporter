@@ -33,13 +33,15 @@
     <PropertyGroup>
       <ThunderstoreDir>$(ProjectDir)..\Thunderstore</ThunderstoreDir>
       <BuildsDir>$(ProjectDir)..\builds</BuildsDir>
-      <ZipName>$(ThunderstoreTeamName)-$(ThunderstoreModName)-$(Version).zip</ZipName>
+      <ZipName>$(TeamName)-$(AssemblyName)-$(Version).zip</ZipName>
       <ZipPath>$(BuildsDir)\$(ZipName)</ZipPath>
     </PropertyGroup>
 
     <MakeDir Directories="$(BuildsDir)" />
+    <Copy SourceFiles="$(ProjectDir)..\README.md" DestinationFolder="$(ThunderstoreDir)" OverwriteReadOnlyFiles="true" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ThunderstoreDir)\BepinEx\plugins" OverwriteReadOnlyFiles="true" />
     <Exec Command="powershell -NoLogo -NoProfile -Command &quot;Compress-Archive -Path '$(ThunderstoreDir)\*' -DestinationPath '$(ZipPath)' -Force&quot;" />
+    <Delete Files="$(ThunderstoreDir)\README.md" ContinueOnError="true" />
     <RemoveDir Directories="$(ThunderstoreDir)\BepinEx" ContinueOnError="true" />
     <Message Text="Packaged Thunderstore ZIP: $(ZipPath)" Importance="high" />
   </Target>
@@ -47,6 +49,6 @@
   <!-- ========== 4️⃣  Automatically copy DLL to dev profile in mod manager ========== -->
   <Target Name="CopyOutputToDevProfile" AfterTargets="PostBuildEvent">
     <Message Text="Copying $(TargetPath) to dev profile..." Importance="high" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(DevProfileDir)\BepInEx\plugins\$(ThunderstoreTeamName)-$(ThunderstoreModName)" OverwriteReadOnlyFiles="true" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BepinExDir)\plugins\$(TeamName)-$(AssemblyName)" OverwriteReadOnlyFiles="true" />
   </Target>
 </Project>

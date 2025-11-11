@@ -3,18 +3,17 @@
 		<!-- NOTE: You may need to adjust this path if your game installation is different. -->
 		<GameDir>C:\Games\Steam\steamapps\common\Lethal Company</GameDir>
 		<!-- Development mod profile directory to auto-copy dll into -->
-		<DevProfileDir>$(AppData)\com.kesomannen.gale\lethal-company\profiles\dev</DevProfileDir>
+		<BepinExDir>$(AppData)\com.kesomannen.gale\lethal-company\profiles\dev\BepinEx</BepinExDir>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
+		<TeamName>jaramp</TeamName>
 		<AssemblyName>BetterBetterTeleporter</AssemblyName>
-		<Description>Fully configurable teleporters and inverse teleporters for Lethal Company.</Description>
+		<Description>A fully configurable Teleporter and Inverse Teleporter mod with advanced item filtering.</Description>
 		<Version>1.0.2</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>latest</LangVersion>
-		<ThunderstoreTeamName>jaramp</ThunderstoreTeamName>
-		<ThunderstoreModName>$(AssemblyName)</ThunderstoreModName>
 	</PropertyGroup>
 
 	<ItemGroup>

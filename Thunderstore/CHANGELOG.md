@@ -1,12 +1,13 @@
-## 1.0.2
+## 1.0.2 - 2025-11-11
 
-Fix issue with incorrect carry weight after teleporting.
+- Setting default config to match unmodded game behavior.
+- Fix issue with incorrect carry weight after teleporting.
 
-## 1.0.1
+## 1.0.1 - 2025-11-09
 
-Hotfix to fix packaged file structure.
+- Hotfix to fix packaged file structure.
 
-## 1.0.0
+## 1.0.0 - 2025-11-09
 
 Initial Release
 

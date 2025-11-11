@@ -31,17 +31,17 @@ public static class ConfigSettings
         ResetCooldownOnOrbitEntry = config.Bind("General", "ResetCooldownOnOrbit", true, new ConfigDescription("Resets the cooldown time on teleporters between days."));
 
         // # Teleporter
-        TeleporterCooldownEntry = config.Bind("Teleporter", "TeleporterCooldown", 10, new ConfigDescription("Cooldown time (in seconds) for using the Teleporter. (Vanilla: 10)", new AcceptableValueRange<int>(0, 600)));
-        TeleporterBehaviorEntry = config.Bind("Teleporter", "TeleporterBehavior", ItemTeleportBehavior.Drop, new ConfigDescription("Sets whether or not items are kept or dropped when using the Teleporter. Options: \"Drop\", \"Keep\"."));
-        TeleporterAlwaysKeepEntry = config.Bind("Teleporter", "TeleporterAlwaysKeep", "", new ConfigDescription("List of items that will always be kept when using the Teleporter. Does nothing if TeleporterBehavior is set to \"Keep\"."));
-        TeleporterAlwaysDropEntry = config.Bind("Teleporter", "TeleporterAlwaysDrop", "", new ConfigDescription("List of items that will always be dropped when using the Teleporter. Does nothing if TeleporterBehavior is set to \"Drop\"."));
+        TeleporterCooldownEntry = config.Bind("Teleporter", "TeleporterCooldown", 10, new ConfigDescription("Cooldown time (in seconds) for using the Teleporter.", new AcceptableValueRange<int>(0, 600)));
+        TeleporterBehaviorEntry = config.Bind("Teleporter", "TeleporterBehavior", ItemTeleportBehavior.Drop, new ConfigDescription("Makes the Teleporter \"Drop\" or \"Keep\" items on teleport."));
+        TeleporterAlwaysKeepEntry = config.Bind("Teleporter", "TeleporterAlwaysKeep", "", new ConfigDescription("Keep these items regardless of Teleporter behavior (comma-separated item names).\nDoes nothing if TeleporterBehavior is set to \"Keep\"."));
+        TeleporterAlwaysDropEntry = config.Bind("Teleporter", "TeleporterAlwaysDrop", "", new ConfigDescription("Drop these items regardless of Teleporter behavior (comma-separated item names).\nDoes nothing if TeleporterBehavior is set to \"Drop\"."));
 
         // # Inverse Teleporter
-        InverseTeleporterCooldownEntry = config.Bind("Inverse Teleporter", "InverseTeleporterCooldown", 210, new ConfigDescription("Cooldown time (in seconds) for using the Inverse Teleporter. (Vanilla: 210)", new AcceptableValueRange<int>(0, 600)));
+        InverseTeleporterCooldownEntry = config.Bind("Inverse Teleporter", "InverseTeleporterCooldown", 210, new ConfigDescription("Cooldown time (in seconds) for using the Inverse Teleporter.", new AcceptableValueRange<int>(0, 600)));
         InverseTeleporterBehaviorEntry = config.Bind("Inverse Teleporter", "InverseTeleporterBehavior", ItemTeleportBehavior.Drop, new ConfigDescription("Sets whether or not items are kept or dropped when using the Inverse Teleporter. Options: \"Drop\", \"Keep\"."));
-        InverseTeleporterAlwaysKeepEntry = config.Bind("Inverse Teleporter", "InverseTeleporterAlwaysKeep", "Key", new ConfigDescription("List of items that will always be kept when using the InverseTeleporter. Does nothing if InverseTeleporterBehavior is set to \"Keep\"."));
-        InverseTeleporterAlwaysDropEntry = config.Bind("Inverse Teleporter", "InverseTeleporterAlwaysDrop", "", new ConfigDescription("List of items that will always be dropped when using the Inverse Teleporter. Does nothing if InverseTeleporterBehavior is set to \"Drop\"."));
-        BatteryDrainPercentEntry = config.Bind("Inverse Teleporter", "BatteryDrainPercent", 0.0f, new ConfigDescription("Drains all held battery items by a percentage when using the Inverse Teleporter. 0.0 means no drain. 1.0 means 100% drained. (Vanilla: 0.0)", new AcceptableValueRange<float>(0.0f, 1.0f)));
+        InverseTeleporterAlwaysKeepEntry = config.Bind("Inverse Teleporter", "InverseTeleporterAlwaysKeep", "", new ConfigDescription("Keep these items regardless of Inverse Teleporter behavior (comma-separated item names).\nDoes nothing if InverseTeleporterBehavior is set to \"Keep\"."));
+        InverseTeleporterAlwaysDropEntry = config.Bind("Inverse Teleporter", "InverseTeleporterAlwaysDrop", "", new ConfigDescription("Drop these items regardless of Inverse Teleporter behavior (comma-separated item names).\nDoes nothing if InverseTeleporterBehavior is set to \"Drop\"."));
+        BatteryDrainPercentEntry = config.Bind("Inverse Teleporter", "BatteryDrainPercent", 0.0f, new ConfigDescription("Drains all held battery items by a percentage when using the Inverse Teleporter. 0.0 means no drain. 1.0 means 100% drained.", new AcceptableValueRange<float>(0.0f, 1.0f)));
 
         SubscribeOnChangeEvents();
         UpdateCurrentGameSettings(GetConfigDataFromEntries());
