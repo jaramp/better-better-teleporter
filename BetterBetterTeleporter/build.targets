@@ -1,9 +1,40 @@
 <Project>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <!-- Update manifest.json version_number to match .csproj Version -->
+  <Target Name="SyncManifestVersion" BeforeTargets="PostBuild">
+    <PropertyGroup>
+      <ManifestFile>$(ProjectDir)..\Thunderstore\manifest.json</ManifestFile>
+    </PropertyGroup>
+    <Message Text="Syncing manifest.json version_number to $(Version)" Importance="high" />
+    <Exec Command="powershell -NoLogo -NoProfile -Command (Get-Content '$(ManifestFile)' -Raw) -replace '(&quot;version_number&quot;\s*:\s*)&quot;[^&quot;]+&quot;', ('$1&quot;$(Version)&quot;') | Set-Content '$(ManifestFile)'" />
+  </Target>
+
+  <!-- Automatically package mod for Thunderstore -->
+  <Target Name="PackageThunderstore" AfterTargets="PostBuildEvent">
+    <PropertyGroup>
+      <ThunderstoreDir>$(ProjectDir)..\Thunderstore</ThunderstoreDir>
+      <BuildsDir>$(ProjectDir)..\builds</BuildsDir>
+      <ZipName>$(ThunderstoreTeamName)-$(ThunderstoreModName)-$(Version).zip</ZipName>
+      <ZipPath>$(BuildsDir)\$(ZipName)</ZipPath>
+    </PropertyGroup>
+
+    <!-- Ensure builds directory exists -->
+    <MakeDir Directories="$(BuildsDir)" />
+
+    <!-- Copy compiled DLL into Thunderstore folder temporarily -->
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ThunderstoreDir)\BepinEx\plugins" OverwriteReadOnlyFiles="true" />
+
+    <!-- Create zip containing manifest, changelog, icon, readme, and DLL -->
+    <Exec Command="powershell -NoLogo -NoProfile -Command &quot;Compress-Archive -Path '$(ThunderstoreDir)\*' -DestinationPath '$(ZipPath)' -Force&quot;" />
+
+    <!-- Remove the DLL from Thunderstore after packaging -->
+    <RemoveDir Directories="$(ThunderstoreDir)\BepinEx" ContinueOnError="true" />
+
+    <Message Text="Packaged Thunderstore ZIP: $(ZipPath)" Importance="high" />
+  </Target>
+
+  <!-- Automatically copy DLL to dev profile in mod manager for quick testing -->
+  <Target Name="CopyOutputToDevProfile" AfterTargets="PostBuildEvent">
     <Message Text="Copying $(TargetPath) to dev profile..." Importance="high" />
-    <Copy
-      SourceFiles="$(TargetPath)"
-      DestinationFolder="$(DevOutDir)"
-      OverwriteReadOnlyFiles="true" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(DevProfileDir)\BepInEx\plugins\$(ThunderstoreTeamName)-$(ThunderstoreModName)" OverwriteReadOnlyFiles="true" />
   </Target>
 </Project>
