@@ -1,5 +1,5 @@
 <Project>
-  <!-- Update manifest.json version_number to match .csproj Version -->
+  <!-- ========== 1️⃣  Version Sync (manifest.json) ========== -->
   <Target Name="SyncManifestVersion" BeforeTargets="PostBuild">
     <PropertyGroup>
       <ManifestFile>$(ProjectDir)..\Thunderstore\manifest.json</ManifestFile>
@@ -8,7 +8,27 @@
     <Exec Command="powershell -NoLogo -NoProfile -Command (Get-Content '$(ManifestFile)' -Raw) -replace '(&quot;version_number&quot;\s*:\s*)&quot;[^&quot;]+&quot;', ('$1&quot;$(Version)&quot;') | Set-Content '$(ManifestFile)'" />
   </Target>
 
-  <!-- Automatically package mod for Thunderstore -->
+  <!-- ========== 2️⃣  Changelog Check (warn if missing version) ========== -->
+  <Target Name="CheckChangelogVersion" BeforeTargets="Build">
+    <PropertyGroup>
+      <ChangelogFile>$(ProjectDir)..\Thunderstore\CHANGELOG.md</ChangelogFile>
+    </PropertyGroup>
+
+    <!-- Read all lines from the changelog -->
+    <ReadLinesFromFile File="$(ChangelogFile)">
+      <Output TaskParameter="Lines" ItemName="ChangelogLines" />
+    </ReadLinesFromFile>
+
+    <!-- Match any line containing the version -->
+    <ItemGroup>
+      <MatchingLine Include="@(ChangelogLines)" Condition="$([System.String]::new('%(Identity)').Contains('$(Version)'))" />
+    </ItemGroup>
+
+    <!-- Emit a warning if no matching line found -->
+    <Warning Text="CHANGELOG.md does not contain a section for version $(Version)" Condition="'@(MatchingLine)' == ''" />
+  </Target>
+
+  <!-- ========== 3️⃣  Thunderstore Packaging ========== -->
   <Target Name="PackageThunderstore" AfterTargets="PostBuildEvent">
     <PropertyGroup>
       <ThunderstoreDir>$(ProjectDir)..\Thunderstore</ThunderstoreDir>
@@ -17,22 +37,14 @@
       <ZipPath>$(BuildsDir)\$(ZipName)</ZipPath>
     </PropertyGroup>
 
-    <!-- Ensure builds directory exists -->
     <MakeDir Directories="$(BuildsDir)" />
-
-    <!-- Copy compiled DLL into Thunderstore folder temporarily -->
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ThunderstoreDir)\BepinEx\plugins" OverwriteReadOnlyFiles="true" />
-
-    <!-- Create zip containing manifest, changelog, icon, readme, and DLL -->
     <Exec Command="powershell -NoLogo -NoProfile -Command &quot;Compress-Archive -Path '$(ThunderstoreDir)\*' -DestinationPath '$(ZipPath)' -Force&quot;" />
-
-    <!-- Remove the DLL from Thunderstore after packaging -->
     <RemoveDir Directories="$(ThunderstoreDir)\BepinEx" ContinueOnError="true" />
-
     <Message Text="Packaged Thunderstore ZIP: $(ZipPath)" Importance="high" />
   </Target>
 
-  <!-- Automatically copy DLL to dev profile in mod manager for quick testing -->
+  <!-- ========== 4️⃣  Automatically copy DLL to dev profile in mod manager ========== -->
   <Target Name="CopyOutputToDevProfile" AfterTargets="PostBuildEvent">
     <Message Text="Copying $(TargetPath) to dev profile..." Importance="high" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(DevProfileDir)\BepInEx\plugins\$(ThunderstoreTeamName)-$(ThunderstoreModName)" OverwriteReadOnlyFiles="true" />
