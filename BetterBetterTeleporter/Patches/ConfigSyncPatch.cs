@@ -10,103 +10,94 @@ namespace BetterBetterTeleporter.Patches;
 /// It uses Unity's NetworkManager to send and receive configuration data.
 /// </summary>
 [HarmonyPatch(typeof(PlayerControllerB))]
-public class ConfigSyncPatch
+public static class ConfigSyncPatch
 {
-    private const string ConfigSyncRequestName = "BetterBetterTeleporterConfigSyncRequest";
+    private const string ConfigSyncRequestName = "BetterBetterTeleporterConfigRequest";
     private const string ConfigSyncReceiveName = "BetterBetterTeleporterConfigReceive";
 
-    /// <summary>
-    /// This Harmony Postfix patch runs after the ConnectClientToPlayerObject method.
-    /// It initializes the local player and registers the necessary message handlers for config sync.
-    /// </summary>
     [HarmonyPatch("ConnectClientToPlayerObject"), HarmonyPostfix]
     public static void InitializeLocalPlayer()
     {
-        if (NetworkManager.Singleton.IsServer)
-        {
-            // Server host
-            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(ConfigSyncRequestName, OnReceiveConfigSyncRequest);
-        }
-        else
-        {
-            // Other players
-            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(ConfigSyncReceiveName, OnReceiveConfigSync);
-            RequestConfigSync();
-        }
+        if (NetworkManager.Singleton.IsServer) Host.Init();
+        else Client.Init();
     }
 
-    /// <summary>
-    /// Server host sends the configuration data to all connected clients.
-    /// </summary>
-    public static void SendConfigSyncToClients()
+    public static void SyncConfig()
     {
         if (!NetworkManager.Singleton.IsServer) return;
 
         TeleporterConfigData data = ConfigSettings.GetConfigDataFromEntries();
-        using FastBufferWriter writer = new(1024, Allocator.Temp);
-        writer.WriteValueSafe(data);
-
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
             if (client.ClientId != NetworkManager.Singleton.LocalClientId)
             {
-                NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(ConfigSyncReceiveName, client.ClientId, writer, NetworkDelivery.ReliableSequenced);
-                Plugin.Logger.LogDebug($"Sent config sync to client {client.ClientId}");
+                Host.SendConfigDataToClient(client.ClientId, data);
             }
         }
     }
 
-    /// <summary>
-    /// Clients request the configuration data from the server.
-    /// </summary>
-    private static void RequestConfigSync()
+    private static class Host
     {
-        if (!NetworkManager.Singleton.IsClient) return;
-
-        Plugin.Logger.LogInfo("Sending config sync request to server.");
-
-        using FastBufferWriter writer = new(0, Allocator.Temp);
-        NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(ConfigSyncRequestName, 0ul, writer, NetworkDelivery.ReliableSequenced);
-    }
-
-    /// <summary>
-    /// Handles the config sync request received from a client.
-    /// </summary>
-    /// <param name="clientId">The ID of the client that sent the request.</param>
-    /// <param name="reader">The FastBufferReader containing the request data.</param>
-    private static void OnReceiveConfigSyncRequest(ulong clientId, FastBufferReader reader)
-    {
-        if (!NetworkManager.Singleton.IsServer) return;
-
-        Plugin.Logger.LogInfo($"Sync request from client {clientId}. Sending config sync.");
-        TeleporterConfigData data = ConfigSettings.GetConfigDataFromEntries();
-        using FastBufferWriter writer = new(1024, Allocator.Temp);
-        writer.WriteValueSafe(data);
-
-        NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(ConfigSyncReceiveName, clientId, writer, NetworkDelivery.ReliableSequenced);
-        Plugin.Logger.LogDebug($"Sent config sync to client {clientId}");
-    }
-
-    /// <summary>
-    /// Handles the config sync data received from the server.
-    /// </summary>
-    /// <param name="clientId">The ID of the server that sent the config.</param>
-    /// <param name="reader">The FastBufferReader containing the config data.</param>
-    private static void OnReceiveConfigSync(ulong clientId, FastBufferReader reader)
-    {
-        if (NetworkManager.Singleton.IsServer) return;
-
-        Plugin.Logger.LogInfo("Receiving sync from server.");
-        var localReader = reader;
-        try
+        public static void Init()
         {
-            localReader.ReadValueSafe(out TeleporterConfigData data);
-            ConfigSettings.UpdateCurrentGameSettings(data);
-            Plugin.Logger.LogInfo("Successfully applied synced config.");
+            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(ConfigSyncRequestName, Host.OnConfigDataRequest);
         }
-        catch (System.Exception e)
+
+        public static void OnConfigDataRequest(ulong clientId, FastBufferReader reader)
         {
-            Plugin.Logger.LogError($"Error receiving config sync from server: {e}");
+            if (!NetworkManager.Singleton.IsServer) return;
+
+            Plugin.Logger.LogInfo($"Sync request from client {clientId}. Sending config sync.");
+            TeleporterConfigData data = ConfigSettings.GetConfigDataFromEntries();
+            SendConfigDataToClient(clientId, data);
+        }
+
+
+        public static void SendConfigDataToClient(ulong clientId, TeleporterConfigData data)
+        {
+            using FastBufferWriter writer = new(1024, Allocator.Temp);
+            writer.WriteValueSafe(data);
+
+            NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(ConfigSyncReceiveName, clientId, writer, NetworkDelivery.ReliableSequenced);
+            Plugin.Logger.LogDebug($"Sent config sync to client {clientId}");
+        }
+    }
+
+    private static class Client
+    {
+        public static void Init()
+        {
+            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(ConfigSyncReceiveName, Client.OnConfigDataReceived);
+            RequestConfigData();
+        }
+
+        public static void RequestConfigData()
+        {
+            if (!NetworkManager.Singleton.IsClient) return;
+
+            Plugin.Logger.LogInfo("Sending config sync request to server.");
+
+            using FastBufferWriter writer = new(0, Allocator.Temp);
+            NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(ConfigSyncRequestName, 0ul, writer, NetworkDelivery.ReliableSequenced);
+        }
+
+        public static void OnConfigDataReceived(ulong clientId, FastBufferReader reader)
+        {
+            if (NetworkManager.Singleton.IsServer) return;
+
+            Plugin.Logger.LogInfo("Receiving sync from server.");
+            var localReader = reader;
+            try
+            {
+                localReader.ReadValueSafe(out TeleporterConfigData data);
+                ConfigSettings.UpdateCurrentGameSettings(data);
+                Plugin.Logger.LogInfo("Successfully applied synced config.");
+            }
+            catch (System.Exception e)
+            {
+                Plugin.Logger.LogError($"Error receiving config sync from server: {e}");
+            }
         }
     }
 }
+

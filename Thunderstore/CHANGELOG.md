@@ -1,3 +1,7 @@
+## 1.0.2
+
+Fix issue with incorrect carry weight after teleporting.
+
 ## 1.0.1
 
 Hotfix to fix packaged file structure.

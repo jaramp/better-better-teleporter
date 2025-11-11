@@ -4,10 +4,6 @@ using UnityEngine;
 
 namespace BetterBetterTeleporter.Patches;
 
-/// <summary>
-/// This patch class is responsible for resetting the teleporter cooldown when the game starts or ends (when returning to orbit).
-/// It uses Harmony patches to hook into the StartGame and EndOfGame methods of the StartOfRound class.
-/// </summary>
 [HarmonyPatch(typeof(StartOfRound))]
 public static class ResetCooldownOnOrbitPatch
 {

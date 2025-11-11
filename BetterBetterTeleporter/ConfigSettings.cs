@@ -68,7 +68,7 @@ public static class ConfigSettings
         if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
         {
             UpdateCurrentGameSettings(GetConfigDataFromEntries());
-            ConfigSyncPatch.SendConfigSyncToClients();
+            ConfigSyncPatch.SyncConfig();
         }
     }
 

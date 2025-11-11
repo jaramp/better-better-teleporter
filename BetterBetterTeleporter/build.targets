@@ -3,7 +3,7 @@
     <Message Text="Copying $(TargetPath) to dev profile..." Importance="high" />
     <Copy
       SourceFiles="$(TargetPath)"
-      DestinationFolder="$(AppData)\com.kesomannen.gale\lethal-company\profiles\dev\BepInEx\plugins\BetterBetterTeleporter"
+      DestinationFolder="$(DevOutDir)"
       OverwriteReadOnlyFiles="true" />
   </Target>
 </Project>
