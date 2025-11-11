@@ -6,7 +6,7 @@ using Unity.Collections;
 namespace BetterBetterTeleporter.Patches;
 
 /// <summary>
-/// This patch class is responsible for synchronizing the configuration settings between the server and clients.
+/// This patch is responsible for synchronizing the configuration settings between the server and clients.
 /// It uses Unity's NetworkManager to send and receive configuration data.
 /// </summary>
 [HarmonyPatch(typeof(PlayerControllerB))]
@@ -29,10 +29,8 @@ public static class ConfigSyncPatch
         TeleporterConfigData data = ConfigSettings.GetConfigDataFromEntries();
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
-            if (client.ClientId != NetworkManager.Singleton.LocalClientId)
-            {
-                Host.SendConfigDataToClient(client.ClientId, data);
-            }
+            if (client.ClientId == NetworkManager.Singleton.LocalClientId) continue;
+            Host.SendConfigDataToClient(client.ClientId, data);
         }
     }
 
@@ -40,10 +38,10 @@ public static class ConfigSyncPatch
     {
         public static void Init()
         {
-            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(ConfigSyncRequestName, Host.OnConfigDataRequest);
+            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(ConfigSyncRequestName, OnConfigDataRequest);
         }
 
-        public static void OnConfigDataRequest(ulong clientId, FastBufferReader reader)
+        private static void OnConfigDataRequest(ulong clientId, FastBufferReader reader)
         {
             if (!NetworkManager.Singleton.IsServer) return;
 
@@ -71,7 +69,7 @@ public static class ConfigSyncPatch
             RequestConfigData();
         }
 
-        public static void RequestConfigData()
+        private static void RequestConfigData()
         {
             if (!NetworkManager.Singleton.IsClient) return;
 
@@ -81,7 +79,7 @@ public static class ConfigSyncPatch
             NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(ConfigSyncRequestName, 0ul, writer, NetworkDelivery.ReliableSequenced);
         }
 
-        public static void OnConfigDataReceived(ulong clientId, FastBufferReader reader)
+        private static void OnConfigDataReceived(ulong clientId, FastBufferReader reader)
         {
             if (NetworkManager.Singleton.IsServer) return;
 
