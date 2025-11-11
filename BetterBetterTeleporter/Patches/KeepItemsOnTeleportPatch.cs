@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 using System.Reflection;
+using UnityEngine;
 
 namespace BetterBetterTeleporter.Patches;
 
@@ -74,10 +75,14 @@ public static class KeepItemsOnTeleporterPatch
         // Restore player's inventory from temporary storage
         var itemsToKeep = playerItems[__instance];
         playerItems.Remove(__instance);
+        float carryWeight = 0;
         for (int i = 0; i < __instance.ItemSlots.Length; i++)
         {
+            if (itemsToKeep[i] == null) continue;
             __instance.ItemSlots[i] = itemsToKeep[i];
+            carryWeight += itemsToKeep[i].itemProperties.weight - 1f;
         }
+        __instance.carryWeight = Math.Clamp(__instance.carryWeight + carryWeight, 1f, 10f);
 
         // Force reselect current item slot to fix issues with the player appearing to not have an item equipped
         __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
