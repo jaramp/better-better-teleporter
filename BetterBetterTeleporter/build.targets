@@ -40,7 +40,7 @@
     <MakeDir Directories="$(BuildsDir)" />
     <Copy SourceFiles="$(ProjectDir)..\README.md" DestinationFolder="$(ThunderstoreDir)" OverwriteReadOnlyFiles="true" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ThunderstoreDir)\BepInEx\plugins" OverwriteReadOnlyFiles="true" />
-    <Exec Command="powershell -NoLogo -NoProfile -Command &quot;Compress-Archive -Path '$(ThunderstoreDir)\*' -DestinationPath '$(ZipPath)' -Force&quot;" />
+    <Exec Command="powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command &quot;Compress-Archive -Path '$(ThunderstoreDir)\*' -DestinationPath '$(ZipPath)' -Force&quot;" />
     <Delete Files="$(ThunderstoreDir)\README.md" ContinueOnError="true" />
     <RemoveDir Directories="$(ThunderstoreDir)\BepInEx" ContinueOnError="true" />
     <Message Text="Packaged Thunderstore ZIP: $(ZipPath)" Importance="high" />
