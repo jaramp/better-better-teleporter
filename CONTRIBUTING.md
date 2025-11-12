@@ -30,17 +30,17 @@ This compiles the mod and runs all configured build steps.
 
 ### Build Outputs
 
-The compiled DLL will appear under `BetterBetterTeleporter/bin/Release/netstandard2.1/`. The DLL will also be automatically copied into your BepinEx plugins folder. See variables in `BetterBetterTeleporter.csproj`:
+The compiled DLL will appear under `BetterBetterTeleporter/bin/Release/netstandard2.1/`. The DLL will also be automatically copied into your BepInEx plugins folder. See variables in `BetterBetterTeleporter.csproj`:
 
 - `GameDir`: Install location for Lethal Company
-- `BepinExDir`: Location of active BepinEx folder, which may depend on your mod manager.
+- `BepInExDir`: Location of active BepInEx folder, which may depend on your mod manager.
 
 `build.targets` will run the following automation:
 
 1. **Version Sync**: Ensures the Thunderstore `manifest.json` version matches the `.csproj` version.
 2. **Changelog Check**: If the changelog does not contain the current version, prints a warning message.
 3. **Thunderstore Packaging**: Creates the zip file to upload to Thunderstore under `/builds`.
-4. **Auto-Copy To Mod Folder**: Puts the DLL into the appropriate location from `BepinExDir` for immediate testing.
+4. **Auto-Copy To Mod Folder**: Puts the DLL into the appropriate location from `BepInExDir` for immediate testing.
 
 You can comment out any of these targets if you don't want them to execute on your local machine.
 

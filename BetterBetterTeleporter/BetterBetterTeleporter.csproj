@@ -3,7 +3,7 @@
 		<!-- NOTE: You may need to adjust this path if your game installation is different. -->
 		<GameDir>C:\Games\Steam\steamapps\common\Lethal Company</GameDir>
 		<!-- Development mod profile directory to auto-copy dll into -->
-		<BepinExDir>$(AppData)\com.kesomannen.gale\lethal-company\profiles\dev\BepinEx</BepinExDir>
+		<BepInExDir>$(AppData)\com.kesomannen.gale\lethal-company\profiles\dev\BepInEx</BepInExDir>
 	</PropertyGroup>
 
 	<PropertyGroup>
