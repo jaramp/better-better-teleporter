@@ -28,7 +28,7 @@ public static class ConfigSettings
     public static void Init(ConfigFile config)
     {
         // # General
-        ResetCooldownOnOrbitEntry = config.Bind("General", "ResetCooldownOnOrbit", true, new ConfigDescription("Resets the cooldown time on teleporters between days."));
+        ResetCooldownOnOrbitEntry = config.Bind("General", "ResetCooldownOnOrbit", false, new ConfigDescription("Resets the cooldown time on teleporters between days."));
 
         // # Teleporter
         TeleporterCooldownEntry = config.Bind("Teleporter", "TeleporterCooldown", 10, new ConfigDescription("Cooldown time (in seconds) for using the Teleporter.", new AcceptableValueRange<int>(0, 600)));
