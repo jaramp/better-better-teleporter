@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using BepInEx.Configuration;
-using Unity.Netcode;
-
+using HarmonyLib;
 using LethalNetworkAPI;
+using LethalNetworkAPI.Utils;
 
 namespace BetterBetterTeleporter;
 
@@ -20,14 +21,16 @@ public static class ModConfig
     public static ConfigEntry<string> InverseTeleporterAlwaysDropEntry { get; private set; }
     public static ConfigEntry<float> BatteryDrainPercentEntry { get; private set; }
 
-    // Current Game Settings (Synced from Host)
-    public static ModConfigData CurrentSettings = new();
+    // Current Game Settings (Synced from Host) - Using LNetworkVariable for automatic sync
+    public static ModConfigData CurrentSettings => configSync.Value;
+    private static LNetworkVariable<ModConfigData> configSync;
 
-    public static event Action OnCooldownSettingsChanged;
-    private static LNetworkMessage<ModConfigData> configSync;
+    public static event Action<ModConfigData> OnCooldownSettingsChanged;
 
     public static void Init(ConfigFile config)
     {
+        config.SaveOnConfigSet = false;
+
         // # General
         ResetCooldownOnOrbitEntry = config.Bind("General", "ResetCooldownOnOrbit", false, new ConfigDescription("Resets the cooldown time on teleporters between days."));
 
@@ -44,16 +47,36 @@ public static class ModConfig
         InverseTeleporterAlwaysDropEntry = config.Bind("Inverse Teleporter", "InverseTeleporterAlwaysDrop", "", new ConfigDescription("Drop these items regardless of Inverse Teleporter behavior (comma-separated item names).\nDoes nothing if InverseTeleporterBehavior is set to \"Drop\"."));
         BatteryDrainPercentEntry = config.Bind("Inverse Teleporter", "BatteryDrainPercent", 0.0f, new ConfigDescription("Drains all held battery items by a percentage when using the Inverse Teleporter. 0.0 means no drain. 1.0 means 100% drained.", new AcceptableValueRange<float>(0.0f, 1.0f)));
 
-        configSync = LNetworkMessage<ModConfigData>.Connect("BetterBetterTeleporter.Config", onClientReceived: UpdateCurrentGameSettings);
-
-        SubscribeOnChangeEvents();
-        UpdateCurrentGameSettings(GetConfigDataFromEntries());
+        ((Dictionary<ConfigDefinition, string>)AccessTools.Property(typeof(ConfigFile), "OrphanedEntries").GetValue(config)).Clear();
+        config.Save();
+        configSync = LNetworkVariable<ModConfigData>.Connect("BetterBetterTeleporter.Config", ReadConfig(), onValueChanged: OnConfigSynced);
+        SubscribeConfigChangeEvents();
     }
 
-    private static void SubscribeOnChangeEvents()
+    private static void OnConfigSynced(ModConfigData oldValue, ModConfigData newValue)
     {
-        TeleporterCooldownEntry.SettingChanged += OnConfigChanged;
-        InverseTeleporterCooldownEntry.SettingChanged += OnConfigChanged;
+        OnCooldownSettingsChanged?.Invoke(newValue);
+    }
+
+    private static void SubscribeConfigChangeEvents()
+    {
+        // When the host updates their config, update the synced variable
+        static void OnConfigChanged(object o, EventArgs e)
+        {
+            if (!LNetworkUtils.IsHostOrServer) return;
+            configSync.Value = ReadConfig();
+        }
+
+        // Fire event to immediately update existing Teleporter cooldowns
+        static void OnTeleporterCooldownChanged(object o, EventArgs e)
+        {
+            if (!LNetworkUtils.IsHostOrServer) return;
+            OnConfigChanged(o, e);
+            OnCooldownSettingsChanged?.Invoke(CurrentSettings);
+        }
+
+        TeleporterCooldownEntry.SettingChanged += OnTeleporterCooldownChanged;
+        InverseTeleporterCooldownEntry.SettingChanged += OnTeleporterCooldownChanged;
         ResetCooldownOnOrbitEntry.SettingChanged += OnConfigChanged;
         BatteryDrainPercentEntry.SettingChanged += OnConfigChanged;
         TeleporterBehaviorEntry.SettingChanged += OnConfigChanged;
@@ -64,77 +87,33 @@ public static class ModConfig
         InverseTeleporterAlwaysDropEntry.SettingChanged += OnConfigChanged;
     }
 
-    private static void OnConfigChanged(object sender, EventArgs args)
+    private static ModConfigData ReadConfig() => new()
     {
-        // When the host updates their config, it syncs across clients for the current game
-        // When a client updates their config, it doesn't affect the current game settings (i.e., no sync)
-        if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-        {
-            var data = GetConfigDataFromEntries();
-            UpdateCurrentGameSettings(data);
-            configSync.SendClients(data);
-        }
-    }
-
-    public static void UpdateCurrentGameSettings(ModConfigData data)
-    {
-        var shouldNotifyCooldowns = HasChangedCooldowns(CurrentSettings, data);
-        CurrentSettings = data;
-        if (shouldNotifyCooldowns) OnCooldownSettingsChanged?.Invoke();
-    }
-
-    private static bool HasChangedCooldowns(ModConfigData a, ModConfigData b)
-    {
-        if (a.TeleporterCooldown != b.TeleporterCooldown) return true;
-        if (a.InverseTeleporterCooldown != b.InverseTeleporterCooldown) return true;
-        return false;
-    }
-
-    public static ModConfigData GetConfigDataFromEntries()
-    {
-        return new ModConfigData
-        {
-            TeleporterCooldown = TeleporterCooldownEntry.Value,
-            InverseTeleporterCooldown = InverseTeleporterCooldownEntry.Value,
-            ResetCooldownOnOrbit = ResetCooldownOnOrbitEntry.Value,
-            BatteryDrainPercent = BatteryDrainPercentEntry.Value,
-            TeleporterBehavior = TeleporterBehaviorEntry.Value,
-            TeleporterAlwaysKeep = TeleporterAlwaysKeepEntry.Value,
-            TeleporterAlwaysDrop = TeleporterAlwaysDropEntry.Value,
-            InverseTeleporterBehavior = InverseTeleporterBehaviorEntry.Value,
-            InverseTeleporterAlwaysKeep = InverseTeleporterAlwaysKeepEntry.Value,
-            InverseTeleporterAlwaysDrop = InverseTeleporterAlwaysDropEntry.Value,
-        };
-    }
+        ResetCooldownOnOrbit = ResetCooldownOnOrbitEntry.Value,
+        TeleporterCooldown = TeleporterCooldownEntry.Value,
+        IsTeleportKeep = TeleporterBehaviorEntry.Value == ItemTeleportBehavior.Keep,
+        TeleporterAlwaysKeep = TeleporterAlwaysKeepEntry.Value,
+        TeleporterAlwaysDrop = TeleporterAlwaysDropEntry.Value,
+        InverseTeleporterCooldown = InverseTeleporterCooldownEntry.Value,
+        IsInverseTeleportKeep = InverseTeleporterBehaviorEntry.Value == ItemTeleportBehavior.Keep,
+        InverseTeleporterAlwaysKeep = InverseTeleporterAlwaysKeepEntry.Value,
+        InverseTeleporterAlwaysDrop = InverseTeleporterAlwaysDropEntry.Value,
+        BatteryDrainPercent = BatteryDrainPercentEntry.Value,
+    };
 }
 
-[Serializable]
-public struct ModConfigData : INetworkSerializable
+public record struct ModConfigData
 {
     public bool ResetCooldownOnOrbit;
     public int TeleporterCooldown;
-    public ItemTeleportBehavior TeleporterBehavior;
+    public bool IsTeleportKeep;
     public string TeleporterAlwaysKeep;
     public string TeleporterAlwaysDrop;
     public int InverseTeleporterCooldown;
-    public ItemTeleportBehavior InverseTeleporterBehavior;
+    public bool IsInverseTeleportKeep;
     public string InverseTeleporterAlwaysKeep;
     public string InverseTeleporterAlwaysDrop;
     public float BatteryDrainPercent;
-
-    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-    {
-        serializer.SerializeValue(ref TeleporterCooldown);
-        serializer.SerializeValue(ref InverseTeleporterCooldown);
-        serializer.SerializeValue(ref ResetCooldownOnOrbit);
-        serializer.SerializeValue(ref BatteryDrainPercent);
-        serializer.SerializeValue(ref TeleporterBehavior);
-        serializer.SerializeValue(ref TeleporterAlwaysKeep);
-        serializer.SerializeValue(ref TeleporterAlwaysDrop);
-        serializer.SerializeValue(ref InverseTeleporterBehavior);
-        serializer.SerializeValue(ref InverseTeleporterAlwaysKeep);
-        serializer.SerializeValue(ref InverseTeleporterAlwaysDrop);
-    }
 }
 
 public enum ItemTeleportBehavior { Keep, Drop }
