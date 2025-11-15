@@ -84,7 +84,7 @@ public static class KeepItemsOnTeleporterPatch
         var config = ConfigSettings.CurrentSettings;
         ItemTeleportBehavior behavior;
         string[] oppositeBehaviorItems;
-        bool isInverseTeleporting = player.shipTeleporterId != 1;
+        bool isInverseTeleporting = InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player);
 
         if (isInverseTeleporting)
         {
@@ -127,6 +127,6 @@ public static class KeepItemsOnTeleporterPatch
         return false;
     }
 
-    private static bool IsDroppingItemsFromTeleport(PlayerControllerB player) => player.shipTeleporterId != -1 || InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player);
+    private static bool IsDroppingItemsFromTeleport(PlayerControllerB player) => player.shipTeleporterId == 1 || InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player);
     private static string Stringify(IEnumerable<GrabbableObject> items) => string.Join(",", items.Select(x => x?.itemProperties.itemName ?? "<empty>"));
 }
