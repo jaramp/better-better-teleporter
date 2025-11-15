@@ -11,7 +11,7 @@ public static class TeleporterCooldownPatch
 
     static TeleporterCooldownPatch()
     {
-        ConfigSettings.OnCooldownSettingsChanged += UpdateAllTeleporterCooldowns;
+        ModConfig.OnCooldownSettingsChanged += UpdateAllTeleporterCooldowns;
     }
 
     [HarmonyPatch("Awake"), HarmonyPostfix]
@@ -19,12 +19,12 @@ public static class TeleporterCooldownPatch
     {
         if (___isInverseTeleporter)
         {
-            ___cooldownAmount = ConfigSettings.CurrentSettings.InverseTeleporterCooldown;
+            ___cooldownAmount = ModConfig.CurrentSettings.InverseTeleporterCooldown;
             Plugin.Logger.LogDebug($"Inverse Teleporter cooldown set to {___cooldownAmount}s");
         }
         else
         {
-            ___cooldownAmount = ConfigSettings.CurrentSettings.TeleporterCooldown;
+            ___cooldownAmount = ModConfig.CurrentSettings.TeleporterCooldown;
             Plugin.Logger.LogDebug($"Teleporter cooldown set to {___cooldownAmount}s");
         }
     }
@@ -36,12 +36,12 @@ public static class TeleporterCooldownPatch
         {
             if (teleporter.isInverseTeleporter)
             {
-                teleporter.cooldownAmount = ConfigSettings.CurrentSettings.InverseTeleporterCooldown;
+                teleporter.cooldownAmount = ModConfig.CurrentSettings.InverseTeleporterCooldown;
                 Plugin.Logger.LogDebug($"Inverse Teleporter cooldown set to {teleporter.cooldownAmount}s");
             }
             else
             {
-                teleporter.cooldownAmount = ConfigSettings.CurrentSettings.TeleporterCooldown;
+                teleporter.cooldownAmount = ModConfig.CurrentSettings.TeleporterCooldown;
                 Plugin.Logger.LogDebug($"Teleporter cooldown set to {teleporter.cooldownAmount}s");
             }
 

@@ -2,11 +2,11 @@ using System;
 using BepInEx.Configuration;
 using Unity.Netcode;
 
-using BetterBetterTeleporter.Patches;
+using LethalNetworkAPI;
 
 namespace BetterBetterTeleporter;
 
-public static class ConfigSettings
+public static class ModConfig
 {
     // Saved Config Entries (Local to each player)
     public static ConfigEntry<bool> ResetCooldownOnOrbitEntry { get; private set; }
@@ -21,9 +21,10 @@ public static class ConfigSettings
     public static ConfigEntry<float> BatteryDrainPercentEntry { get; private set; }
 
     // Current Game Settings (Synced from Host)
-    public static TeleporterConfigData CurrentSettings = new();
+    public static ModConfigData CurrentSettings = new();
 
     public static event Action OnCooldownSettingsChanged;
+    private static LNetworkMessage<ModConfigData> configSync;
 
     public static void Init(ConfigFile config)
     {
@@ -42,6 +43,8 @@ public static class ConfigSettings
         InverseTeleporterAlwaysKeepEntry = config.Bind("Inverse Teleporter", "InverseTeleporterAlwaysKeep", "", new ConfigDescription("Keep these items regardless of Inverse Teleporter behavior (comma-separated item names).\nDoes nothing if InverseTeleporterBehavior is set to \"Keep\"."));
         InverseTeleporterAlwaysDropEntry = config.Bind("Inverse Teleporter", "InverseTeleporterAlwaysDrop", "", new ConfigDescription("Drop these items regardless of Inverse Teleporter behavior (comma-separated item names).\nDoes nothing if InverseTeleporterBehavior is set to \"Drop\"."));
         BatteryDrainPercentEntry = config.Bind("Inverse Teleporter", "BatteryDrainPercent", 0.0f, new ConfigDescription("Drains all held battery items by a percentage when using the Inverse Teleporter. 0.0 means no drain. 1.0 means 100% drained.", new AcceptableValueRange<float>(0.0f, 1.0f)));
+
+        configSync = LNetworkMessage<ModConfigData>.Connect("BetterBetterTeleporter.Config", onClientReceived: UpdateCurrentGameSettings);
 
         SubscribeOnChangeEvents();
         UpdateCurrentGameSettings(GetConfigDataFromEntries());
@@ -67,28 +70,29 @@ public static class ConfigSettings
         // When a client updates their config, it doesn't affect the current game settings (i.e., no sync)
         if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
         {
-            UpdateCurrentGameSettings(GetConfigDataFromEntries());
-            ConfigSyncPatch.SyncConfig();
+            var data = GetConfigDataFromEntries();
+            UpdateCurrentGameSettings(data);
+            configSync.SendClients(data);
         }
     }
 
-    public static void UpdateCurrentGameSettings(TeleporterConfigData data)
+    public static void UpdateCurrentGameSettings(ModConfigData data)
     {
         var shouldNotifyCooldowns = HasChangedCooldowns(CurrentSettings, data);
         CurrentSettings = data;
         if (shouldNotifyCooldowns) OnCooldownSettingsChanged?.Invoke();
     }
 
-    private static bool HasChangedCooldowns(TeleporterConfigData a, TeleporterConfigData b)
+    private static bool HasChangedCooldowns(ModConfigData a, ModConfigData b)
     {
         if (a.TeleporterCooldown != b.TeleporterCooldown) return true;
         if (a.InverseTeleporterCooldown != b.InverseTeleporterCooldown) return true;
         return false;
     }
 
-    public static TeleporterConfigData GetConfigDataFromEntries()
+    public static ModConfigData GetConfigDataFromEntries()
     {
-        return new TeleporterConfigData
+        return new ModConfigData
         {
             TeleporterCooldown = TeleporterCooldownEntry.Value,
             InverseTeleporterCooldown = InverseTeleporterCooldownEntry.Value,
@@ -104,7 +108,8 @@ public static class ConfigSettings
     }
 }
 
-public struct TeleporterConfigData : INetworkSerializable
+[Serializable]
+public struct ModConfigData : INetworkSerializable
 {
     public bool ResetCooldownOnOrbit;
     public int TeleporterCooldown;

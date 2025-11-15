@@ -8,6 +8,7 @@ namespace BetterBetterTeleporter;
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 [BepInDependency("ainavt.lc.lethalconfig", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("LethalNetworkAPI")]
 public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger { get; private set; }
@@ -19,7 +20,7 @@ public class Plugin : BaseUnityPlugin
 
         Instance = this;
         Logger = base.Logger;
-        ConfigSettings.Init(Config);
+        ModConfig.Init(Config);
 
         if (Chainloader.PluginInfos.ContainsKey("ainavt.lc.lethalconfig"))
         {

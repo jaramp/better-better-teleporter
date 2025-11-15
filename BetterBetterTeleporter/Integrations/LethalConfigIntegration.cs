@@ -23,20 +23,20 @@ internal static class LethalConfigIntegration
     private static void RegisterAll()
     {
         // # General
-        RegisterCheckbox(ConfigSettings.ResetCooldownOnOrbitEntry);
+        RegisterCheckbox(ModConfig.ResetCooldownOnOrbitEntry);
 
         // # Teleporter
-        RegisterInput(ConfigSettings.TeleporterCooldownEntry);
-        RegisterDropdown(ConfigSettings.TeleporterBehaviorEntry);
-        RegisterTextInput(ConfigSettings.TeleporterAlwaysKeepEntry);
-        RegisterTextInput(ConfigSettings.TeleporterAlwaysDropEntry);
+        RegisterInput(ModConfig.TeleporterCooldownEntry);
+        RegisterDropdown(ModConfig.TeleporterBehaviorEntry);
+        RegisterTextInput(ModConfig.TeleporterAlwaysKeepEntry);
+        RegisterTextInput(ModConfig.TeleporterAlwaysDropEntry);
 
         // # Inverse Teleporter
-        RegisterInput(ConfigSettings.InverseTeleporterCooldownEntry);
-        RegisterDropdown(ConfigSettings.InverseTeleporterBehaviorEntry);
-        RegisterTextInput(ConfigSettings.InverseTeleporterAlwaysKeepEntry);
-        RegisterTextInput(ConfigSettings.InverseTeleporterAlwaysDropEntry);
-        RegisterSlider(ConfigSettings.BatteryDrainPercentEntry, 0f, 1f);
+        RegisterInput(ModConfig.InverseTeleporterCooldownEntry);
+        RegisterDropdown(ModConfig.InverseTeleporterBehaviorEntry);
+        RegisterTextInput(ModConfig.InverseTeleporterAlwaysKeepEntry);
+        RegisterTextInput(ModConfig.InverseTeleporterAlwaysDropEntry);
+        RegisterSlider(ModConfig.BatteryDrainPercentEntry, 0f, 1f);
     }
 
     private static void RegisterInput(ConfigEntry<int> entry)

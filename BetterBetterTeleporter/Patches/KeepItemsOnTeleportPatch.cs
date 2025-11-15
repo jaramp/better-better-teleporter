@@ -77,7 +77,7 @@ public static class KeepItemsOnTeleporterPatch
 
     private static (ItemTeleportBehavior behavior, string[] oppositeBehaviorItems) GetTeleportConfig(PlayerControllerB player)
     {
-        var config = ConfigSettings.CurrentSettings;
+        var config = ModConfig.CurrentSettings;
         ItemTeleportBehavior behavior;
         string[] oppositeBehaviorItems;
         bool isInverseTeleporting = player.shipTeleporterId != 1;

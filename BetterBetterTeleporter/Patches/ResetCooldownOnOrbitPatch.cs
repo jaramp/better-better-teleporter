@@ -15,7 +15,7 @@ public static class ResetCooldownOnOrbitPatch
     [HarmonyPatch("EndOfGameClientRpc")]
     private static void ResetCooldowns()
     {
-        if (!ConfigSettings.CurrentSettings.ResetCooldownOnOrbit) return;
+        if (!ModConfig.CurrentSettings.ResetCooldownOnOrbit) return;
         if (cooldownTimeField == null)
         {
             Plugin.Logger.LogWarning("Couldn't find ShipTeleporter.cooldownTime field to reset cooldowns.");
