@@ -11,7 +11,7 @@
 		<TeamName>jaramp</TeamName>
 		<AssemblyName>BetterBetterTeleporter</AssemblyName>
 		<Description>A fully configurable Teleporter and Inverse Teleporter mod with advanced item filtering.</Description>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
