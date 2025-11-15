@@ -18,7 +18,7 @@ public record struct ModConfigData
     public bool IsInverseTeleportKeep;
     public string InverseTeleporterAlwaysKeep;
     public string InverseTeleporterAlwaysDrop;
-    public float BatteryDrainPercent;
+    public int BatteryDrainPercent;
 }
 
 public enum ItemTeleportBehavior { Keep, Drop }
@@ -34,7 +34,7 @@ public class ModConfig : SyncedConfig2<ModConfig>
     [SyncedEntryField] public SyncedEntry<ItemTeleportBehavior> InverseTeleporterBehavior;
     [SyncedEntryField] public SyncedEntry<string> InverseTeleporterAlwaysKeep;
     [SyncedEntryField] public SyncedEntry<string> InverseTeleporterAlwaysDrop;
-    [SyncedEntryField] public SyncedEntry<float> BatteryDrainPercent;
+    [SyncedEntryField] public SyncedEntry<int> BatteryDrainPercent;
 
     public ModConfig(ConfigFile config) : base(PluginInfo.PLUGIN_GUID)
     {
@@ -54,7 +54,7 @@ public class ModConfig : SyncedConfig2<ModConfig>
         InverseTeleporterBehavior = config.BindSyncedEntry("Inverse Teleporter", "InverseTeleporterBehavior", ItemTeleportBehavior.Drop, new ConfigDescription("Makes the Inverse Teleporter \"Drop\" or \"Keep\" items on teleport."));
         InverseTeleporterAlwaysKeep = config.BindSyncedEntry("Inverse Teleporter", "InverseTeleporterAlwaysKeep", "", new ConfigDescription("Keep these items regardless of Inverse Teleporter behavior (comma-separated item names).\n\nDoes nothing if InverseTeleporterBehavior is set to \"Keep\"."));
         InverseTeleporterAlwaysDrop = config.BindSyncedEntry("Inverse Teleporter", "InverseTeleporterAlwaysDrop", "", new ConfigDescription("Drop these items regardless of Inverse Teleporter behavior (comma-separated item names).\n\nDoes nothing if InverseTeleporterBehavior is set to \"Drop\"."));
-        BatteryDrainPercent = config.BindSyncedEntry("Inverse Teleporter", "BatteryDrainPercent", 0.0f, new ConfigDescription("Drains all held battery items by a percentage when using the Inverse Teleporter. 0.0 means no drain. 1.0 means 100% drained.", new AcceptableValueRange<float>(0.0f, 1.0f)));
+        BatteryDrainPercent = config.BindSyncedEntry("Inverse Teleporter", "BatteryDrainPercent", 0, new ConfigDescription("Drains all held battery items by a percentage when using the Inverse Teleporter.", new AcceptableValueRange<int>(0, 100)));
 
         ((Dictionary<ConfigDefinition, string>)AccessTools.Property(typeof(ConfigFile), "OrphanedEntries").GetValue(config)).Clear();
         config.Save();

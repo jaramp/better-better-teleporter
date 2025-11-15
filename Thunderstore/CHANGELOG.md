@@ -1,6 +1,7 @@
 ## Version 1.1.0
 
 - Using CSync for better network communication
+- Changed BatteryDrainPercent to an integer range from 0 to 100
 - Improving init and update performance
 - Fix issue where disconnecting players wouldn't drop some items
 - Fix incorrect default value on ResetCooldownOnOrbit

@@ -9,7 +9,7 @@ public static class InverseTeleporterBatteryDrainPatch
     [HarmonyPostfix]
     public static void TeleportPlayerOutWithInverseTeleporterPostfix(int playerObj, Vector3 teleportPos)
     {
-        var drainAmount = Plugin.ModConfig.BatteryDrainPercent.Value;
+        float drainAmount = Plugin.ModConfig.BatteryDrainPercent.Value / 100f;
         if (drainAmount == 0) return;
 
         var player = StartOfRound.Instance.allPlayerScripts[playerObj];

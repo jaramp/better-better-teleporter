@@ -50,7 +50,7 @@ TeleporterAlwaysDrop = Shovel,StopSign,YieldSign
 | InverseTeleporterBehavior   | `Drop` or `Keep` | `Drop`  | Sets whether items are kept or dropped when using the Inverse Teleporter. |
 | InverseTeleporterAlwaysKeep | `ItemList`       |         | Treat these items as `Keep` regardless of Inverse Teleporter behavior.    |
 | InverseTeleporterAlwaysDrop | `ItemList`       |         | Treat these items as `Drop` regardless of Inverse Teleporter behavior.    |
-| BatteryDrainPercent         | `0.0`-`1.0`      | `0.0`   | Percent drain on held battery items when using the Inverse Teleporter.    |
+| BatteryDrainPercent         | `Numeric`        | `0`     | Percent drain on held battery items when using the Inverse Teleporter.    |
 
 As an example, if you wanted an Inverse Teleporter that drops all items except for keys and walkie-talkies, and drains batteries by 25%:
 
@@ -59,7 +59,7 @@ InverseTeleporterCooldown = 210
 InverseTeleporterBehavior = Drop
 InverseTeleporterAlwaysKeep = Key,WalkieTalkie
 InverseTeleporterAlwaysDrop =
-BatteryDrainPercent = 0.25
+BatteryDrainPercent = 25
 ```
 
 ## Item Names

@@ -31,7 +31,7 @@ internal static class LethalConfigIntegration
         RegisterDropdown(Plugin.ModConfig.InverseTeleporterBehavior.Entry);
         RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysKeep.Entry);
         RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysDrop.Entry);
-        RegisterSlider(Plugin.ModConfig.BatteryDrainPercent.Entry, 0f, 1f);
+        RegisterSlider(Plugin.ModConfig.BatteryDrainPercent.Entry, 0, 100);
     }
 
     private static void RegisterInput(ConfigEntry<int> entry)
