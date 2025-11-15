@@ -23,20 +23,20 @@ internal static class LethalConfigIntegration
     private static void RegisterAll()
     {
         // # General
-        RegisterCheckbox(ModConfig.ResetCooldownOnOrbitEntry);
+        RegisterCheckbox(Plugin.ModConfig.ResetCooldownOnOrbit.Entry);
 
         // # Teleporter
-        RegisterInput(ModConfig.TeleporterCooldownEntry);
-        RegisterDropdown(ModConfig.TeleporterBehaviorEntry);
-        RegisterTextInput(ModConfig.TeleporterAlwaysKeepEntry);
-        RegisterTextInput(ModConfig.TeleporterAlwaysDropEntry);
+        RegisterInput(Plugin.ModConfig.TeleporterCooldown.Entry);
+        RegisterDropdown(Plugin.ModConfig.TeleporterBehavior.Entry);
+        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysKeep.Entry);
+        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysDrop.Entry);
 
         // # Inverse Teleporter
-        RegisterInput(ModConfig.InverseTeleporterCooldownEntry);
-        RegisterDropdown(ModConfig.InverseTeleporterBehaviorEntry);
-        RegisterTextInput(ModConfig.InverseTeleporterAlwaysKeepEntry);
-        RegisterTextInput(ModConfig.InverseTeleporterAlwaysDropEntry);
-        RegisterSlider(ModConfig.BatteryDrainPercentEntry, 0f, 1f);
+        RegisterInput(Plugin.ModConfig.InverseTeleporterCooldown.Entry);
+        RegisterDropdown(Plugin.ModConfig.InverseTeleporterBehavior.Entry);
+        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysKeep.Entry);
+        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysDrop.Entry);
+        RegisterSlider(Plugin.ModConfig.BatteryDrainPercent.Entry, 0f, 1f);
     }
 
     private static void RegisterInput(ConfigEntry<int> entry)

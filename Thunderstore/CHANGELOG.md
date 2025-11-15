@@ -1,9 +1,10 @@
 ## Version 1.1.0
 
-- Using LethalNetworkAPI for better network communication
+- Using CSync for better network communication
 - Improving init and update performance
 - Fix issue where disconnecting players wouldn't drop some items
 - Fix incorrect default value on ResetCooldownOnOrbit
+- Fix issue where changing server host synced incorrect settings
 
 ## Version 1.0.2
 

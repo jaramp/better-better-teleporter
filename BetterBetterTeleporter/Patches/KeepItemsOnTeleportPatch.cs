@@ -77,7 +77,6 @@ public static class KeepItemsOnTeleporterPatch
 
     private static (bool behavior, string[] itemList) GetTeleportConfig(PlayerControllerB player)
     {
-        var config = ModConfig.CurrentSettings;
         bool isInverse = player.shipTeleporterId != 1;
         bool isKeeping;
         string[] except;
@@ -85,16 +84,16 @@ public static class KeepItemsOnTeleporterPatch
         if (isInverse)
         {
             Plugin.Logger.LogDebug($"Player {player.playerClientId} teleporting via Inverse Teleporter");
-            isKeeping = config.IsInverseTeleportKeep;
-            var items = isKeeping ? config.InverseTeleporterAlwaysDrop : config.InverseTeleporterAlwaysKeep;
-            except = items.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            isKeeping = Plugin.ModConfig.InverseTeleporterBehavior.Value == ItemTeleportBehavior.Keep;
+            var items = isKeeping ? Plugin.ModConfig.InverseTeleporterAlwaysDrop : Plugin.ModConfig.InverseTeleporterAlwaysKeep;
+            except = items.Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
         }
         else
         {
             Plugin.Logger.LogDebug($"Player {player.playerClientId} teleporting via Teleporter");
-            isKeeping = config.IsTeleportKeep;
-            var items = isKeeping ? config.TeleporterAlwaysDrop : config.TeleporterAlwaysKeep;
-            except = items.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            isKeeping = Plugin.ModConfig.TeleporterBehavior.Value == ItemTeleportBehavior.Keep;
+            var items = isKeeping ? Plugin.ModConfig.TeleporterAlwaysDrop : Plugin.ModConfig.TeleporterAlwaysKeep;
+            except = items.Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
         }
         Plugin.Logger.LogDebug($"Behavior: {isKeeping} items");
 
