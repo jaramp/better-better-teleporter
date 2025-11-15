@@ -64,7 +64,7 @@ BatteryDrainPercent = 25
 
 ## Item Names
 
-You can specify multiple items to keep/drop by listing them separated by commas (such as `Shovel,Key,Flashlight,WalkieTalkie`). BetterBetterTeleporter will do its best to resolve items with inconsistent names (example: "clipboard" vs "Clipboard" vs "ClipboardItem" vs "ClipboardManual"). As long as you have a reasonable idea of what the item is called, it should work.
+You can specify multiple items to keep/drop by listing them separated by commas (such as `Shovel,Key,Flashlight,WalkieTalkie`). BetterBetterTeleporter will do its best to resolve items with inconsistent names (example: "clipboard" vs "Clipboard" vs "ClipboardItem"). As long as you have a reasonable idea of what the item is called, it should work.
 
 Here are some example names that can be used for whitelisting/blacklisting items:
 
@@ -95,6 +95,10 @@ Here are some example names that can be used for whitelisting/blacklisting items
 This is not an exhaustive list. Any item should work, including from other mods.
 Names are not case-sensitive. Using the in-game display name will also work,
 but it may have issues when playing with players that use different language settings.
+
+If you have LethalConfig installed, there is a button at the bottom of the
+BetterBetterTeleporter config section to display the names of all items you're currently
+holding in your inventory. This should help verify if you're using the correct item name.
 
 ## Dependencies
 

@@ -115,10 +115,9 @@ public static class KeepItemsOnTeleporterPatch
     private static bool IsMatchOnName(GrabbableObject item, string itemName)
     {
         const StringComparison caseInsensitive = StringComparison.OrdinalIgnoreCase;
-        if (item.itemProperties.itemName.Equals(itemName, caseInsensitive)) return true;
-        if (item.itemProperties.name.Equals(itemName, caseInsensitive)) return true;
-        if (item.name.Equals(itemName, caseInsensitive)) return true;
-        if (item.GetType().ToString().Equals(itemName, caseInsensitive)) return true;
+        if (item.itemProperties.name.Equals(itemName, caseInsensitive)) return true; // ExtensionLadder
+        if (item.GetType().ToString().Equals(itemName, caseInsensitive)) return true; // ExtensionLadderItem
+        if (item.itemProperties.itemName.Equals(itemName, caseInsensitive)) return true; // Extension Ladder
         return false;
     }
 
