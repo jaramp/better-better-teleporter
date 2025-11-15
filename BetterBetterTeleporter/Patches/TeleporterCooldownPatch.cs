@@ -1,5 +1,5 @@
-using HarmonyLib;
 using System.Reflection;
+using HarmonyLib;
 using UnityEngine;
 
 namespace BetterBetterTeleporter.Patches;
@@ -19,12 +19,12 @@ public static class TeleporterCooldownPatch
     public static void AwakePostfix(ShipTeleporter __instance)
     {
         var (inverse, regular) = GetCooldowns();
-        if (__instance.isInverseTeleporter)
+        if (__instance.isInverseTeleporter && __instance.cooldownAmount != inverse)
         {
             __instance.cooldownAmount = inverse;
             Plugin.Logger.LogDebug($"Inverse Teleporter cooldown set to {inverse}s");
         }
-        else
+        else if (__instance.cooldownAmount != regular)
         {
             __instance.cooldownAmount = regular;
             Plugin.Logger.LogDebug($"Teleporter cooldown set to {regular}s");

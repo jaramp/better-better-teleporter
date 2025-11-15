@@ -8,15 +8,10 @@ namespace BetterBetterTeleporter.Integrations;
 
 internal static class LethalConfigIntegration
 {
-    public static bool Enabled { get; private set; }
-
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static void Initialize()
     {
-        Enabled = true;
         Plugin.Logger.LogInfo("LethalConfig detected — integrating BetterBetterTeleporter config.");
-
-        LethalConfigManager.SetModDescription("Customize teleporter cooldowns and item behavior.");
         RegisterAll();
     }
 

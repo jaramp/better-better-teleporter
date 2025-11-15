@@ -1,8 +1,8 @@
 using BepInEx;
-using BepInEx.Logging;
-using HarmonyLib;
-using BetterBetterTeleporter.Integrations;
 using BepInEx.Bootstrap;
+using BepInEx.Logging;
+using BetterBetterTeleporter.Integrations;
+using HarmonyLib;
 
 namespace BetterBetterTeleporter;
 
