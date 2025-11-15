@@ -20,9 +20,9 @@
 
 Initial Release
 
-- Customize Teleporter cooldown.
-- Customize Inverse Teleporter cooldown.
 - Reset cooldowns on orbit.
+- Customize Teleporter cooldown.
 - Customizable list of items to keep on Teleport.
+- Customize Inverse Teleporter cooldown.
 - Customizable list of items to keep on Inverse Teleport.
 - Customizable battery drain on Inverse Teleport.
