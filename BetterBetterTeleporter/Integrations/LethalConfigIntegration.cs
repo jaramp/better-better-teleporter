@@ -36,7 +36,7 @@ internal static class LethalConfigIntegration
         RegisterDropdown(ConfigSettings.InverseTeleporterBehaviorEntry);
         RegisterTextInput(ConfigSettings.InverseTeleporterAlwaysKeepEntry);
         RegisterTextInput(ConfigSettings.InverseTeleporterAlwaysDropEntry);
-        RegisterSlider(ConfigSettings.BatteryDrainPercentEntry, 0f, 1f);
+        RegisterSlider(ConfigSettings.BatteryDrainPercentEntry, 0, 100);
     }
 
     private static void RegisterInput(ConfigEntry<int> entry)

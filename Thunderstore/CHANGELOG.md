@@ -1,3 +1,16 @@
+## Version 1.1.1
+
+- Rolling back lots of changes from 1.1.0 due to compatibility issues on v73
+
+## Version 1.1.0
+
+- Using CSync for better network communication
+- Changed BatteryDrainPercent to an integer range from 0 to 100
+- Improving init and update performance
+- Fix issue where disconnecting players wouldn't drop some items
+- Fix incorrect default value on ResetCooldownOnOrbit
+- Fix issue where changing server host synced incorrect settings-
+
 ## Version 1.0.2
 
 - Setting default config to match unmodded game behavior.
