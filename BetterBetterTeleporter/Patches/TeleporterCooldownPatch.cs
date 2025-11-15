@@ -11,8 +11,8 @@ public static class TeleporterCooldownPatch
 
     static TeleporterCooldownPatch()
     {
-        Plugin.ModConfig.TeleporterCooldown.Changed += (o, e) => UpdateAllTeleporterCooldowns();
-        Plugin.ModConfig.InverseTeleporterCooldown.Changed += (o, e) => UpdateAllTeleporterCooldowns();
+        Plugin.ModConfig.TeleporterCooldown.SettingChanged += (o, e) => UpdateAllTeleporterCooldowns();
+        Plugin.ModConfig.InverseTeleporterCooldown.SettingChanged += (o, e) => UpdateAllTeleporterCooldowns();
     }
 
     [HarmonyPatch("Awake"), HarmonyPostfix]

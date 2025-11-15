@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx.Configuration;
 using LethalConfig;
@@ -20,20 +21,20 @@ internal static class LethalConfigIntegration
     private static void RegisterAll()
     {
         // # General
-        RegisterCheckbox(Plugin.ModConfig.ResetCooldownOnOrbit.Entry);
+        RegisterCheckbox(Plugin.ModConfig.ResetCooldownOnOrbit);
 
         // # Teleporter
-        RegisterInput(Plugin.ModConfig.TeleporterCooldown.Entry);
-        RegisterDropdown(Plugin.ModConfig.TeleporterBehavior.Entry);
-        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysKeep.Entry);
-        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysDrop.Entry);
+        RegisterInput(Plugin.ModConfig.TeleporterCooldown);
+        RegisterDropdown(Plugin.ModConfig.TeleporterBehavior);
+        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysKeep);
+        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysDrop);
 
         // # Inverse Teleporter
-        RegisterInput(Plugin.ModConfig.InverseTeleporterCooldown.Entry);
-        RegisterDropdown(Plugin.ModConfig.InverseTeleporterBehavior.Entry);
-        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysKeep.Entry);
-        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysDrop.Entry);
-        RegisterSlider(Plugin.ModConfig.BatteryDrainPercent.Entry, 0, 100);
+        RegisterInput(Plugin.ModConfig.InverseTeleporterCooldown);
+        RegisterDropdown(Plugin.ModConfig.InverseTeleporterBehavior);
+        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysKeep);
+        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysDrop);
+        RegisterSlider(Plugin.ModConfig.BatteryDrainPercent, 0, 100);
 
         // # Help
         RegisterShowInventoryButton();
@@ -119,7 +120,8 @@ internal static class LethalConfigIntegration
                     return;
                 }
 
-                if (teleporter.cooldownTime > 0)
+                var cooldownTimeField = typeof(ShipTeleporter).GetField("cooldownTime", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (cooldownTimeField?.GetValue(teleporter) as float? > 0)
                 {
                     hud.DisplayTip(failMsg, "The teleporter is on cooldown.", true, false);
                     return;
