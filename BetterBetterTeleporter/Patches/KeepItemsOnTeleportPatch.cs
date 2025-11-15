@@ -38,7 +38,7 @@ public static class KeepItemsOnTeleporterPatch
                 __instance.ItemSlots[i] = null;
             }
         }
-        Plugin.Logger.LogDebug($"Client #{__instance.playerClientId} items to keep: {Stringify(itemsToKeep.Where(x => x != null))}");
+        Plugin.Logger.LogDebug($"Client {__instance.playerClientId} items to keep: {Stringify(itemsToKeep.Where(x => x != null))}");
         // This is needed to suppress the drop animation
         __instance.isHoldingObject = false;
 
@@ -75,7 +75,7 @@ public static class KeepItemsOnTeleporterPatch
         __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
         SwitchToItemSlotMethod.Invoke(__instance, [__instance.currentItemSlot, null]);
 
-        Plugin.Logger.LogDebug($"Client #{__instance.playerClientId} inventory after teleport: {Stringify(__instance.ItemSlots)}");
+        Plugin.Logger.LogDebug($"Client {__instance.playerClientId} inventory after teleport: {Stringify(__instance.ItemSlots)}");
     }
 
     private static (bool behavior, string[] itemList) GetTeleportConfig(PlayerControllerB player)
