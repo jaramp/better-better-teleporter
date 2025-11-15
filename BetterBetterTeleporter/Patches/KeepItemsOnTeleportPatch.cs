@@ -18,7 +18,7 @@ public static class KeepItemsOnTeleporterPatch
     public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
     {
         // If the player is disconnecting, exit this patch.
-        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(__instance.playerClientId)) return;
+        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(__instance.actualClientId)) return;
         // If the player is not teleporting, exit this patch.
         if (!IsDroppingItemsFromTeleport(__instance)) return;
 
@@ -55,7 +55,7 @@ public static class KeepItemsOnTeleporterPatch
     public static void DropAllHeldItemsPostfix(PlayerControllerB __instance)
     {
         // If the player is disconnecting, exit this patch.
-        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(__instance.playerClientId)) return;
+        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(__instance.actualClientId)) return;
         // If the player is not teleporting, exit this patch.
         if (!IsDroppingItemsFromTeleport(__instance)) return;
 
@@ -121,6 +121,6 @@ public static class KeepItemsOnTeleporterPatch
         return false;
     }
 
-    private static bool IsDroppingItemsFromTeleport(PlayerControllerB player) => player.shipTeleporterId != -1 || InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player);
+    private static bool IsDroppingItemsFromTeleport(PlayerControllerB player) => player.shipTeleporterId == 1 || InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player);
     private static string Stringify(IEnumerable<GrabbableObject> items) => string.Join(",", items.Select(x => x?.itemProperties.itemName ?? "<empty>"));
 }
