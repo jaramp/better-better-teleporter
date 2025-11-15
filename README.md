@@ -44,13 +44,13 @@ TeleporterAlwaysDrop = Shovel,StopSign,YieldSign
 
 **Inverse Teleporter**
 
-| Option                      | Value            | Default | Description                                                               |
-| --------------------------- | ---------------- | ------- | ------------------------------------------------------------------------- |
-| InverseTeleporterCooldown   | `Numeric`        | `210`   | Cooldown time (in seconds) for using the Inverse Teleporter.              |
-| InverseTeleporterBehavior   | `Drop` or `Keep` | `Drop`  | Sets whether items are kept or dropped when using the Inverse Teleporter. |
-| InverseTeleporterAlwaysKeep | `ItemList`       |         | Treat these items as `Keep` regardless of Inverse Teleporter behavior.    |
-| InverseTeleporterAlwaysDrop | `ItemList`       |         | Treat these items as `Drop` regardless of Inverse Teleporter behavior.    |
-| BatteryDrainPercent         | `Numeric`        | `0`     | Percent drain on held battery items when using the Inverse Teleporter.    |
+| Option                      | Value            | Default | Description                                                                             |
+| --------------------------- | ---------------- | ------- | --------------------------------------------------------------------------------------- |
+| InverseTeleporterCooldown   | `Numeric`        | `210`   | Cooldown time (in seconds) for using the Inverse Teleporter.                            |
+| InverseTeleporterBehavior   | `Drop` or `Keep` | `Drop`  | Sets whether items are kept or dropped when using the Inverse Teleporter.               |
+| InverseTeleporterAlwaysKeep | `ItemList`       |         | Treat these items as `Keep` regardless of Inverse Teleporter behavior.                  |
+| InverseTeleporterAlwaysDrop | `ItemList`       |         | Treat these items as `Drop` regardless of Inverse Teleporter behavior.                  |
+| BatteryDrainPercent         | `Numeric`        | `0`     | Percent drain on held battery items when using the Inverse Teleporter (`0` to disable). |
 
 As an example, if you wanted an Inverse Teleporter that drops all items except for keys and walkie-talkies, and drains batteries by 25%:
 
