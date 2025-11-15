@@ -7,6 +7,22 @@ using LethalNetworkAPI.Utils;
 
 namespace BetterBetterTeleporter;
 
+public record struct ModConfigData
+{
+    public bool ResetCooldownOnOrbit;
+    public int TeleporterCooldown;
+    public bool IsTeleportKeep;
+    public string TeleporterAlwaysKeep;
+    public string TeleporterAlwaysDrop;
+    public int InverseTeleporterCooldown;
+    public bool IsInverseTeleportKeep;
+    public string InverseTeleporterAlwaysKeep;
+    public string InverseTeleporterAlwaysDrop;
+    public float BatteryDrainPercent;
+}
+
+public enum ItemTeleportBehavior { Keep, Drop }
+
 public static class ModConfig
 {
     // Saved Config Entries (Local to each player)
@@ -101,19 +117,3 @@ public static class ModConfig
         BatteryDrainPercent = BatteryDrainPercentEntry.Value,
     };
 }
-
-public record struct ModConfigData
-{
-    public bool ResetCooldownOnOrbit;
-    public int TeleporterCooldown;
-    public bool IsTeleportKeep;
-    public string TeleporterAlwaysKeep;
-    public string TeleporterAlwaysDrop;
-    public int InverseTeleporterCooldown;
-    public bool IsInverseTeleportKeep;
-    public string InverseTeleporterAlwaysKeep;
-    public string InverseTeleporterAlwaysDrop;
-    public float BatteryDrainPercent;
-}
-
-public enum ItemTeleportBehavior { Keep, Drop }
