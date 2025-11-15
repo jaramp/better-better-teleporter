@@ -86,14 +86,14 @@ public static class KeepItemsOnTeleporterPatch
 
         if (isInverse)
         {
-            Plugin.Logger.LogDebug($"Inverse teleporting client {player.playerClientId}...");
+            Plugin.Logger.LogDebug($"Client {player.playerClientId} inverse teleporting...");
             isKeeping = Plugin.ModConfig.InverseTeleporterBehavior.Value == ItemTeleportBehavior.Keep;
             var items = isKeeping ? Plugin.ModConfig.InverseTeleporterAlwaysDrop : Plugin.ModConfig.InverseTeleporterAlwaysKeep;
             except = items.Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
         }
         else
         {
-            Plugin.Logger.LogDebug($"Teleporting client {player.playerClientId}...");
+            Plugin.Logger.LogDebug($"Client {player.playerClientId} teleporting...");
             isKeeping = Plugin.ModConfig.TeleporterBehavior.Value == ItemTeleportBehavior.Keep;
             var items = isKeeping ? Plugin.ModConfig.TeleporterAlwaysDrop : Plugin.ModConfig.TeleporterAlwaysKeep;
             except = items.Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
@@ -103,7 +103,7 @@ public static class KeepItemsOnTeleporterPatch
         {
             except[i] = except[i].Trim();
         }
-        Plugin.Logger.LogDebug($"{(isKeeping ? "Keeping" : "Dropping")} all items except for: {string.Join(",", except)}");
+        Plugin.Logger.LogDebug($"Client {player.playerClientId} {(isKeeping ? "keeping" : "dropping")} all items{(except.Length > 0 ? $" except for: {string.Join(",", except)}" : "")}");
         return (isKeeping, except);
     }
 
