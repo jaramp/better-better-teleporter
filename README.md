@@ -103,7 +103,6 @@ holding in your inventory. This should help verify if you're using the correct i
 ## Dependencies
 
 - [BepInExPack](https://thunderstore.io/c/lethal-company/p/BepInEx/BepInExPack/)
-- [CSync](https://thunderstore.io/c/lethal-company/p/Sigurd/CSync/)
 - (Optional) [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/) for in-game configuration.
 
 ## Installation
