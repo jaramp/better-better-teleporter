@@ -13,7 +13,7 @@ public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger { get; private set; }
     public static Plugin Instance { get; private set; }
-    public static ModConfig ModConfig;
+    public static ModConfig ModConfig { get; private set; }
 
     internal void Awake()
     {
