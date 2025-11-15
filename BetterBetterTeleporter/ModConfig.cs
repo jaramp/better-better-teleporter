@@ -4,20 +4,6 @@ using HarmonyLib;
 
 namespace BetterBetterTeleporter;
 
-public record struct ModConfigData
-{
-    public bool ResetCooldownOnOrbit;
-    public int TeleporterCooldown;
-    public bool IsTeleportKeep;
-    public string TeleporterAlwaysKeep;
-    public string TeleporterAlwaysDrop;
-    public int InverseTeleporterCooldown;
-    public bool IsInverseTeleportKeep;
-    public string InverseTeleporterAlwaysKeep;
-    public string InverseTeleporterAlwaysDrop;
-    public int BatteryDrainPercent;
-}
-
 public enum ItemTeleportBehavior { Keep, Drop }
 
 public class ModConfig
