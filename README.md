@@ -99,6 +99,7 @@ but it may have issues when playing with players that use different language set
 ## Dependencies
 
 - [BepInExPack](https://thunderstore.io/c/lethal-company/p/BepInEx/BepInExPack/)
+- [LethalNetworkAPI](https://thunderstore.io/c/lethal-company/p/xilophor/LethalNetworkAPI)
 - (Optional) [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/) for in-game configuration.
 
 ## Installation
