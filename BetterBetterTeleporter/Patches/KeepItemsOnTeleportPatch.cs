@@ -1,9 +1,9 @@
-using HarmonyLib;
-using GameNetcodeStuff;
-using System.Linq;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using GameNetcodeStuff;
+using HarmonyLib;
 using UnityEngine;
 
 namespace BetterBetterTeleporter.Patches;
@@ -17,15 +17,17 @@ public static class KeepItemsOnTeleporterPatch
     [HarmonyPrefix]
     public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
     {
+        // If the player is disconnecting, exit this patch.
+        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(__instance.actualClientId)) return;
         // If the player is not teleporting, exit this patch.
         if (!IsDroppingItemsFromTeleport(__instance)) return;
-        Plugin.Logger.LogDebug($"Player {__instance.playerClientId} inventory before teleport: {Stringify(__instance.ItemSlots)}");
 
-        var (behavior, oppositeBehaviorItems) = GetTeleportConfig(__instance);
+        var (behavior, itemList) = GetTeleportConfig(__instance);
         var itemsToKeep = (GrabbableObject[])__instance.ItemSlots.Clone();
+        Plugin.Logger.LogDebug($"Client {__instance.playerClientId} inventory before teleport: {Stringify(__instance.ItemSlots)}");
         for (int i = 0; i < __instance.ItemSlots.Length; i++)
         {
-            if (ShouldDropItem(__instance.ItemSlots[i], behavior, oppositeBehaviorItems))
+            if (ShouldDropItem(__instance.ItemSlots[i], behavior, itemList))
             {
                 // Remove item from cloned inventory, as it will be dropped on teleport
                 itemsToKeep[i] = null;
@@ -36,8 +38,7 @@ public static class KeepItemsOnTeleporterPatch
                 __instance.ItemSlots[i] = null;
             }
         }
-        Plugin.Logger.LogDebug($"Player {__instance.playerClientId} items to keep: {Stringify(itemsToKeep.Where(x => x != null))}");
-
+        Plugin.Logger.LogDebug($"Client {__instance.playerClientId} items to keep: {Stringify(itemsToKeep.Where(x => x != null))}");
         // This is needed to suppress the drop animation
         __instance.isHoldingObject = false;
 
@@ -53,6 +54,8 @@ public static class KeepItemsOnTeleporterPatch
     [HarmonyPostfix]
     public static void DropAllHeldItemsPostfix(PlayerControllerB __instance)
     {
+        // If the player is disconnecting, exit this patch.
+        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(__instance.actualClientId)) return;
         // If the player is not teleporting, exit this patch.
         if (!IsDroppingItemsFromTeleport(__instance)) return;
 
@@ -72,57 +75,52 @@ public static class KeepItemsOnTeleporterPatch
         __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
         SwitchToItemSlotMethod.Invoke(__instance, [__instance.currentItemSlot, null]);
 
-        Plugin.Logger.LogDebug($"Player {__instance.playerClientId} inventory after teleport: {Stringify(__instance.ItemSlots)}");
+        Plugin.Logger.LogDebug($"Client {__instance.playerClientId} inventory after teleport: {Stringify(__instance.ItemSlots)}");
     }
 
-    private static (ItemTeleportBehavior behavior, string[] oppositeBehaviorItems) GetTeleportConfig(PlayerControllerB player)
+    private static (bool behavior, string[] itemList) GetTeleportConfig(PlayerControllerB player)
     {
-        var config = ConfigSettings.CurrentSettings;
-        ItemTeleportBehavior behavior;
-        string[] oppositeBehaviorItems;
-        bool isInverseTeleporting = player.shipTeleporterId != 1;
+        bool isInverse = player.shipTeleporterId != 1;
+        bool isKeeping;
+        string[] except;
 
-        if (isInverseTeleporting)
+        if (isInverse)
         {
-            Plugin.Logger.LogDebug($"Player {player.playerClientId} teleporting via InverseTeleporter");
-            behavior = config.InverseTeleporterBehavior;
-            var items = behavior == ItemTeleportBehavior.Keep ? config.InverseTeleporterAlwaysDrop : config.InverseTeleporterAlwaysKeep;
-            oppositeBehaviorItems = items.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            Plugin.Logger.LogDebug($"Client {player.playerClientId} inverse teleporting...");
+            isKeeping = Plugin.ModConfig.InverseTeleporterBehavior.Value == ItemTeleportBehavior.Keep;
+            var items = isKeeping ? Plugin.ModConfig.InverseTeleporterAlwaysDrop : Plugin.ModConfig.InverseTeleporterAlwaysKeep;
+            except = items.Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
         }
         else
         {
-            Plugin.Logger.LogDebug($"Player {player.playerClientId} teleporting via Teleporter");
-            behavior = config.TeleporterBehavior;
-            var items = behavior == ItemTeleportBehavior.Keep ? config.TeleporterAlwaysDrop : config.TeleporterAlwaysKeep;
-            oppositeBehaviorItems = items.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            Plugin.Logger.LogDebug($"Client {player.playerClientId} teleporting...");
+            isKeeping = Plugin.ModConfig.TeleporterBehavior.Value == ItemTeleportBehavior.Keep;
+            var items = isKeeping ? Plugin.ModConfig.TeleporterAlwaysDrop : Plugin.ModConfig.TeleporterAlwaysKeep;
+            except = items.Value.Split(',', StringSplitOptions.RemoveEmptyEntries);
         }
-        Plugin.Logger.LogDebug($"Behavior: {behavior} items");
 
-        for (int i = 0; i < oppositeBehaviorItems.Length; i++)
+        for (int i = 0; i < except.Length; i++)
         {
-            oppositeBehaviorItems[i] = oppositeBehaviorItems[i].Trim();
+            except[i] = except[i].Trim();
         }
-        Plugin.Logger.LogDebug($"Except for: {string.Join(",", oppositeBehaviorItems)}");
-        return (behavior, oppositeBehaviorItems);
+        Plugin.Logger.LogDebug($"Client {player.playerClientId} {(isKeeping ? "keeping" : "dropping")} all items{(except.Length > 0 ? $" except for: {string.Join(",", except)}" : "")}");
+        return (isKeeping, except);
     }
 
-    private static bool ShouldDropItem(GrabbableObject item, ItemTeleportBehavior behavior, string[] itemList)
+    private static bool ShouldDropItem(GrabbableObject item, bool behavior, string[] itemList)
     {
-        if (item == null) return false;
-
-        return behavior == ItemTeleportBehavior.Keep ^ !itemList.Any(x => IsMatchOnName(item, x));
+        return item != null && behavior ^ !itemList.Any(x => IsMatchOnName(item, x));
     }
 
     private static bool IsMatchOnName(GrabbableObject item, string itemName)
     {
         const StringComparison caseInsensitive = StringComparison.OrdinalIgnoreCase;
-        if (item.itemProperties.itemName.Equals(itemName, caseInsensitive)) return true;
-        if (item.itemProperties.name.Equals(itemName, caseInsensitive)) return true;
-        if (item.name.Equals(itemName, caseInsensitive)) return true;
-        if (item.GetType().ToString().Equals(itemName, caseInsensitive)) return true;
+        if (item.itemProperties.name.Equals(itemName, caseInsensitive)) return true; // ExtensionLadder
+        if (item.GetType().ToString().Equals(itemName, caseInsensitive)) return true; // ExtensionLadderItem
+        if (item.itemProperties.itemName.Equals(itemName, caseInsensitive)) return true; // Extension Ladder
         return false;
     }
 
-    private static bool IsDroppingItemsFromTeleport(PlayerControllerB player) => player.shipTeleporterId != -1 || InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player);
+    private static bool IsDroppingItemsFromTeleport(PlayerControllerB player) => player.shipTeleporterId == 1 || InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player);
     private static string Stringify(IEnumerable<GrabbableObject> items) => string.Join(",", items.Select(x => x?.itemProperties.itemName ?? "<empty>"));
 }

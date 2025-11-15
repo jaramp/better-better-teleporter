@@ -50,7 +50,7 @@ TeleporterAlwaysDrop = Shovel,StopSign,YieldSign
 | InverseTeleporterBehavior   | `Drop` or `Keep` | `Drop`  | Sets whether items are kept or dropped when using the Inverse Teleporter. |
 | InverseTeleporterAlwaysKeep | `ItemList`       |         | Treat these items as `Keep` regardless of Inverse Teleporter behavior.    |
 | InverseTeleporterAlwaysDrop | `ItemList`       |         | Treat these items as `Drop` regardless of Inverse Teleporter behavior.    |
-| BatteryDrainPercent         | `0.0`-`1.0`      | `0.0`   | Percent drain on held battery items when using the Inverse Teleporter.    |
+| BatteryDrainPercent         | `Numeric`        | `0`     | Percent drain on held battery items when using the Inverse Teleporter.    |
 
 As an example, if you wanted an Inverse Teleporter that drops all items except for keys and walkie-talkies, and drains batteries by 25%:
 
@@ -59,12 +59,12 @@ InverseTeleporterCooldown = 210
 InverseTeleporterBehavior = Drop
 InverseTeleporterAlwaysKeep = Key,WalkieTalkie
 InverseTeleporterAlwaysDrop =
-BatteryDrainPercent = 0.25
+BatteryDrainPercent = 25
 ```
 
 ## Item Names
 
-You can specify multiple items to keep/drop by listing them separated by commas (such as `Shovel,Key,Flashlight,WalkieTalkie`). BetterBetterTeleporter will do its best to resolve items with inconsistent names (example: "clipboard" vs "Clipboard" vs "ClipboardItem" vs "ClipboardManual"). As long as you have a reasonable idea of what the item is called, it should work.
+You can specify multiple items to keep/drop by listing them separated by commas (such as `Shovel,Key,Flashlight,WalkieTalkie`). BetterBetterTeleporter will do its best to resolve items with inconsistent names (example: "clipboard" vs "Clipboard" vs "ClipboardItem"). As long as you have a reasonable idea of what the item is called, it should work.
 
 Here are some example names that can be used for whitelisting/blacklisting items:
 
@@ -96,9 +96,14 @@ This is not an exhaustive list. Any item should work, including from other mods.
 Names are not case-sensitive. Using the in-game display name will also work,
 but it may have issues when playing with players that use different language settings.
 
+If you have LethalConfig installed, there is a button at the bottom of the
+BetterBetterTeleporter config section to display the names of all items you're currently
+holding in your inventory. This should help verify if you're using the correct item name.
+
 ## Dependencies
 
 - [BepInExPack](https://thunderstore.io/c/lethal-company/p/BepInEx/BepInExPack/)
+- [CSync](https://thunderstore.io/c/lethal-company/p/Sigurd/CSync/)
 - (Optional) [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/) for in-game configuration.
 
 ## Installation

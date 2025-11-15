@@ -1,17 +1,19 @@
 using BepInEx;
-using BepInEx.Logging;
-using HarmonyLib;
-using BetterBetterTeleporter.Integrations;
 using BepInEx.Bootstrap;
+using BepInEx.Logging;
+using BetterBetterTeleporter.Integrations;
+using HarmonyLib;
 
 namespace BetterBetterTeleporter;
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 [BepInDependency("ainavt.lc.lethalconfig", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.sigurd.csync", "5.0.1")]
 public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger { get; private set; }
     public static Plugin Instance { get; private set; }
+    public static ModConfig ModConfig { get; private set; }
 
     internal void Awake()
     {
@@ -19,7 +21,7 @@ public class Plugin : BaseUnityPlugin
 
         Instance = this;
         Logger = base.Logger;
-        ConfigSettings.Init(Config);
+        ModConfig = new ModConfig(Config);
 
         if (Chainloader.PluginInfos.ContainsKey("ainavt.lc.lethalconfig"))
         {

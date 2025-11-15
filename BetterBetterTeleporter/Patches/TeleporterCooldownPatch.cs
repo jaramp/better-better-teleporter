@@ -1,5 +1,5 @@
-using HarmonyLib;
 using System.Reflection;
+using HarmonyLib;
 using UnityEngine;
 
 namespace BetterBetterTeleporter.Patches;
@@ -11,46 +11,35 @@ public static class TeleporterCooldownPatch
 
     static TeleporterCooldownPatch()
     {
-        ConfigSettings.OnCooldownSettingsChanged += UpdateAllTeleporterCooldowns;
+        Plugin.ModConfig.TeleporterCooldown.Changed += (o, e) => UpdateAllTeleporterCooldowns();
+        Plugin.ModConfig.InverseTeleporterCooldown.Changed += (o, e) => UpdateAllTeleporterCooldowns();
     }
 
     [HarmonyPatch("Awake"), HarmonyPostfix]
-    public static void AwakePostfix(ShipTeleporter __instance, ref float ___cooldownAmount, bool ___isInverseTeleporter)
+    public static void AwakePostfix(ShipTeleporter __instance)
     {
-        if (___isInverseTeleporter)
+        var (inverse, regular) = GetCooldowns();
+        if (__instance.isInverseTeleporter && __instance.cooldownAmount != inverse)
         {
-            ___cooldownAmount = ConfigSettings.CurrentSettings.InverseTeleporterCooldown;
-            Plugin.Logger.LogDebug($"Inverse Teleporter cooldown set to {___cooldownAmount}s");
+            __instance.cooldownAmount = inverse;
+            Plugin.Logger.LogDebug($"Inverse Teleporter cooldown set to {inverse}s");
         }
-        else
+        else if (__instance.cooldownAmount != regular)
         {
-            ___cooldownAmount = ConfigSettings.CurrentSettings.TeleporterCooldown;
-            Plugin.Logger.LogDebug($"Teleporter cooldown set to {___cooldownAmount}s");
+            __instance.cooldownAmount = regular;
+            Plugin.Logger.LogDebug($"Teleporter cooldown set to {regular}s");
         }
     }
 
     public static void UpdateAllTeleporterCooldowns()
     {
-        Plugin.Logger.LogInfo("Updating all teleporter cooldowns.");
-        foreach (ShipTeleporter teleporter in Object.FindObjectsOfType<ShipTeleporter>())
+        var (inverse, regular) = GetCooldowns();
+        foreach (ShipTeleporter tp in Object.FindObjectsOfType<ShipTeleporter>())
         {
-            if (teleporter.isInverseTeleporter)
-            {
-                teleporter.cooldownAmount = ConfigSettings.CurrentSettings.InverseTeleporterCooldown;
-                Plugin.Logger.LogDebug($"Inverse Teleporter cooldown set to {teleporter.cooldownAmount}s");
-            }
-            else
-            {
-                teleporter.cooldownAmount = ConfigSettings.CurrentSettings.TeleporterCooldown;
-                Plugin.Logger.LogDebug($"Teleporter cooldown set to {teleporter.cooldownAmount}s");
-            }
-
-            // Reduce current cooldown timer if it's greater than new maximum
-            if (cooldownTimeField != null)
-            {
-                var currentCooldownTime = (float)(cooldownTimeField.GetValue(teleporter) ?? 0);
-                cooldownTimeField.SetValue(teleporter, Mathf.Min(currentCooldownTime, teleporter.cooldownAmount));
-            }
+            tp.cooldownAmount = tp.isInverseTeleporter ? inverse : regular;
+            cooldownTimeField?.SetValue(tp, Mathf.Min(tp.cooldownAmount, (float)(cooldownTimeField?.GetValue(tp) ?? 0)));
         }
     }
+
+    private static (int inverse, int regular) GetCooldowns() => (Plugin.ModConfig.InverseTeleporterCooldown.Value, Plugin.ModConfig.TeleporterCooldown.Value);
 }

@@ -1,42 +1,43 @@
+using System.Linq;
 using System.Runtime.CompilerServices;
 using BepInEx.Configuration;
 using LethalConfig;
 using LethalConfig.ConfigItems;
 using LethalConfig.ConfigItems.Options;
+using Unity.Netcode;
 
 namespace BetterBetterTeleporter.Integrations;
 
 internal static class LethalConfigIntegration
 {
-    public static bool Enabled { get; private set; }
-
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static void Initialize()
     {
-        Enabled = true;
         Plugin.Logger.LogInfo("LethalConfig detected — integrating BetterBetterTeleporter config.");
-
-        LethalConfigManager.SetModDescription("Customize teleporter cooldowns and item behavior.");
         RegisterAll();
     }
 
     private static void RegisterAll()
     {
         // # General
-        RegisterCheckbox(ConfigSettings.ResetCooldownOnOrbitEntry);
+        RegisterCheckbox(Plugin.ModConfig.ResetCooldownOnOrbit.Entry);
 
         // # Teleporter
-        RegisterInput(ConfigSettings.TeleporterCooldownEntry);
-        RegisterDropdown(ConfigSettings.TeleporterBehaviorEntry);
-        RegisterTextInput(ConfigSettings.TeleporterAlwaysKeepEntry);
-        RegisterTextInput(ConfigSettings.TeleporterAlwaysDropEntry);
+        RegisterInput(Plugin.ModConfig.TeleporterCooldown.Entry);
+        RegisterDropdown(Plugin.ModConfig.TeleporterBehavior.Entry);
+        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysKeep.Entry);
+        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysDrop.Entry);
 
         // # Inverse Teleporter
-        RegisterInput(ConfigSettings.InverseTeleporterCooldownEntry);
-        RegisterDropdown(ConfigSettings.InverseTeleporterBehaviorEntry);
-        RegisterTextInput(ConfigSettings.InverseTeleporterAlwaysKeepEntry);
-        RegisterTextInput(ConfigSettings.InverseTeleporterAlwaysDropEntry);
-        RegisterSlider(ConfigSettings.BatteryDrainPercentEntry, 0f, 1f);
+        RegisterInput(Plugin.ModConfig.InverseTeleporterCooldown.Entry);
+        RegisterDropdown(Plugin.ModConfig.InverseTeleporterBehavior.Entry);
+        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysKeep.Entry);
+        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysDrop.Entry);
+        RegisterSlider(Plugin.ModConfig.BatteryDrainPercent.Entry, 0, 100);
+
+        // # Help
+        RegisterShowInventoryButton();
+        RegisterSelfTeleportButton();
     }
 
     private static void RegisterInput(ConfigEntry<int> entry)
@@ -71,5 +72,61 @@ internal static class LethalConfigIntegration
     private static void RegisterTextInput(ConfigEntry<string> entry)
     {
         LethalConfigManager.AddConfigItem(new TextInputFieldConfigItem(entry, requiresRestart: false));
+    }
+
+    private static void RegisterShowInventoryButton()
+    {
+        LethalConfigManager.AddConfigItem(new GenericButtonConfigItem("Help",
+        "What items am I holding?",
+        "See currently held items to help figure out what to add to the keep/drop lists.",
+        "Show inventory", () =>
+        {
+            var inventory = GameNetworkManager.Instance?.localPlayerController?.ItemSlots;
+            if (inventory != null && HUDManager.Instance != null)
+            {
+                var display = string.Join(",", inventory.Where(x => x != null).Select(x => x.itemProperties.name));
+                HUDManager.Instance.DisplayTip("Current Inventory", display, false, false);
+            }
+        }));
+    }
+
+    private static void RegisterSelfTeleportButton()
+    {
+        LethalConfigManager.AddConfigItem(new GenericButtonConfigItem("Help",
+            "Activate Teleporter",
+            "Pushes the teleport button. Only works if the Teleporter is unlocked and there are no other players connected to the game.",
+            "Beam me up, Scotty",
+            () =>
+            {
+                var hud = HUDManager.Instance;
+                var round = StartOfRound.Instance;
+                var player = GameNetworkManager.Instance?.localPlayerController;
+
+                if (hud == null || round == null || player == null)
+                    return;
+
+                const string failMsg = "No cheating";
+                if (NetworkManager.Singleton?.ConnectedClientsList.Count > 1)
+                {
+                    hud.DisplayTip(failMsg, "There's more than one player in the game.", true, false);
+                    return;
+                }
+
+                var teleporter = UnityEngine.Object.FindObjectsOfType<ShipTeleporter>().FirstOrDefault(tp => !tp.isInverseTeleporter);
+                if (teleporter == null)
+                {
+                    hud.DisplayTip(failMsg, "No teleporter on the ship.", true, false);
+                    return;
+                }
+
+                if (teleporter.cooldownTime > 0)
+                {
+                    hud.DisplayTip(failMsg, "The teleporter is on cooldown.", true, false);
+                    return;
+                }
+
+                teleporter.PressTeleportButtonOnLocalClient();
+            }
+        ));
     }
 }
