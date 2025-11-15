@@ -17,6 +17,8 @@ public static class KeepItemsOnTeleporterPatch
     [HarmonyPrefix]
     public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
     {
+        // If the player is disconnecting, exit this patch.
+        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(__instance.actualClientId)) return;
         // If the player is not teleporting, exit this patch.
         if (!IsDroppingItemsFromTeleport(__instance)) return;
         Plugin.Logger.LogDebug($"Player {__instance.playerClientId} inventory before teleport: {Stringify(__instance.ItemSlots)}");
@@ -53,6 +55,8 @@ public static class KeepItemsOnTeleporterPatch
     [HarmonyPostfix]
     public static void DropAllHeldItemsPostfix(PlayerControllerB __instance)
     {
+        // If the player is disconnecting, exit this patch.
+        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(__instance.actualClientId)) return;
         // If the player is not teleporting, exit this patch.
         if (!IsDroppingItemsFromTeleport(__instance)) return;
 
