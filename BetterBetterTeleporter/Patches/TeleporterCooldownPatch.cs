@@ -19,25 +19,14 @@ public static class TeleporterCooldownPatch
     public static void AwakePostfix(ShipTeleporter __instance)
     {
         var (inverse, regular) = GetCooldowns();
-        if (__instance.isInverseTeleporter && __instance.cooldownAmount != inverse)
-        {
-            __instance.cooldownAmount = inverse;
-            Plugin.Logger.LogDebug($"Inverse Teleporter cooldown set to {inverse}s");
-        }
-        else if (__instance.cooldownAmount != regular)
-        {
-            __instance.cooldownAmount = regular;
-            Plugin.Logger.LogDebug($"Teleporter cooldown set to {regular}s");
-        }
+        __instance.cooldownAmount = __instance.isInverseTeleporter ? inverse : regular;
     }
 
     private static void UpdateAllTeleporterCooldowns(int oldValue, int newValue)
     {
-        Plugin.Logger.LogDebug($"UpdateAllTeleporterCooldowns({oldValue}, {newValue})");
         if (oldValue == newValue) return;
 
         var (inverse, regular) = GetCooldowns();
-        Plugin.Logger.LogDebug($"GetCooldowns = ({oldValue}, {newValue})");
         foreach (ShipTeleporter tp in Object.FindObjectsOfType<ShipTeleporter>())
         {
             tp.cooldownAmount = tp.isInverseTeleporter ? inverse : regular;

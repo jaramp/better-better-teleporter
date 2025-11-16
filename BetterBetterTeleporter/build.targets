@@ -1,54 +1,70 @@
 <Project>
-  <!-- ========== 1️⃣  Version Sync (manifest.json) ========== -->
-  <Target Name="SyncManifestVersion" BeforeTargets="PostBuild">
+  <PropertyGroup>
+    <ThunderstoreDir>$(ProjectDir)../Thunderstore</ThunderstoreDir>
+    <BuildsDir>$(ProjectDir)../builds</BuildsDir>
+    <ChangelogFile>$(ThunderstoreDir)/CHANGELOG.md</ChangelogFile>
+    <ManifestFile>$(ThunderstoreDir)/manifest.json</ManifestFile>
+    <TeamName>$(TeamName)</TeamName>
+  </PropertyGroup>
+
+  <!-- ========== 1️⃣ Version Sync (manifest.json) ========== -->
+  <Target Name="SyncManifestVersion" BeforeTargets="BeforeBuild">
     <PropertyGroup>
-      <ManifestFile>$(ProjectDir)..\Thunderstore\manifest.json</ManifestFile>
+      <ManifestFile>$(ThunderstoreDir)/manifest.json</ManifestFile>
+
+      <UpdatedManifestContent>
+        $([System.Text.RegularExpressions.Regex]::Replace(
+        $([System.IO.File]::ReadAllText('$(ManifestFile)')),
+        '"version_number"\s*:\s*"[^\"]*"',
+        '"version_number": "$(Version)"'))
+      </UpdatedManifestContent>
     </PropertyGroup>
-    <Message Text="Syncing manifest.json version_number to $(Version)" Importance="high" />
-    <Exec Command="powershell -NoLogo -NoProfile -Command (Get-Content '$(ManifestFile)' -Raw) -replace '(&quot;version_number&quot;\s*:\s*)&quot;[^&quot;]+&quot;', ('$1&quot;$(Version)&quot;') | Set-Content '$(ManifestFile)'" />
+
+    <!-- Write back the updated content -->
+    <WriteLinesToFile File="$(ManifestFile)" Lines="$(UpdatedManifestContent)" Overwrite="true" />
+    <Message Text="Updated manifest.json version to $(Version)" Importance="normal" />
   </Target>
 
-  <!-- ========== 2️⃣  Changelog Check (warn if missing version) ========== -->
-  <Target Name="CheckChangelogVersion" BeforeTargets="Build">
-    <PropertyGroup>
-      <ChangelogFile>$(ProjectDir)..\Thunderstore\CHANGELOG.md</ChangelogFile>
-    </PropertyGroup>
 
-    <!-- Read all lines from the changelog -->
+  <!-- ========== 2️⃣ Changelog Check ========== -->
+  <Target Name="CheckChangelogVersion" BeforeTargets="BeforeBuild">
     <ReadLinesFromFile File="$(ChangelogFile)">
       <Output TaskParameter="Lines" ItemName="ChangelogLines" />
     </ReadLinesFromFile>
 
-    <!-- Match any line containing the version -->
-    <ItemGroup>
-      <MatchingLine Include="@(ChangelogLines)" Condition="$([System.String]::new('%(Identity)').Contains('$(Version)'))" />
-    </ItemGroup>
-
-    <!-- Emit a warning if no matching line found -->
-    <Warning Text="CHANGELOG.md does not contain a section for version $(Version)" Condition="'@(MatchingLine)' == ''" />
-  </Target>
-
-  <!-- ========== 3️⃣  Thunderstore Packaging ========== -->
-  <Target Name="PackageThunderstore" AfterTargets="PostBuildEvent">
     <PropertyGroup>
-      <ThunderstoreDir>$(ProjectDir)..\Thunderstore</ThunderstoreDir>
-      <BuildsDir>$(ProjectDir)..\builds</BuildsDir>
-      <ZipName>$(TeamName)-$(AssemblyName)-$(Version).zip</ZipName>
-      <ZipPath>$(BuildsDir)\$(ZipName)</ZipPath>
+      <ChangelogText>@(ChangelogLines)</ChangelogText>
     </PropertyGroup>
 
-    <MakeDir Directories="$(BuildsDir)" />
-    <Copy SourceFiles="$(ProjectDir)..\README.md" DestinationFolder="$(ThunderstoreDir)" OverwriteReadOnlyFiles="true" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ThunderstoreDir)\BepInEx\plugins" OverwriteReadOnlyFiles="true" />
-    <Exec Command="powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command &quot;Compress-Archive -Path '$(ThunderstoreDir)\*' -DestinationPath '$(ZipPath)' -Force&quot;" />
-    <Delete Files="$(ThunderstoreDir)\README.md" ContinueOnError="true" />
-    <RemoveDir Directories="$(ThunderstoreDir)\BepInEx" ContinueOnError="true" />
-    <Message Text="Packaged Thunderstore ZIP: $(ZipPath)" Importance="high" />
+    <Warning Text="CHANGELOG.md does not contain a section for version $(Version)" Condition="!$(ChangelogText.Contains('$(Version)'))" />
   </Target>
 
-  <!-- ========== 4️⃣  Automatically copy DLL to dev profile in mod manager ========== -->
-  <Target Name="CopyOutputToDevProfile" AfterTargets="PostBuildEvent">
-    <Message Text="Copying $(TargetPath) to dev profile..." Importance="high" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BepInExDir)\plugins\$(TeamName)-$(AssemblyName)" OverwriteReadOnlyFiles="true" />
+  <!-- ========== 3️⃣ Thunderstore Packaging ========== -->
+  <Target Name="PackageThunderstore" AfterTargets="Build">
+    <MakeDir Directories="$(BuildsDir)" />
+
+    <!-- Copy files to staging area -->
+    <Copy SourceFiles="$(ProjectDir)../README.md" DestinationFolder="$(ThunderstoreDir)" OverwriteReadOnlyFiles="true" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ThunderstoreDir)/BepInEx/plugins" OverwriteReadOnlyFiles="true" />
+
+    <!-- Create ZIP using MSBuild built-in task (requires MSBuild 16.8+) -->
+    <ZipDirectory SourceDirectory="$(ThunderstoreDir)" DestinationFile="$(BuildsDir)/$(TeamName)-$(AssemblyName)-$(Version).zip" Overwrite="true" />
+
+    <!-- Cleanup copied files -->
+    <Delete Files="$(ThunderstoreDir)/README.md" ContinueOnError="true" />
+    <RemoveDir Directories="$(ThunderstoreDir)/BepInEx" ContinueOnError="true" />
+
+    <Message Text="Packaged Thunderstore ZIP: $(BuildsDir)/$(TeamName)-$(AssemblyName)-$(Version).zip" Importance="high" />
+  </Target>
+
+  <!-- ========== 4️⃣ Copy to Dev Profile ========== -->
+  <Target Name="CopyOutputToDevProfile" AfterTargets="Build" Condition="'$(BepInExDir)' != ''">
+    <PropertyGroup>
+      <DevPluginDir>$(BepInExDir)/plugins/$(TeamName)-$(AssemblyName)</DevPluginDir>
+    </PropertyGroup>
+
+    <MakeDir Directories="$(DevPluginDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(DevPluginDir)" OverwriteReadOnlyFiles="true" />
+    <Message Text="Copied $(TargetFileName) to dev profile: $(DevPluginDir)" Importance="high" />
   </Target>
 </Project>

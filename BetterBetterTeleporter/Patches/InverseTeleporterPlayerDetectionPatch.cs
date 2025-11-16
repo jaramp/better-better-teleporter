@@ -15,7 +15,7 @@ public static class InverseTeleporterPlayerDetectionPatch
     private static readonly HashSet<int> InverseTeleportingPlayers = [];
     public static bool IsInverseTeleporting(PlayerControllerB player) => InverseTeleportingPlayers.Contains((int)player.playerClientId);
     [HarmonyPrefix]
-    public static void TeleportPlayerOutWithInverseTeleporterPrefix(int playerObj, Vector3 teleportPos) => InverseTeleportingPlayers.Add(playerObj);
+    public static void TeleportPlayerOutWithInverseTeleporterPrefix(int playerObj) => InverseTeleportingPlayers.Add(playerObj);
     [HarmonyPostfix]
-    public static void TeleportPlayerOutWithInverseTeleporterPostfix(int playerObj, Vector3 teleportPos) => InverseTeleportingPlayers.Remove(playerObj);
+    public static void TeleportPlayerOutWithInverseTeleporterPostfix(int playerObj) => InverseTeleportingPlayers.Remove(playerObj);
 }
