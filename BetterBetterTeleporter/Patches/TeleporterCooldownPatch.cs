@@ -11,8 +11,8 @@ public static class TeleporterCooldownPatch
 
     static TeleporterCooldownPatch()
     {
-        Plugin.ModConfig.TeleporterCooldown.SettingChanged += (o, e) => UpdateAllTeleporterCooldowns();
-        Plugin.ModConfig.InverseTeleporterCooldown.SettingChanged += (o, e) => UpdateAllTeleporterCooldowns();
+        Plugin.ModConfig.TeleporterCooldown.OnChanged += UpdateAllTeleporterCooldowns;
+        Plugin.ModConfig.InverseTeleporterCooldown.OnChanged += UpdateAllTeleporterCooldowns;
     }
 
     [HarmonyPatch("Awake"), HarmonyPostfix]
@@ -31,9 +31,13 @@ public static class TeleporterCooldownPatch
         }
     }
 
-    public static void UpdateAllTeleporterCooldowns()
+    private static void UpdateAllTeleporterCooldowns(int oldValue, int newValue)
     {
+        Plugin.Logger.LogDebug($"UpdateAllTeleporterCooldowns({oldValue}, {newValue})");
+        if (oldValue == newValue) return;
+
         var (inverse, regular) = GetCooldowns();
+        Plugin.Logger.LogDebug($"GetCooldowns = ({oldValue}, {newValue})");
         foreach (ShipTeleporter tp in Object.FindObjectsOfType<ShipTeleporter>())
         {
             tp.cooldownAmount = tp.isInverseTeleporter ? inverse : regular;
