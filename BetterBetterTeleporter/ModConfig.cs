@@ -42,5 +42,16 @@ public class ModConfig
         ((Dictionary<ConfigDefinition, string>)AccessTools.Property(typeof(ConfigFile), "OrphanedEntries").GetValue(config)).Clear();
         config.Save();
         config.SaveOnConfigSet = true;
+
+        ResetCooldownOnOrbit.SettingChanged += (o, e) => Plugin.Logger.LogDebug($"{nameof(ResetCooldownOnOrbit)}: {((ConfigEntryBase)o).BoxedValue}");
+        TeleporterCooldown.SettingChanged += (o, e) => Plugin.Logger.LogDebug($"{nameof(TeleporterCooldown)}: {((ConfigEntryBase)o).BoxedValue}");
+        TeleporterBehavior.SettingChanged += (o, e) => Plugin.Logger.LogDebug($"{nameof(TeleporterBehavior)}: {((ConfigEntryBase)o).BoxedValue}");
+        TeleporterAlwaysKeep.SettingChanged += (o, e) => Plugin.Logger.LogDebug($"{nameof(TeleporterAlwaysKeep)}: {((ConfigEntryBase)o).BoxedValue}");
+        TeleporterAlwaysDrop.SettingChanged += (o, e) => Plugin.Logger.LogDebug($"{nameof(TeleporterAlwaysDrop)}: {((ConfigEntryBase)o).BoxedValue}");
+        InverseTeleporterCooldown.SettingChanged += (o, e) => Plugin.Logger.LogDebug($"{nameof(InverseTeleporterCooldown)}: {((ConfigEntryBase)o).BoxedValue}");
+        InverseTeleporterBehavior.SettingChanged += (o, e) => Plugin.Logger.LogDebug($"{nameof(InverseTeleporterBehavior)}: {((ConfigEntryBase)o).BoxedValue}");
+        InverseTeleporterAlwaysKeep.SettingChanged += (o, e) => Plugin.Logger.LogDebug($"{nameof(InverseTeleporterAlwaysKeep)}: {((ConfigEntryBase)o).BoxedValue}");
+        InverseTeleporterAlwaysDrop.SettingChanged += (o, e) => Plugin.Logger.LogDebug($"{nameof(InverseTeleporterAlwaysDrop)}: {((ConfigEntryBase)o).BoxedValue}");
+        BatteryDrainPercent.SettingChanged += (o, e) => Plugin.Logger.LogDebug($"{nameof(BatteryDrainPercent)}: {((ConfigEntryBase)o).BoxedValue}");
     }
 }
