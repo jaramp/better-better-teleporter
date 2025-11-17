@@ -12,18 +12,31 @@ public static class PlayerConnectionPatch
     [HarmonyPatch(typeof(GameNetcodeStuff.PlayerControllerB), "ConnectClientToPlayerObject"), HarmonyPostfix]
     public static void ConnectClientToPlayerObject()
     {
+        InitializeCoroutineHost();
+        var messager = NetworkManager.Singleton.CustomMessagingManager;
         if (NetworkManager.Singleton.IsServer)
         {
-            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(MessageName, (clientId, reader) => SyncedEntry.BroadcastAll());
+            messager.RegisterNamedMessageHandler(MessageName, (clientId, reader) => SyncedEntries.SendAllToClient(clientId));
         }
         else
         {
-            SyncedEntry.BeginListenAll();
+            SyncedEntries.BeginListening();
             using FastBufferWriter writer = new(0, Allocator.Temp);
-            NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(MessageName, 0ul, writer, NetworkDelivery.ReliableSequenced);
+            messager.SendNamedMessage(MessageName, 0ul, writer, NetworkDelivery.ReliableSequenced);
         }
     }
 
     [HarmonyPatch(typeof(GameNetworkManager), "StartDisconnect"), HarmonyPostfix]
-    public static void PlayerLeave() => SyncedEntry.StopListenAll();
+    public static void PlayerLeave() => SyncedEntries.StopListening();
+
+    private class EmptyBehaviour : UnityEngine.MonoBehaviour { }
+    private static void InitializeCoroutineHost()
+    {
+        if (Plugin.CoroutineHost == null)
+        {
+            var go = new UnityEngine.GameObject($"{PluginInfo.PLUGIN_GUID}.Coroutines");
+            UnityEngine.Object.DontDestroyOnLoad(go);
+            Plugin.CoroutineHost = go.AddComponent<EmptyBehaviour>();
+        }
+    }
 }

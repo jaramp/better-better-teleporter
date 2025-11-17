@@ -1,23 +1,111 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using BepInEx.Configuration;
 using Unity.Collections;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace BetterBetterTeleporter.Networking;
 
-public static class SyncedEntry
+public static class SyncedEntries
 {
-    public static System.Collections.Generic.List<ISyncable> SyncedEntries { get; private set; } = [];
-
-    public static void SyncAll() => SyncedEntries.ForEach(x => x.Sync());
-    public static void BroadcastAll() => SyncedEntries.ForEach(x => x.Broadcast());
-    public static void BeginListenAll() => SyncedEntries.ForEach(x => x.BeginListening());
-    public static void StopListenAll() => SyncedEntries.ForEach(x => x.StopListening());
+    private static byte _idGen = 0;
+    private const string SyncMessage = $"{PluginInfo.PLUGIN_GUID}.ConfigSync";
+    private static readonly Dictionary<byte, ISyncable> AllEntries = [];
+    private static readonly HashSet<byte> UnsyncedEntries = [];
 
     private static SyncedEntry<T> Add<T>(SyncedEntry<T> item)
     {
-        SyncedEntries.Add(item);
+        byte id = _idGen++;
+        AllEntries.Add(id, item);
+        item.Entry.SettingChanged += (o, e) => ScheduleBroadcastFor(id, item);
         return item;
+    }
+
+    private static bool _isBroadcasting = false;
+    private static void ScheduleBroadcastFor<T>(byte id, SyncedEntry<T> item)
+    {
+        if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsServer) return;
+
+        item.Value = item.Entry.Value;
+
+        if (NetworkManager.Singleton.ConnectedClientsList.Count <= 1 || Plugin.CoroutineHost == null) return;
+
+        UnsyncedEntries.Add(id);
+        if (_isBroadcasting) return;
+        _isBroadcasting = true;
+        Plugin.CoroutineHost.StartCoroutine(Broadcast());
+    }
+
+    private static IEnumerator Broadcast()
+    {
+        // Wait for any other config change events to propagate
+        yield return new WaitForSecondsRealtime(0.05f);
+        if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsServer || NetworkManager.Singleton.ConnectedClientsList.Count <= 1)
+        {
+            _isBroadcasting = false;
+            yield break;
+        }
+        var payload = AllEntries.Where(x => UnsyncedEntries.Contains(x.Key)).ToArray();
+        SendPayload(SyncMessage, payload, NetworkManager.Singleton.ConnectedClientsIds);
+        UnsyncedEntries.Clear();
+        _isBroadcasting = false;
+    }
+
+    public static void SendAllToClient(ulong clientId)
+    {
+        SendPayload(SyncMessage, AllEntries, clientId);
+    }
+
+    private static void SendPayload(string messageName, IEnumerable<KeyValuePair<byte, ISyncable>> payload, params IEnumerable<ulong> clients)
+    {
+        // Calculate payload size
+        int size = payload.Sum(item => sizeof(byte) + item.Value.GetSize());
+
+        // Write payload to writer
+        using FastBufferWriter writer = new(size, Allocator.Temp);
+        foreach (var item in payload)
+        {
+            writer.WriteByteSafe(item.Key);
+            item.Value.WriteToWriter(writer);
+        }
+
+        // Send message to clients
+        foreach (var client in clients)
+        {
+            if (client == NetworkManager.Singleton.LocalClientId) continue;
+            NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(messageName, client, writer, NetworkDelivery.ReliableSequenced);
+        }
+
+        // Clear unsynced list
+        UnsyncedEntries.Clear();
+    }
+
+    public static bool BeginListening()
+    {
+        if (NetworkManager.Singleton?.CustomMessagingManager == null) return false;
+        NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(SyncMessage, ReadPayload);
+        return true;
+    }
+
+    private static void ReadPayload(ulong clientId, FastBufferReader reader)
+    {
+        if (!NetworkManager.Singleton || NetworkManager.Singleton.IsServer) return;
+
+        while (reader.TryBeginRead(sizeof(byte)))
+        {
+            reader.ReadByteSafe(out byte id);
+            AllEntries[id].SetFromReader(reader);
+        }
+    }
+
+    public static void StopListening(bool resetToLocalConfig = true)
+    {
+        if (resetToLocalConfig) foreach (var item in AllEntries.Values) item.ResetValue();
+        if (NetworkManager.Singleton?.CustomMessagingManager == null) return;
+        NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(SyncMessage);
     }
 
     public static SyncedEntry<int> BindSynced(this ConfigFile config, string section, string key, int value, ConfigDescription description)
@@ -58,61 +146,27 @@ public static class SyncedEntry
 
 public class SyncedEntry<T> : ISyncable
 {
-    public ConfigEntry<T> Entry;
-    private T _value;
-    public T Value { get => _value; set { var old = _value; _value = value; OnChanged?.Invoke(old, value); } }
-    public Action<T, T> OnChanged;
-
-    private string MessageName => $"{PluginInfo.PLUGIN_GUID}.{Entry.Definition.Key}";
-    private readonly Func<T, int> size;
     private readonly Func<FastBufferReader, T> read;
     private readonly Action<FastBufferWriter, T> write;
 
-    public SyncedEntry(ConfigEntry<T> entry, Func<T, int> size, Func<FastBufferReader, T> read, Action<FastBufferWriter, T> write)
+    public ConfigEntry<T> Entry;
+    public T Value { get => field; set { var old = field; field = value; OnChanged?.Invoke(old, value); } }
+    public Action<T, T> OnChanged;
+
+    public readonly Func<T, int> calcSize;
+
+
+    public SyncedEntry(ConfigEntry<T> entry, Func<T, int> calcSize, Func<FastBufferReader, T> read, Action<FastBufferWriter, T> write)
     {
         Entry = entry;
         Value = entry.Value;
-        this.size = size;
+        this.calcSize = calcSize;
         this.read = read;
         this.write = write;
-        Entry.SettingChanged += (o, e) => Sync();
     }
 
-    public void Sync()
-    {
-        if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsServer) return;
-        Value = Entry.Value;
-        Broadcast();
-    }
-
-    public void Broadcast()
-    {
-        if (NetworkManager.Singleton.ConnectedClientsList.Count <= 1) return;
-
-        using FastBufferWriter writer = new(size(Value), Allocator.Temp);
-        write(writer, Value);
-
-        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
-        {
-            if (client.ClientId == NetworkManager.Singleton.LocalClientId) continue;
-            NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(MessageName, client.ClientId, writer, NetworkDelivery.ReliableSequenced);
-        }
-    }
-
-    public void BeginListening()
-    {
-        if (NetworkManager.Singleton?.CustomMessagingManager == null) return;
-        NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(MessageName, (clientId, reader) =>
-        {
-            if (!NetworkManager.Singleton || NetworkManager.Singleton.IsServer) return;
-            Value = read(reader);
-        });
-    }
-
-    public void StopListening(bool resetToLocalConfig = true)
-    {
-        if (resetToLocalConfig) Value = Entry.Value;
-        if (NetworkManager.Singleton?.CustomMessagingManager == null) return;
-        NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(MessageName);
-    }
+    public int GetSize() => calcSize(Value);
+    public void ResetValue() => Value = Entry.Value;
+    public void SetFromReader(FastBufferReader reader) => Value = read(reader);
+    public void WriteToWriter(FastBufferWriter writer) => write(writer, Value);
 }
