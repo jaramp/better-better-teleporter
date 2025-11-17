@@ -1,6 +1,6 @@
 ## Version 1.1.2
 
-- Rewrote netcode
+- Rewrote netcode from scratch
 
 ## Version 1.1.1
 
