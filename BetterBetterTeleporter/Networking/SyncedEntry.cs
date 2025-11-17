@@ -78,9 +78,6 @@ public static class SyncedEntries
             if (client == NetworkManager.Singleton.LocalClientId) continue;
             NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(messageName, client, writer, NetworkDelivery.ReliableSequenced);
         }
-
-        // Clear unsynced list
-        UnsyncedEntries.Clear();
     }
 
     public static bool BeginListening()
@@ -104,6 +101,7 @@ public static class SyncedEntries
     public static void StopListening(bool resetToLocalConfig = true)
     {
         if (resetToLocalConfig) foreach (var item in AllEntries.Values) item.ResetValue();
+        UnsyncedEntries.Clear();
         if (NetworkManager.Singleton?.CustomMessagingManager == null) return;
         NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(SyncMessage);
     }
