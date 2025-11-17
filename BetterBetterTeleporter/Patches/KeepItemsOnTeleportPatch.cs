@@ -14,6 +14,11 @@ public static class KeepItemsOnTeleporterPatch
     private static readonly Dictionary<PlayerControllerB, GrabbableObject[]> tempInventories = [];
     private static readonly MethodInfo SwitchToItemSlotMethod = AccessTools.Method(typeof(PlayerControllerB), "SwitchToItemSlot");
 
+    /// <summary>
+    /// This Harmony Postfix patch runs before the original DropAllHeldItems method.
+    /// It checks if the player is teleporting, and hides items that are meant to be kept.
+    /// </summary>
+    /// <param name="__instance">The PlayerControllerB instance.</param>
     [HarmonyPrefix]
     public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
     {
@@ -27,16 +32,10 @@ public static class KeepItemsOnTeleporterPatch
         Plugin.Logger.LogDebug($"Client {__instance.playerClientId} inventory before teleport: {Stringify(__instance.ItemSlots)}");
         for (int i = 0; i < __instance.ItemSlots.Length; i++)
         {
-            if (ShouldDropItem(__instance.ItemSlots[i], behavior, itemList))
-            {
-                // Remove item from cloned inventory, as it will be dropped on teleport
-                itemsToKeep[i] = null;
-            }
+            if (ShouldDrop(__instance.ItemSlots[i], behavior, itemList))
+                itemsToKeep[i] = null; // Remove item from cloned inventory
             else
-            {
-                // Setting the item slot to null will make DropAllHeldItems ignore it, tricking it into leaving the item in the player's inventory
-                __instance.ItemSlots[i] = null;
-            }
+                __instance.ItemSlots[i] = null; // Hide the item from DropAllHeldItems, tricking it into leaving the item in the player's inventory
         }
         Plugin.Logger.LogDebug($"Client {__instance.playerClientId} items to keep: {Stringify(itemsToKeep.Where(x => x != null))}");
         // This is needed to suppress the drop animation
@@ -107,7 +106,7 @@ public static class KeepItemsOnTeleporterPatch
         return (isKeeping, except);
     }
 
-    private static bool ShouldDropItem(GrabbableObject item, bool behavior, string[] itemList)
+    private static bool ShouldDrop(GrabbableObject item, bool behavior, string[] itemList)
     {
         return item != null && behavior ^ !itemList.Any(x => IsMatchOnName(item, x));
     }

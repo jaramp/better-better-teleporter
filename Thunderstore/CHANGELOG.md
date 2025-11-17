@@ -1,3 +1,7 @@
+## Version 1.1.2
+
+- Rewrote netcode from scratch
+
 ## Version 1.1.1
 
 - Fix issue where dead players wouldn't drop some items

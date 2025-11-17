@@ -22,5 +22,6 @@ public static class InverseTeleporterBatteryDrainPatch
                 item.SyncBatteryServerRpc((int)(battery.charge * 100));
             }
         }
+        Plugin.Logger.LogDebug($"Client {playerObj} batteries drained by {drainAmount}.");
     }
 }

@@ -21,20 +21,20 @@ internal static class LethalConfigIntegration
     private static void RegisterAll()
     {
         // # General
-        RegisterCheckbox(Plugin.ModConfig.ResetCooldownOnOrbit);
+        RegisterCheckbox(Plugin.ModConfig.ResetCooldownOnOrbit.Entry);
 
         // # Teleporter
-        RegisterInput(Plugin.ModConfig.TeleporterCooldown);
-        RegisterDropdown(Plugin.ModConfig.TeleporterBehavior);
-        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysKeep);
-        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysDrop);
+        RegisterInput(Plugin.ModConfig.TeleporterCooldown.Entry);
+        RegisterDropdown(Plugin.ModConfig.TeleporterBehavior.Entry);
+        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysKeep.Entry);
+        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysDrop.Entry);
 
         // # Inverse Teleporter
-        RegisterInput(Plugin.ModConfig.InverseTeleporterCooldown);
-        RegisterDropdown(Plugin.ModConfig.InverseTeleporterBehavior);
-        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysKeep);
-        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysDrop);
-        RegisterSlider(Plugin.ModConfig.BatteryDrainPercent, 0, 100);
+        RegisterInput(Plugin.ModConfig.InverseTeleporterCooldown.Entry);
+        RegisterDropdown(Plugin.ModConfig.InverseTeleporterBehavior.Entry);
+        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysKeep.Entry);
+        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysDrop.Entry);
+        RegisterSlider(Plugin.ModConfig.BatteryDrainPercent.Entry, 0, 100);
 
         // # Help
         RegisterShowInventoryButton();

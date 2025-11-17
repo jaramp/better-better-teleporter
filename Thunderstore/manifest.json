@@ -1,6 +1,6 @@
 {
   "name": "BetterBetterTeleporter",
-  "version_number": "1.1.1",
+  "version_number": "1.1.2",
   "website_url": "https://github.com/jaramp/better-better-teleporter",
   "description": "A fully configurable Teleporter and Inverse Teleporter mod with advanced item filtering.",
   "dependencies": ["BepInEx-BepInExPack-5.4.2304"]
