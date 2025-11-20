@@ -32,7 +32,7 @@ public static class KeepItemsOnTeleporterPatch
         Plugin.Logger.LogDebug($"Client {__instance.playerClientId} inventory before teleport: {Stringify(__instance.ItemSlots)}");
         for (int i = 0; i < __instance.ItemSlots.Length; i++)
         {
-            if (ShouldDrop(__instance.ItemSlots[i], behavior, itemList))
+            if (ShouldDrop(__instance, __instance.ItemSlots[i], behavior, itemList))
                 itemsToKeep[i] = null; // Remove item from cloned inventory
             else
                 __instance.ItemSlots[i] = null; // Hide the item from DropAllHeldItems, tricking it into leaving the item in the player's inventory
@@ -106,9 +106,32 @@ public static class KeepItemsOnTeleporterPatch
         return (isKeeping, except);
     }
 
-    private static bool ShouldDrop(GrabbableObject item, bool behavior, string[] itemList)
+    private static bool ShouldDrop(PlayerControllerB player, GrabbableObject item, bool behavior, string[] itemList)
     {
-        return item != null && behavior ^ !itemList.Any(x => IsMatchOnName(item, x));
+        return item != null && behavior ^ !itemList.Any(itemName => IsMatch(player, item, itemName));
+    }
+
+    private static bool IsMatch(PlayerControllerB player, GrabbableObject item, string itemName)
+    {
+        if (itemName[0] == '[' && itemName[^1] == ']')
+            return IsMatchOnCategory(player, item, itemName);
+        return IsMatchOnName(item, itemName);
+    }
+
+    private static bool IsMatchOnCategory(PlayerControllerB player, GrabbableObject item, string category)
+    {
+        // TODO: Solve issue where Behavior is Drop and Keep List is [current:not(Key)] drops equipped Clipboard
+        var parts = category.Split(":not", 1)[1..^1];
+        bool behavior = $"{category.ToLowerInvariant()}]" switch
+        {
+            "current" => player.ItemSlots[player.currentItemSlot] == item,
+            _ => false,
+        };
+        string[] itemList = [];
+        if (parts.Length > 1 && parts[1][0] == '(' && parts[1][^1] == ')') {
+            itemList = parts[1][1..^1].Split(',');
+        }
+        return !ShouldDrop(player, item, behavior, itemList);
     }
 
     private static bool IsMatchOnName(GrabbableObject item, string itemName)
