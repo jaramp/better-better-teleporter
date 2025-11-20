@@ -120,18 +120,22 @@ public static class KeepItemsOnTeleporterPatch
 
     private static bool IsMatchOnCategory(PlayerControllerB player, GrabbableObject item, string category)
     {
-        // TODO: Solve issue where Behavior is Drop and Keep List is [current:not(Key)] drops equipped Clipboard
-        var parts = category.Split(":not", 1)[1..^1];
-        bool behavior = $"{category.ToLowerInvariant()}]" switch
+        category = category.ToLowerInvariant();
+        Plugin.Logger.LogDebug($"Advanced rule: {category}");
+        var parts = category[1..^1].Split(":not", 2, StringSplitOptions.RemoveEmptyEntries);
+        Plugin.Logger.LogDebug($"Category: {parts[0]} {(parts.Length > 1 ? $"| not: {parts[1]}" : "")}");
+        bool behavior = parts[0] switch
         {
             "current" => player.ItemSlots[player.currentItemSlot] == item,
             _ => false,
         };
         string[] itemList = [];
-        if (parts.Length > 1 && parts[1][0] == '(' && parts[1][^1] == ')') {
-            itemList = parts[1][1..^1].Split(',');
+        if (parts.Length > 1 && parts[1][0] == '(' && parts[1][^1] == ')')
+        {
+            itemList = parts[1][1..^1].Split(',', StringSplitOptions.RemoveEmptyEntries);
+            Plugin.Logger.LogDebug($"itemList: {string.Join(",", itemList)}");
         }
-        return !ShouldDrop(player, item, behavior, itemList);
+        return behavior && !ShouldDrop(player, item, behavior, itemList);
     }
 
     private static bool IsMatchOnName(GrabbableObject item, string itemName)
