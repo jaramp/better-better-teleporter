@@ -64,15 +64,17 @@ BatteryDrainPercent = 25
 
 ## Configuring Item Lists
 
-There are two ways to specify items to always keep or drop: by category or by name.
+There are two ways to specify items: by category or by name.
 
 ### (EXPERIMENTAL) Specifying Items by Category
 
+Disclaimer: this feature is being actively developed and may change in the future.
+
 There are special keywords you can use to describe items or groups of items. Here is the current list of item categories:
 
-| Category  | Description                                  |
-| --------- | -------------------------------------------- |
-| [current] | The teleporting player's currently-held item |
+| Category    | Description              |
+| ----------- | ------------------------ |
+| `[current]` | The currently-held item. |
 
 As an example, take this configuration:
 
@@ -81,10 +83,8 @@ TeleporterBehavior = Drop
 TeleporterAlwaysKeep = key,[current],clipboard
 ```
 
-This setting makes the Teleporter drop all items except for the `Key`, the `Clipboard`, as well as the currently-selected inventory slot
+This setting makes the Teleporter drop all items except for the `Key` and `Clipboard`, as well as the currently-selected inventory slot
 (so if the player is holding a `GoldBar`, they keep it, but if the `GoldBar` is not the active inventory item, it drops).
-
-This feature is being actively developed and may change in the future.
 
 ### Specifying Items by Name
 
@@ -94,25 +94,25 @@ As long as you have a reasonable idea of what the item is called, it should work
 
 Here is a list of Lethal Company's internal item names that can be used for whitelisting/blacklisting items:
 
-|                 |                   |                 |               |                  |
-| --------------- | ----------------- | --------------- | ------------- | ---------------- |
-| 7Ball           | ClownHorn         | Flask           | Phone         | SteeringWheel    |
-| Airhorn         | Cog1              | GarbageLid      | PickleJar     | StickyNote       |
-| BabyKiwiEgg     | ComedyMask        | GiftBox         | PillBottle    | StopSign         |
-| Bell            | ControlPad        | GoldBar         | PlasticCup    | StunGrenade      |
-| BeltBag         | Dentures          | GunAmmo         | ProFlashlight | TeaKettle        |
-| BigBolt         | DiyFlashbang      | Hairdryer       | RadarBooster  | ToiletPaperRolls |
-| Binoculars      | DustPan           | Jetpack         | Ragdoll       | Toothpaste       |
-| Boombox         | EasterEgg         | Key             | RedLocustHive | ToyCube          |
-| BottleBin       | EggBeater         | Knife           | Remote        | ToyTrain         |
-| Brush           | EnginePart1       | LockPicker      | Ring          | TragedyMask      |
-| Candy           | ExtensionLadder   | LungApparatus   | RobotToy      | TZPInhalant      |
-| CardboardBox    | FancyCup          | MagnifyingGlass | RubberDuck    | WalkieTalkie     |
-| CashRegister    | FancyLamp         | MapDevice       | Shotgun       | WeedKillerBottle |
-| CaveDwellerBaby | FancyPainting     | MetalSheet      | Shovel        | WhoopieCushion   |
-| ChemicalJug     | FishTestProp      | MoldPan         | SoccerBall    | YieldSign        |
-| Clipboard       | FlashLaserPointer | Mug             | SodaCanRed    | ZapGun           |
-| Clock           | Flashlight        | PerfumeBottle   | SprayPaint    | Zeddog           |
+|                   |                     |                   |                 |                    |
+| ----------------- | ------------------- | ----------------- | --------------- | ------------------ |
+| `7Ball`           | `ClownHorn`         | `Flask`           | `Phone`         | `SteeringWheel`    |
+| `Airhorn`         | `Cog1`              | `GarbageLid`      | `PickleJar`     | `StickyNote`       |
+| `BabyKiwiEgg`     | `ComedyMask`        | `GiftBox`         | `PillBottle`    | `StopSign`         |
+| `Bell`            | `ControlPad`        | `GoldBar`         | `PlasticCup`    | `StunGrenade`      |
+| `BeltBag`         | `Dentures`          | `GunAmmo`         | `ProFlashlight` | `TeaKettle`        |
+| `BigBolt`         | `DiyFlashbang`      | `Hairdryer`       | `RadarBooster`  | `ToiletPaperRolls` |
+| `Binoculars`      | `DustPan`           | `Jetpack`         | `Ragdoll`       | `Toothpaste`       |
+| `Boombox`         | `EasterEgg`         | `Key`             | `RedLocustHive` | `ToyCube`          |
+| `BottleBin`       | `EggBeater`         | `Knife`           | `Remote`        | `ToyTrain`         |
+| `Brush`           | `EnginePart1`       | `LockPicker`      | `Ring`          | `TragedyMask`      |
+| `Candy`           | `ExtensionLadder`   | `LungApparatus`   | `RobotToy`      | `TZPInhalant`      |
+| `CardboardBox`    | `FancyCup`          | `MagnifyingGlass` | `RubberDuck`    | `WalkieTalkie`     |
+| `CashRegister`    | `FancyLamp`         | `MapDevice`       | `Shotgun`       | `WeedKillerBottle` |
+| `CaveDwellerBaby` | `FancyPainting`     | `MetalSheet`      | `Shovel`        | `WhoopieCushion`   |
+| `ChemicalJug`     | `FishTestProp`      | `MoldPan`         | `SoccerBall`    | `YieldSign`        |
+| `Clipboard`       | `FlashLaserPointer` | `Mug`             | `SodaCanRed`    | `ZapGun`           |
+| `Clock`           | `Flashlight`        | `PerfumeBottle`   | `SprayPaint`    | `Zeddog`           |
 
 This is not an exhaustive list: any item should work, including from other mods.
 Names are not case-sensitive. Using the in-game display name will also work,

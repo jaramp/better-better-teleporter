@@ -4,6 +4,27 @@ Thanks for your interest in contributing! Community help is always appreciated.
 
 ---
 
+## 🐞 Reporting Bugs or Asking Questions
+
+- Check the **README** first: it covers how to use and configure the mod.
+- If the issue isn’t covered, open a **GitHub Issue** with:
+  - Steps to reproduce (if it’s a bug)
+  - Expected vs. actual behavior
+  - Any relevant screenshots or log snippets
+
+Questions and suggestions can go in issues, too (just label them accordingly).
+
+---
+
+## 💡 Suggesting Enhancements
+
+If you have an idea for improvement:
+
+- Open an **enhancement issue** describing what you’d like to see and why.
+- You may **open a pull request** that implements it to speed things up, but that won't guarantee it gets added.
+
+---
+
 ## 🛠 How to Contribute
 
 1. **Fork** the repository and create a new branch for your changes.
@@ -43,27 +64,6 @@ The compiled DLL will appear under `BetterBetterTeleporter/bin/Release/netstanda
 4. **Auto-Copy To Mod Folder**: Puts the DLL into the appropriate location from `BepInExDir` for immediate testing.
 
 You can comment out any of these targets if you don't want them to execute on your local machine.
-
-## 🐞 Reporting Bugs or Asking Questions
-
-- Check the **README** first: it covers how to use and configure the mod.
-- If the issue isn’t covered, open a **GitHub Issue** with:
-  - Steps to reproduce (if it’s a bug)
-  - Expected vs. actual behavior
-  - Any relevant screenshots or log snippets
-
-Questions and suggestions can go in issues, too (just label them accordingly).
-
----
-
-## 💡 Suggesting Enhancements
-
-If you have an idea for improvement:
-
-- The best way is to **open a pull request** that implements it.
-- Otherwise, open an **enhancement issue** describing what you’d like to see and why.
-
----
 
 ## 💬 Style & Guidelines
 
