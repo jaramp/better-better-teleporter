@@ -21,7 +21,8 @@ Questions and suggestions can go in issues, too (just label them accordingly).
 If you have an idea for improvement:
 
 - Open an **enhancement issue** describing what you’d like to see and why.
-- You may **open a pull request** that implements it to speed things up, but that won't guarantee it gets added.
+- You may **open a pull request** that implements it to speed things up.
+- There's no guarantee your suggestion/implementation will be approved.
 
 ---
 
