@@ -62,7 +62,31 @@ InverseTeleporterAlwaysDrop =
 BatteryDrainPercent = 25
 ```
 
-## Item Names
+## Configuring Item Lists
+
+There are two ways to specify items to always keep or drop: by category or by name.
+
+### (EXPERIMENTAL) Specifying Items by Category
+
+There are special keywords you can use to describe items or groups of items. Here is the current list of item categories:
+
+| Category  | Description                                  |
+| --------- | -------------------------------------------- |
+| [current] | The teleporting player's currently-held item |
+
+As an example, take this configuration:
+
+```ini
+TeleporterBehavior = Drop
+TeleporterAlwaysKeep = key,[current],clipboard
+```
+
+This setting makes the Teleporter drop all items except for the `Key`, the `Clipboard`, as well as the currently-selected inventory slot
+(so if the player is holding a `GoldBar`, they keep it, but if the `GoldBar` is not the active inventory item, it drops).
+
+This feature is being actively developed and may change in the future.
+
+### Specifying Items by Name
 
 You can specify multiple items to keep/drop by listing them separated by commas (such as `Shovel,Key,Flashlight,WalkieTalkie`).
 BetterBetterTeleporter will do its best to resolve items with inconsistent names (example: "clipboard" vs "Clipboard" vs "ClipboardItem").
