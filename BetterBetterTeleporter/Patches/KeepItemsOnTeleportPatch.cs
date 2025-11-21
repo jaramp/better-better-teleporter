@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using BetterBetterTeleporter.Adapters;
 using BetterBetterTeleporter.Utility;
 using GameNetcodeStuff;
 using HarmonyLib;
@@ -33,7 +34,7 @@ public static class KeepItemsOnTeleporterPatch
         Plugin.Logger.LogDebug($"Client {__instance.playerClientId} inventory before teleport: {Stringify(__instance.ItemSlots)}");
         for (int i = 0; i < __instance.ItemSlots.Length; i++)
         {
-            if (ItemParser.ShouldDrop(__instance, __instance.ItemSlots[i], behavior, itemList))
+            if (ItemParser.ShouldDrop(__instance.Adapter, __instance.ItemSlots[i].Adapter, behavior, itemList))
                 itemsToKeep[i] = null; // Remove item from cloned inventory
             else
                 __instance.ItemSlots[i] = null; // Hide the item from DropAllHeldItems, tricking it into leaving the item in the player's inventory
@@ -78,6 +79,7 @@ public static class KeepItemsOnTeleporterPatch
         Plugin.Logger.LogDebug($"Client {__instance.playerClientId} inventory after teleport: {Stringify(__instance.ItemSlots)}");
     }
 
+    // TODO: Move logic to Utility.ItemParser
     private static (bool behavior, string[] itemList) GetTeleportConfig(PlayerControllerB player)
     {
         bool isInverse = player.shipTeleporterId != 1;
