@@ -143,6 +143,24 @@ public sealed class ItemParserTest
         Assert.IsTrue(ItemParser.ShouldDrop(player, clipboard, keep, except));
     }
 
+    [TestMethod]
+    [DataRow(["[current:not(key,shovel,[current:not(airhorn,clipboard,bigbolt)],boombox)]", "bell"])]
+    [DataRow(["[current:not(key,shovel,[current:not(airhorn,bigbolt)],boombox)]", "bell"])]
+    public void Given_Keep_When_InDropListExtremeNesting_Then_ItemKept(string[] except)
+    {
+        currentItemSlot = clipboardItemSlot;
+        Assert.IsTrue(ItemParser.ShouldDrop(player, clipboard, keep, except));
+    }
+
+    [TestMethod]
+    [DataRow(["[current:not(key,shovel,clipboard,[current:not(airhorn,bigbolt)],boombox)]", "bell"])]
+    [DataRow(["[current:not(key,shovel,[current:not(airhorn,bigbolt)],clipboard,boombox)]", "bell"])]
+    public void Given_Keep_When_NegatedDropListExtremeNesting_Then_ItemKept(string[] except)
+    {
+        currentItemSlot = clipboardItemSlot;
+        Assert.IsFalse(ItemParser.ShouldDrop(player, clipboard, keep, except));
+    }
+
     #region Category: [current]
     #region Category: [current]: Default Keep
 

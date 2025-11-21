@@ -20,11 +20,19 @@ public static class ItemParser
 
     private static bool IsMatchOnCategory(IPlayerControllerB player, IGrabbableObject item, string category)
     {
-        return category.ToLowerInvariant() switch
+        category = category.ToLowerInvariant();
+        var parts = category[1..^1].Split(":not", 2, StringSplitOptions.RemoveEmptyEntries);
+        bool behavior = parts[0] switch
         {
-            "[current]" => player.ItemSlots[player.currentItemSlot] == item,
+            "current" => player.ItemSlots[player.currentItemSlot] == item,
             _ => false,
         };
+        string[] itemList = [];
+        if (parts.Length > 1 && parts[1][0] == '(' && parts[1][^1] == ')')
+        {
+            itemList = parts[1][1..^1].Split(',', StringSplitOptions.RemoveEmptyEntries);
+        }
+        return behavior && !ShouldDrop(player, item, behavior, itemList);
     }
 
     private static bool IsMatchOnName(IGrabbableObject item, string itemName)
