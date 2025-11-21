@@ -20,8 +20,14 @@ public static class SyncedEntries
     {
         byte id = _idGen++;
         AllEntries.Add(id, item);
-        item.Entry.SettingChanged += (o, e) => ScheduleBroadcastFor(id, item);
+        item.Entry.SettingChanged += (o, e) => ConfigEntryChanged(id, item);
         return item;
+    }
+
+    private static void ConfigEntryChanged<T>(byte key, SyncedEntry<T> item)
+    {
+        if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsConnectedClient) item.Value = item.Entry.Value;
+        else if (NetworkManager.Singleton.IsServer) ScheduleBroadcastFor(key, item);
     }
 
     private static bool _isBroadcasting = false;
@@ -31,12 +37,12 @@ public static class SyncedEntries
 
         item.Value = item.Entry.Value;
 
-        if (NetworkManager.Singleton.ConnectedClientsList.Count <= 1 || Plugin.CoroutineHost == null) return;
+        if (NetworkManager.Singleton.ConnectedClientsList.Count <= 1) return;
 
         UnsyncedEntries.Add(id);
         if (_isBroadcasting) return;
         _isBroadcasting = true;
-        Plugin.CoroutineHost.StartCoroutine(Broadcast());
+        NetworkManager.Singleton.StartCoroutine(Broadcast());
     }
 
     private static IEnumerator Broadcast()
@@ -106,9 +112,14 @@ public static class SyncedEntries
         }
     }
 
+    public static void ResetToLocalConfig()
+    {
+        foreach (var item in AllEntries.Values) item.ResetValue();
+    }
+
     public static void StopListening(bool resetToLocalConfig = true)
     {
-        if (resetToLocalConfig) foreach (var item in AllEntries.Values) item.ResetValue();
+        if (resetToLocalConfig) ResetToLocalConfig();
         UnsyncedEntries.Clear();
         if (NetworkManager.Singleton?.CustomMessagingManager == null) return;
         NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(SyncMessage);
