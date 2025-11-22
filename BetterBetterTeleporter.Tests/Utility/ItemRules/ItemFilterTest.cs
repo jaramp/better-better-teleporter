@@ -5,7 +5,7 @@ using BetterBetterTeleporter.Utility;
 namespace BetterBetterTeleporter.Tests.Utility.ItemRules;
 
 [TestClass]
-public sealed class RuleFilterTest
+public sealed class ItemFilterTest
 {
     private const bool drop = true;
     private const bool keep = false;
