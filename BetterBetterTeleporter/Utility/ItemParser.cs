@@ -30,7 +30,7 @@ public static class ItemParser
         {
             except = ParseConfig(filter[1][1..^1]);
         }
-        return RuleFilter.FromId(Unescape(filter[0]), except);
+        return ItemRules.FromId(Unescape(filter[0]), except);
     }
 
     private static List<string> SplitCurrentGeneration(string source)

@@ -5,6 +5,7 @@ using BetterBetterTeleporter.Adapters;
 
 namespace BetterBetterTeleporter.Utility;
 
+
 public static class ItemRules
 {
     public static bool ShouldDropItem(this IPlayerInfo player, IItemInfo item, TeleporterConfigState state)
@@ -16,6 +17,17 @@ public static class ItemRules
     public static bool ShouldDropItem(this IPlayerInfo player, IItemInfo item, bool isDropDefault, List<ItemRule> rules)
     {
         return item != null && isDropDefault ^ rules.Any(rule => rule.IsMatch(player, item));
+    }
+
+    public static ItemRule FromId(string id, List<ItemRule> except)
+    {
+        // Add new rule filters here
+        switch (id)
+        {
+            case CurrentlyHeldFilter.Id: return new CurrentlyHeldFilter(except);
+        }
+        Plugin.Logger?.LogWarning($"Unknown item filter: {id}. Falling back to item name matching.");
+        return new ItemNameRule(id);
     }
 }
 
@@ -41,16 +53,6 @@ public class ItemNameRule(string name) : ItemRule(name)
 public abstract class RuleFilter(string id, List<ItemRule> except) : ItemRule(id)
 {
     public override bool IsMatch(IPlayerInfo player, IItemInfo item) => except.Count == 0 || !except.Any(rule => rule.IsMatch(player, item));
-
-    public static ItemRule FromId(string id, List<ItemRule> except)
-    {
-        switch (id)
-        {
-            case CurrentlyHeldFilter.Id: return new CurrentlyHeldFilter(except);
-        }
-        Plugin.Logger?.LogWarning($"Unknown item filter: {id}. Falling back to item name matching.");
-        return new ItemNameRule(id);
-    }
 }
 
 public class CurrentlyHeldFilter(List<ItemRule> except) : RuleFilter(Id, except)
