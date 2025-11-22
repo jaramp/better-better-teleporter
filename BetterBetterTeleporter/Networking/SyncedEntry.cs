@@ -20,8 +20,14 @@ public static class SyncedEntries
     {
         byte id = _idGen++;
         AllEntries.Add(id, item);
-        item.Entry.SettingChanged += (o, e) => ScheduleBroadcastFor(id, item);
+        item.Entry.SettingChanged += (o, e) => ConfigEntryChanged(id, item);
         return item;
+    }
+
+    private static void ConfigEntryChanged<T>(byte key, SyncedEntry<T> item)
+    {
+        if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsConnectedClient) item.Value = item.Entry.Value;
+        else if (NetworkManager.Singleton.IsServer) ScheduleBroadcastFor(key, item);
     }
 
     private static bool _isBroadcasting = false;
@@ -31,12 +37,12 @@ public static class SyncedEntries
 
         item.Value = item.Entry.Value;
 
-        if (NetworkManager.Singleton.ConnectedClientsList.Count <= 1 || Plugin.CoroutineHost == null) return;
+        if (NetworkManager.Singleton.ConnectedClientsList.Count <= 1) return;
 
         UnsyncedEntries.Add(id);
         if (_isBroadcasting) return;
         _isBroadcasting = true;
-        Plugin.CoroutineHost.StartCoroutine(Broadcast());
+        NetworkManager.Singleton.StartCoroutine(Broadcast());
     }
 
     private static IEnumerator Broadcast()
@@ -49,34 +55,42 @@ public static class SyncedEntries
             yield break;
         }
         var payload = AllEntries.Where(x => UnsyncedEntries.Contains(x.Key)).ToArray();
-        SendPayload(SyncMessage, payload, NetworkManager.Singleton.ConnectedClientsIds);
+        SendPayload(SyncMessage, payload, NetworkManager.Singleton.ConnectedClientsIds.ToArray()[1..]);
         UnsyncedEntries.Clear();
         _isBroadcasting = false;
     }
 
     public static void SendAllToClient(ulong clientId)
     {
+        if (clientId == 0uL) return;
         SendPayload(SyncMessage, AllEntries, clientId);
     }
 
-    private static void SendPayload(string messageName, IEnumerable<KeyValuePair<byte, ISyncable>> payload, params IEnumerable<ulong> clients)
+    private static void SendPayload(string messageName, ICollection<KeyValuePair<byte, ISyncable>> payload, params ulong[] clients)
     {
-        // Calculate payload size
-        int size = payload.Sum(item => sizeof(byte) + item.Value.GetSize());
+        const int maxPayloadSize = 1024;
 
-        // Write payload to writer
-        using FastBufferWriter writer = new(size, Allocator.Temp);
-        foreach (var item in payload)
+        var chunks = new List<PayloadChunk>([new()]);
+        foreach (var data in payload)
         {
-            writer.WriteByteSafe(item.Key);
-            item.Value.WriteToWriter(writer);
+            int dataSize = sizeof(byte) + data.Value.GetSize();
+            if (dataSize + chunks[^1].Size > maxPayloadSize) chunks.Add(new());
+            chunks[^1].Size += dataSize;
+            chunks[^1].Items.Add(data);
         }
 
-        // Send message to clients
-        foreach (var client in clients)
+        foreach (var chunk in chunks)
         {
-            if (client == NetworkManager.Singleton.LocalClientId) continue;
-            NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(messageName, client, writer, NetworkDelivery.ReliableSequenced);
+            // Write payload to writer
+            using FastBufferWriter writer = new(chunk.Size, Allocator.Temp);
+            foreach (var item in chunk.Items)
+            {
+                writer.WriteValueSafe(item.Key);
+                item.Value.WriteToWriter(writer);
+            }
+
+            // Send message to clients
+            NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(messageName, clients, writer, NetworkDelivery.ReliableSequenced);
         }
     }
 
@@ -98,9 +112,14 @@ public static class SyncedEntries
         }
     }
 
+    public static void ResetToLocalConfig()
+    {
+        foreach (var item in AllEntries.Values) item.ResetValue();
+    }
+
     public static void StopListening(bool resetToLocalConfig = true)
     {
-        if (resetToLocalConfig) foreach (var item in AllEntries.Values) item.ResetValue();
+        if (resetToLocalConfig) ResetToLocalConfig();
         UnsyncedEntries.Clear();
         if (NetworkManager.Singleton?.CustomMessagingManager == null) return;
         NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(SyncMessage);
@@ -129,9 +148,9 @@ public static class SyncedEntries
 
     public static SyncedEntry<string> BindSynced(this ConfigFile config, string section, string key, string value, ConfigDescription description)
     {
-        return Add<string>(new(config.Bind(section, key, value, description), value => FastBufferWriter.GetWriteSize(value),
+        return Add<string>(new(config.Bind(section, key, value, description), value => FastBufferWriter.GetWriteSize(value, true),
         reader => { reader.ReadValueSafe(out string result); return result; },
-        (writer, value) => writer.WriteValueSafe(value)));
+        (writer, value) => writer.WriteValueSafe(value, true)));
     }
 
     public static SyncedEntry<T> BindSynced<T>(this ConfigFile config, string section, string key, T value, ConfigDescription description) where T : Enum
@@ -139,6 +158,12 @@ public static class SyncedEntries
         return Add<T>(new(config.Bind(section, key, value, description), _ => sizeof(int),
         reader => { reader.ReadValueSafe(out int result); return (T)(object)result; },
         (writer, value) => writer.WriteValueSafe(Convert.ToInt32(value))));
+    }
+
+    private class PayloadChunk
+    {
+        public int Size;
+        public ICollection<KeyValuePair<byte, ISyncable>> Items = [];
     }
 }
 
