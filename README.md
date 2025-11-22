@@ -18,20 +18,20 @@ If [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig
 
 ### Configuration Options
 
-| Option                      | Value            | Default | Description                                                                             |
-| --------------------------- | ---------------- | ------- | --------------------------------------------------------------------------------------- |
-| ResetCooldownOnOrbit        | `Boolean`        | `false` | Resets the cooldown time on teleporters between days.                                   |
-|                             |                  |         |                                                                                         |
-| TeleporterCooldown          | `Integer`        | `10`    | Cooldown time (in seconds) for using the Teleporter.                                    |
-| TeleporterBehavior          | `Drop` or `Keep` | `Drop`  | Sets whether items are kept or dropped when using the Teleporter.                       |
-| TeleporterAlwaysKeep        | `ItemList`       |         | Treat these items as `Keep` regardless of Teleporter behavior.                          |
-| TeleporterAlwaysDrop        | `ItemList`       |         | Treat these items as `Drop` regardless of Teleporter behavior.                          |
-|                             |                  |         |                                                                                         |
-| InverseTeleporterCooldown   | `Integer`        | `210`   | Cooldown time (in seconds) for using the Inverse Teleporter.                            |
-| InverseTeleporterBehavior   | `Drop` or `Keep` | `Drop`  | Sets whether items are kept or dropped when using the Inverse Teleporter.               |
-| InverseTeleporterAlwaysKeep | `ItemList`       |         | Treat these items as `Keep` regardless of Inverse Teleporter behavior.                  |
-| InverseTeleporterAlwaysDrop | `ItemList`       |         | Treat these items as `Drop` regardless of Inverse Teleporter behavior.                  |
-| BatteryDrainPercent         | `Integer`        | `0`     | Percent drain on held battery items when using the Inverse Teleporter (`0` to disable). |
+| Option                      | Value         | Default | Description                                                                             |
+| --------------------------- | ------------- | ------- | --------------------------------------------------------------------------------------- |
+| ResetCooldownOnOrbit        | `Boolean`     | `false` | Resets the cooldown time on teleporters between days.                                   |
+|                             |               |         |                                                                                         |
+| TeleporterCooldown          | `Integer`     | `10`    | Cooldown time (in seconds) for using the Teleporter.                                    |
+| TeleporterBehavior          | `Drop`/`Keep` | `Drop`  | Sets whether items are kept or dropped when using the Teleporter.                       |
+| TeleporterAlwaysKeep        | `ItemList`    |         | Treat these items as `Keep` regardless of Teleporter behavior.                          |
+| TeleporterAlwaysDrop        | `ItemList`    |         | Treant these items as `Drop` regardless of Teleporter behavior.                         |
+|                             |               |         |                                                                                         |
+| InverseTeleporterCooldown   | `Integer`     | `210`   | Cooldown time (in seconds) for using the Inverse Teleporter.                            |
+| InverseTeleporterBehavior   | `Drop`/`Keep` | `Drop`  | Sets whether items are kept or dropped when using the Inverse Teleporter.               |
+| InverseTeleporterAlwaysKeep | `ItemList`    |         | Treat these items as `Keep` regardless of Inverse Teleporter behavior.                  |
+| InverseTeleporterAlwaysDrop | `ItemList`    |         | Treat these items as `Drop` regardless of Inverse Teleporter behavior.                  |
+| BatteryDrainPercent         | `Integer`     | `0`     | Percent drain on held battery items when using the Inverse Teleporter (`0` to disable). |
 
 As an example, if you wanted an Inverse Teleporter that drops all items except for keys and walkie-talkies, and drains batteries by 25%:
 
