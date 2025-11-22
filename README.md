@@ -84,7 +84,7 @@ TeleporterAlwaysKeep = key,[current],clipboard
 ```
 
 This setting makes the Teleporter drop all items except for the `Key` and `Clipboard`, as well as the currently-selected inventory slot
-(so if the player is holding a `GoldBar`, they keep it, but if the `GoldBar` is not the active inventory item, it drops).
+(so if the player is actively holding a `GoldBar`, they keep it, but if the `GoldBar` is not the active inventory item, it drops).
 
 ### Specifying Items by Name
 
