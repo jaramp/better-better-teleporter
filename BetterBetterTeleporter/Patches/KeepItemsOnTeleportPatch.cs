@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using System.Reflection;
 using BetterBetterTeleporter.Adapters;
 using BetterBetterTeleporter.Utility;
@@ -16,92 +14,87 @@ public static class KeepItemsOnTeleporterPatch
     private static readonly Dictionary<PlayerControllerB, GrabbableObject[]> tempInventories = [];
     private static readonly MethodInfo SwitchToItemSlotMethod = AccessTools.Method(typeof(PlayerControllerB), "SwitchToItemSlot");
 
-    /// <summary>
-    /// This Harmony Postfix patch runs before the original DropAllHeldItems method.
-    /// It checks if the player is teleporting, and hides items that are meant to be kept.
-    /// </summary>
-    /// <param name="__instance">The PlayerControllerB instance.</param>
+    private static readonly TeleporterConfigState TeleportConfig;
+    private static readonly TeleporterConfigState InverseConfig;
+
+    static KeepItemsOnTeleporterPatch()
+    {
+        var config = Plugin.ModConfig;
+        TeleportConfig = new TeleporterConfigState(config.TeleporterBehavior, config.TeleporterAlwaysKeep, config.TeleporterAlwaysDrop);
+        InverseConfig = new TeleporterConfigState(config.InverseTeleporterBehavior, config.InverseTeleporterAlwaysKeep, config.InverseTeleporterAlwaysDrop);
+    }
+
+    private static bool IsTeleporting(PlayerControllerB player)
+    {
+        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(player.actualClientId))
+            return false; // Player is disconnecting
+
+        if (player.shipTeleporterId == 1)
+            return true; // Regular teleporting
+
+        if (InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player))
+            return true; // Inverse teleporting
+
+        return false; // Unknown, assume not teleporting
+    }
+
     [HarmonyPrefix]
     public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
     {
-        // If the player is disconnecting, exit this patch.
-        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(__instance.actualClientId)) return;
-        // If the player is not teleporting, exit this patch.
-        if (!IsDroppingItemsFromTeleport(__instance)) return;
+        if (!IsTeleporting(__instance)) return;
 
         var playerInfo = new PlayerInfo(__instance);
-        var (behavior, itemList) = GetTeleportConfig(__instance);
+        var state = GetTeleportState(__instance);
         var itemsToKeep = (GrabbableObject[])__instance.ItemSlots.Clone();
-        Plugin.Logger.LogDebug($"Client {__instance.playerClientId} inventory before teleport: {Stringify(__instance.ItemSlots)}");
+
         for (int i = 0; i < __instance.ItemSlots.Length; i++)
         {
-            if (playerInfo.ShouldDropItem(playerInfo.Slots[i], behavior, itemList))
-                itemsToKeep[i] = null; // Remove item from cloned inventory
-            else
-                __instance.ItemSlots[i] = null; // Hide the item from DropAllHeldItems, tricking it into leaving the item in the player's inventory
+            if (playerInfo.ShouldDropItem(playerInfo.Slots[i], state)) itemsToKeep[i] = null;
+            else __instance.ItemSlots[i] = null; // Hide from DropAllHeldItems to prevent dropping
         }
-        Plugin.Logger.LogDebug($"Client {__instance.playerClientId} items to keep: {Stringify(itemsToKeep.Where(x => x != null))}");
-        // This is needed to suppress the drop animation
-        __instance.isHoldingObject = false;
+
+        // Suppress drop animation call from DropAllHeldItems
+        __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
 
         // Temporarily store cloned inventory so we can restore it on Postfix
         tempInventories[__instance] = itemsToKeep;
     }
 
-    /// <summary>
-    /// This Harmony Postfix patch runs after the original DropAllHeldItems method.
-    /// It restores the items that the player should keep after teleporting.
-    /// </summary>
-    /// <param name="__instance">The PlayerControllerB instance.</param>
     [HarmonyPostfix]
     public static void DropAllHeldItemsPostfix(PlayerControllerB __instance)
     {
-        // If the player is disconnecting, exit this patch.
-        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(__instance.actualClientId)) return;
-        // If the player is not teleporting, exit this patch.
-        if (!IsDroppingItemsFromTeleport(__instance)) return;
+        if (!IsTeleporting(__instance)) return;
 
         // Restore player's inventory from temporary storage
         var itemsToKeep = tempInventories[__instance];
         tempInventories.Remove(__instance);
-        float carryWeight = 0;
+
+        // DropAllHeldItems resets weight: need to manually add back current inventory weight
+        float carryWeightDelta = 0f;
         for (int i = 0; i < __instance.ItemSlots.Length; i++)
         {
-            if (itemsToKeep[i] == null) continue;
-            __instance.ItemSlots[i] = itemsToKeep[i];
-            carryWeight += itemsToKeep[i].itemProperties.weight - 1f;
+            var keptItem = itemsToKeep[i];
+            if (keptItem == null) continue;
+
+            __instance.ItemSlots[i] = keptItem;
+            carryWeightDelta += keptItem.itemProperties.weight - 1f;
         }
-        __instance.carryWeight = Mathf.Clamp(__instance.carryWeight + carryWeight, 1f, 10f);
+        __instance.carryWeight = Mathf.Clamp(__instance.carryWeight + carryWeightDelta, 1f, 10f);
 
-        // Force reselect current item slot to fix issues with the player appearing to not have an item equipped
-        __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
-        SwitchToItemSlotMethod.Invoke(__instance, [__instance.currentItemSlot, null]);
-
-        Plugin.Logger.LogDebug($"Client {__instance.playerClientId} inventory after teleport: {Stringify(__instance.ItemSlots)}");
+        try
+        {
+            // Force reselect current item slot to fix issues with the player appearing to not have an item equipped
+            __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
+            SwitchToItemSlotMethod.Invoke(__instance, [__instance.currentItemSlot, null]);
+        }
+        catch
+        {
+            Plugin.Logger.LogError("Error running SwitchToItemSlot. This might be caused by an incompatible game version.");
+        }
     }
 
-    // TODO: Move logic to Utility.ItemParser
-    private static (bool behavior, List<ItemRule> rules) GetTeleportConfig(PlayerControllerB player)
+    private static TeleporterConfigState GetTeleportState(PlayerControllerB player)
     {
-        bool isInverse = player.shipTeleporterId != 1;
-        bool isDropping;
-        List<ItemRule> rules;
-
-        if (isInverse)
-        {
-            Plugin.Logger.LogDebug($"Client {player.playerClientId} inverse teleporting...");
-            isDropping = Plugin.ModConfig.InverseTeleporterBehavior.Value != ItemTeleportBehavior.Keep;
-            rules = isDropping ? Plugin.ModConfig.InverseTeleporterKeepList : Plugin.ModConfig.InverseTeleporterDropList;
-        }
-        else
-        {
-            Plugin.Logger.LogDebug($"Client {player.playerClientId} teleporting...");
-            isDropping = Plugin.ModConfig.TeleporterBehavior.Value != ItemTeleportBehavior.Keep;
-            rules = isDropping ? Plugin.ModConfig.TeleporterKeepList : Plugin.ModConfig.TeleporterDropList;
-        }
-        return (isDropping, rules);
+        return InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player) ? InverseConfig : TeleportConfig;
     }
-
-    private static bool IsDroppingItemsFromTeleport(PlayerControllerB player) => player.shipTeleporterId == 1 || InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player);
-    private static string Stringify(IEnumerable<GrabbableObject> items) => string.Join(",", items.Select(x => x?.itemProperties.itemName ?? "<empty>"));
 }

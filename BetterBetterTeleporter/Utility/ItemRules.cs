@@ -7,9 +7,15 @@ namespace BetterBetterTeleporter.Utility;
 
 public static class ItemRules
 {
-    public static bool ShouldDropItem(this IPlayerInfo player, IItemInfo item, bool dropIfUnmatched, List<ItemRule> rules)
+    public static bool ShouldDropItem(this IPlayerInfo player, IItemInfo item, TeleporterConfigState state)
     {
-        return item != null && dropIfUnmatched ^ rules.Any(rule => rule.IsMatch(player, item));
+        bool isDropDefault = state.Behavior == ItemTeleportBehavior.Drop;
+        return player.ShouldDropItem(item, isDropDefault, state.Rules);
+    }
+
+    public static bool ShouldDropItem(this IPlayerInfo player, IItemInfo item, bool isDropDefault, List<ItemRule> rules)
+    {
+        return item != null && isDropDefault ^ rules.Any(rule => rule.IsMatch(player, item));
     }
 }
 
