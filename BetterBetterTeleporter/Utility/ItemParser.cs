@@ -72,7 +72,7 @@ public static class ItemParser
         if (string.IsNullOrEmpty(source)) return null;
         source = source.Trim(delimiter);
         bool escaped = false;
-        for (int i = 1; i < source.Length - 1; i++)
+        for (int i = 0; i < source.Length; i++)
         {
             if (source[i] == escapeChar) escaped = !escaped;
             else if (source[i] == delimiter && !escaped) return i;
@@ -84,7 +84,7 @@ public static class ItemParser
     private static string Unescape(string source, char escapeChar = '\\')
     {
         bool escaped = false;
-        for (int i = 1; i < source.Length - 1; i++)
+        for (int i = 0; i < source.Length; i++)
         {
             if (source[i] == escapeChar && !escaped) escaped = !escaped;
             else if (source[i] == escapeChar) source = source.Remove(i, 1);
