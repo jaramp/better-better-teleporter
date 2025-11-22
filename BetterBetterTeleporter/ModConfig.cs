@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BepInEx.Configuration;
 using BetterBetterTeleporter.Networking;
+using BetterBetterTeleporter.Utility;
 using HarmonyLib;
 
 namespace BetterBetterTeleporter;
@@ -19,6 +20,11 @@ public class ModConfig
     public SyncedEntry<string> InverseTeleporterAlwaysKeep;
     public SyncedEntry<string> InverseTeleporterAlwaysDrop;
     public SyncedEntry<int> BatteryDrainPercent;
+
+    public List<ItemRule> TeleporterKeepList = [];
+    public List<ItemRule> TeleporterDropList = [];
+    public List<ItemRule> InverseTeleporterKeepList = [];
+    public List<ItemRule> InverseTeleporterDropList = [];
 
     public ModConfig(ConfigFile config)
     {
@@ -43,5 +49,18 @@ public class ModConfig
         ((Dictionary<ConfigDefinition, string>)AccessTools.Property(typeof(ConfigFile), "OrphanedEntries").GetValue(config)).Clear();
         config.Save();
         config.SaveOnConfigSet = true;
+        SetupTracking();
+    }
+
+    private void SetupTracking()
+    {
+        TeleporterKeepList = ItemParser.ParseConfig(TeleporterAlwaysKeep.Value);
+        TeleporterDropList = ItemParser.ParseConfig(TeleporterAlwaysDrop.Value);
+        InverseTeleporterDropList = ItemParser.ParseConfig(InverseTeleporterAlwaysKeep.Value);
+        InverseTeleporterKeepList = ItemParser.ParseConfig(InverseTeleporterAlwaysDrop.Value);
+        TeleporterAlwaysKeep.OnChanged += (o, n) => TeleporterKeepList = ItemParser.ParseConfig(n);
+        TeleporterAlwaysDrop.OnChanged += (o, n) => TeleporterDropList = ItemParser.ParseConfig(n);
+        InverseTeleporterAlwaysKeep.OnChanged += (o, n) => InverseTeleporterDropList = ItemParser.ParseConfig(n);
+        InverseTeleporterAlwaysDrop.OnChanged += (o, n) => InverseTeleporterKeepList = ItemParser.ParseConfig(n);
     }
 }
