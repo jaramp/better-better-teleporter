@@ -25,7 +25,6 @@
     <Message Text="Updated manifest.json version to $(Version)" Importance="normal" />
   </Target>
 
-
   <!-- ========== 2️⃣ Changelog Check ========== -->
   <Target Name="CheckChangelogVersion" BeforeTargets="BeforeBuild">
     <ReadLinesFromFile File="$(ChangelogFile)">

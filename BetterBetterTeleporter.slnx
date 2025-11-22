@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BetterBetterTeleporter/BetterBetterTeleporter.csproj" />
+  <Project Path="BetterBetterTeleporter.Tests/BetterBetterTeleporter.Tests.csproj" />
+</Solution>
