@@ -9,10 +9,10 @@ public sealed class ItemRulesTest
 {
     public sealed class AlwaysMatchesRule() : ItemRule("true") { public override bool IsMatch(IPlayerInfo player, IItemInfo item) => true; }
     public sealed class NeverMatchesRule() : ItemRule("false") { public override bool IsMatch(IPlayerInfo player, IItemInfo item) => false; }
-    public sealed class UnmatchedFilter() : RuleFilter("false", []) { public override bool IsMatch(IPlayerInfo player, IItemInfo item) => false; }
-    public sealed class EmptyMatchedFilter() : RuleFilter("true", []) { }
-    public sealed class MatchedFilter() : RuleFilter("true/false", [new NeverMatchesRule()]) { }
-    public sealed class NegatedMatchedFilter() : RuleFilter("true/true", [new AlwaysMatchesRule()]) { }
+    public sealed class UnmatchedFilter() : ItemFilter("false", []) { public override bool IsMatch(IPlayerInfo player, IItemInfo item) => false; }
+    public sealed class EmptyMatchedFilter() : ItemFilter("true", []) { }
+    public sealed class MatchedFilter() : ItemFilter("true/false", [new NeverMatchesRule()]) { }
+    public sealed class NegatedMatchedFilter() : ItemFilter("true/true", [new AlwaysMatchesRule()]) { }
 
     private FakePlayerInfo player = null!;
     private FakeItemInfo clipboard = null!;

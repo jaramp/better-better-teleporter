@@ -31,35 +31,35 @@ public sealed class ItemParserTest
     [TestMethod]
     public void Given_FilterWithEmptyDelimiters_When_Parsed_Then_SingleResult()
     {
-        var actual = ItemParser.ParseConfig("[current:not(,)]");
+        var actual = ItemParser.ParseConfig("[held:not(,)]");
         Assert.HasCount(1, actual);
-        Assert.AreEqual("current", actual[0].ToString());
+        Assert.AreEqual("held", actual[0].ToString());
     }
 
     [TestMethod]
     public void Given_FilterWithItemAndEmptyDelimiters_When_Parsed_Then_ReturnsCollection()
     {
-        var actual = ItemParser.ParseConfig("[current:not(shovel,,key)],clipboard");
+        var actual = ItemParser.ParseConfig("[held:not(shovel,,key)],clipboard");
         Assert.HasCount(2, actual);
-        Assert.AreEqual("current", actual[0].ToString());
+        Assert.AreEqual("held", actual[0].ToString());
         Assert.AreEqual("clipboard", actual[1].ToString());
     }
 
     [TestMethod]
     public void Given_NestedSingleRule_When_Parsed_Then_SingleResult()
     {
-        var actual = ItemParser.ParseConfig("[current:not(key,shovel,clipboard)]");
+        var actual = ItemParser.ParseConfig("[held:not(key,shovel,clipboard)]");
         Assert.HasCount(1, actual);
-        Assert.AreEqual("current", actual[0].ToString());
+        Assert.AreEqual("held", actual[0].ToString());
     }
 
     [TestMethod]
     public void Given_ComplexList_When_Parsed_Then_ReturnsCollection()
     {
-        var actual = ItemParser.ParseConfig("shovel,[current:not(key,clipboard)],airhorn");
+        var actual = ItemParser.ParseConfig("shovel,[held:not(key,clipboard)],airhorn");
         Assert.HasCount(3, actual);
         Assert.AreEqual("shovel", actual[0].ToString());
-        Assert.AreEqual("current", actual[1].ToString());
+        Assert.AreEqual("held", actual[1].ToString());
         Assert.AreEqual("airhorn", actual[2].ToString());
     }
 

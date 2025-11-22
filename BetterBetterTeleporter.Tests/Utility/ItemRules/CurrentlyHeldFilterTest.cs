@@ -5,7 +5,7 @@ using BetterBetterTeleporter.Utility;
 namespace BetterBetterTeleporter.Tests.Utility.ItemRules;
 
 [TestClass]
-public sealed class CurrentlyHeldFilterTest
+public sealed class HeldFilterTest
 {
     private const bool drop = true;
     private const bool keep = false;
@@ -25,13 +25,13 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current]")]
-    [DataRow("key,[current]")]
-    [DataRow("[current],key")]
-    [DataRow("[current:not(shovel)]")]
-    [DataRow("[current:not(shovel)],key")]
-    [DataRow("key,[current:not(shovel)]")]
-    public void Given_Keep_When_DropCurrentlyHeld_Then_CurrentlyHeldItemDropped(string except)
+    [DataRow("[held]")]
+    [DataRow("key,[held]")]
+    [DataRow("[held],key")]
+    [DataRow("[held:not(shovel)]")]
+    [DataRow("[held:not(shovel)],key")]
+    [DataRow("key,[held:not(shovel)]")]
+    public void Given_Keep_When_DropHeld_Then_HeldItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
@@ -39,13 +39,13 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current]")]
-    [DataRow("key,[current]")]
-    [DataRow("[current],key")]
-    [DataRow("[current:not(shovel)]")]
-    [DataRow("[current:not(shovel)],key")]
-    [DataRow("key,[current:not(shovel)]")]
-    public void Given_Keep_When_DropCurrentlyHeld_Then_PocketedItemKept(string except)
+    [DataRow("[held]")]
+    [DataRow("key,[held]")]
+    [DataRow("[held],key")]
+    [DataRow("[held:not(shovel)]")]
+    [DataRow("[held:not(shovel)],key")]
+    [DataRow("key,[held:not(shovel)]")]
+    public void Given_Keep_When_DropHeld_Then_PocketedItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;
@@ -53,10 +53,10 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current:not(clipboard)]")]
-    [DataRow("key,[current:not(clipboard)]")]
-    [DataRow("[current:not(clipboard)],key")]
-    public void Given_Keep_When_DropCurrentlyHeldExceptItem_Then_CurrentlyHeldItemKept(string except)
+    [DataRow("[held:not(clipboard)]")]
+    [DataRow("key,[held:not(clipboard)]")]
+    [DataRow("[held:not(clipboard)],key")]
+    public void Given_Keep_When_DropHeldExceptItem_Then_HeldItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
@@ -64,10 +64,10 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current:not(clipboard)]")]
-    [DataRow("key,[current:not(clipboard)]")]
-    [DataRow("[current:not(clipboard)],key")]
-    public void Given_Keep_When_DropCurrentlyHeldExceptItem_Then_PocketedItemKept(string except)
+    [DataRow("[held:not(clipboard)]")]
+    [DataRow("key,[held:not(clipboard)]")]
+    [DataRow("[held:not(clipboard)],key")]
+    public void Given_Keep_When_DropHeldExceptItem_Then_PocketedItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;
@@ -75,13 +75,13 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current:not(key,clipboard)]")]
-    [DataRow("[current:not(clipboard,key)]")]
-    [DataRow("key,[current:not(key,clipboard)]")]
-    [DataRow("key,[current:not(clipboard,key)]")]
-    [DataRow("[current:not(key,clipboard)],key")]
-    [DataRow("[current:not(clipboard,key)],key")]
-    public void Given_Keep_When_DropCurrentlyHeldExceptListContainsItem_Then_CurrentlyHeldItemKept(string except)
+    [DataRow("[held:not(key,clipboard)]")]
+    [DataRow("[held:not(clipboard,key)]")]
+    [DataRow("key,[held:not(key,clipboard)]")]
+    [DataRow("key,[held:not(clipboard,key)]")]
+    [DataRow("[held:not(key,clipboard)],key")]
+    [DataRow("[held:not(clipboard,key)],key")]
+    public void Given_Keep_When_DropHeldExceptListContainsItem_Then_HeldItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
@@ -89,13 +89,13 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current:not(key,clipboard)]")]
-    [DataRow("[current:not(clipboard,key)]")]
-    [DataRow("key,[current:not(key,clipboard)]")]
-    [DataRow("key,[current:not(clipboard,key)]")]
-    [DataRow("[current:not(key,clipboard)],key")]
-    [DataRow("[current:not(clipboard,key)],key")]
-    public void Given_Keep_When_DropCurrentlyHeldExceptListContainsItem_Then_PocketedItemKept(string except)
+    [DataRow("[held:not(key,clipboard)]")]
+    [DataRow("[held:not(clipboard,key)]")]
+    [DataRow("key,[held:not(key,clipboard)]")]
+    [DataRow("key,[held:not(clipboard,key)]")]
+    [DataRow("[held:not(key,clipboard)],key")]
+    [DataRow("[held:not(clipboard,key)],key")]
+    public void Given_Keep_When_DropHeldExceptListContainsItem_Then_PocketedItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;
@@ -103,13 +103,13 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current]")]
-    [DataRow("key,[current]")]
-    [DataRow("[current],key")]
-    [DataRow("[current:not(shovel)]")]
-    [DataRow("[current:not(shovel)],key")]
-    [DataRow("key,[current:not(shovel)]")]
-    public void Given_Drop_When_KeepCurrentlyHeld_Then_CurrentlyHeldItemKept(string except)
+    [DataRow("[held]")]
+    [DataRow("key,[held]")]
+    [DataRow("[held],key")]
+    [DataRow("[held:not(shovel)]")]
+    [DataRow("[held:not(shovel)],key")]
+    [DataRow("key,[held:not(shovel)]")]
+    public void Given_Drop_When_KeepHeld_Then_HeldItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
@@ -117,13 +117,13 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current]")]
-    [DataRow("key,[current]")]
-    [DataRow("[current],key")]
-    [DataRow("[current:not(shovel)]")]
-    [DataRow("[current:not(shovel)],key")]
-    [DataRow("key,[current:not(shovel)]")]
-    public void Given_Drop_When_KeepCurrentlyHeld_Then_PocketedItemDropped(string except)
+    [DataRow("[held]")]
+    [DataRow("key,[held]")]
+    [DataRow("[held],key")]
+    [DataRow("[held:not(shovel)]")]
+    [DataRow("[held:not(shovel)],key")]
+    [DataRow("key,[held:not(shovel)]")]
+    public void Given_Drop_When_KeepHeld_Then_PocketedItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;
@@ -131,10 +131,10 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current:not(clipboard)]")]
-    [DataRow("key,[current:not(clipboard)]")]
-    [DataRow("[current:not(clipboard)],key")]
-    public void Given_Drop_When_KeepCurrentlyHeldExceptItem_Then_CurrentlyHeldItemDropped(string except)
+    [DataRow("[held:not(clipboard)]")]
+    [DataRow("key,[held:not(clipboard)]")]
+    [DataRow("[held:not(clipboard)],key")]
+    public void Given_Drop_When_KeepHeldExceptItem_Then_HeldItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
@@ -142,10 +142,10 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current:not(clipboard)]")]
-    [DataRow("key,[current:not(clipboard)]")]
-    [DataRow("[current:not(clipboard)],key")]
-    public void Given_Drop_When_KeepCurrentlyHeldExceptItem_Then_PocketedItemDropped(string except)
+    [DataRow("[held:not(clipboard)]")]
+    [DataRow("key,[held:not(clipboard)]")]
+    [DataRow("[held:not(clipboard)],key")]
+    public void Given_Drop_When_KeepHeldExceptItem_Then_PocketedItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;
@@ -153,13 +153,13 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current:not(key,clipboard)]")]
-    [DataRow("[current:not(clipboard,key)]")]
-    [DataRow("key,[current:not(key,clipboard)]")]
-    [DataRow("key,[current:not(clipboard,key)]")]
-    [DataRow("[current:not(key,clipboard)],key")]
-    [DataRow("[current:not(clipboard,key)],key")]
-    public void Given_Drop_When_KeepCurrentlyHeldExceptListContainsItem_Then_CurrentlyHeldItemDropped(string except)
+    [DataRow("[held:not(key,clipboard)]")]
+    [DataRow("[held:not(clipboard,key)]")]
+    [DataRow("key,[held:not(key,clipboard)]")]
+    [DataRow("key,[held:not(clipboard,key)]")]
+    [DataRow("[held:not(key,clipboard)],key")]
+    [DataRow("[held:not(clipboard,key)],key")]
+    public void Given_Drop_When_KeepHeldExceptListContainsItem_Then_HeldItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
@@ -167,13 +167,13 @@ public sealed class CurrentlyHeldFilterTest
     }
 
     [TestMethod]
-    [DataRow("[current:not(key,clipboard)]")]
-    [DataRow("[current:not(clipboard,key)]")]
-    [DataRow("key,[current:not(key,clipboard)]")]
-    [DataRow("key,[current:not(clipboard,key)]")]
-    [DataRow("[current:not(key,clipboard)],key")]
-    [DataRow("[current:not(clipboard,key)],key")]
-    public void Given_Drop_When_KeepCurrentlyHeldExceptListContainsItem_Then_PocketedItemDropped(string except)
+    [DataRow("[held:not(key,clipboard)]")]
+    [DataRow("[held:not(clipboard,key)]")]
+    [DataRow("key,[held:not(key,clipboard)]")]
+    [DataRow("key,[held:not(clipboard,key)]")]
+    [DataRow("[held:not(key,clipboard)],key")]
+    [DataRow("[held:not(clipboard,key)],key")]
+    public void Given_Drop_When_KeepHeldExceptListContainsItem_Then_PocketedItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;

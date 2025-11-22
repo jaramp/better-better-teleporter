@@ -24,7 +24,7 @@ public static class ItemRules
         // Add new rule filters here
         switch (id)
         {
-            case CurrentlyHeldFilter.Id: return new CurrentlyHeldFilter(except);
+            case HeldItemFilter.Id: return new HeldItemFilter(except);
         }
         Plugin.Logger?.LogWarning($"Unknown item filter: {id}. Falling back to item name matching.");
         return new ItemNameRule(id);
@@ -50,14 +50,14 @@ public class ItemNameRule(string name) : ItemRule(name)
     }
 }
 
-public abstract class RuleFilter(string id, List<ItemRule> except) : ItemRule(id)
+public abstract class ItemFilter(string id, List<ItemRule> except) : ItemRule(id)
 {
     public override bool IsMatch(IPlayerInfo player, IItemInfo item) => except.Count == 0 || !except.Any(rule => rule.IsMatch(player, item));
 }
 
-public class CurrentlyHeldFilter(List<ItemRule> except) : RuleFilter(Id, except)
+public class HeldItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
 {
-    public const string Id = "current";
+    public const string Id = "held";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
         var held = player.Slots[player.CurrentSlotIndex];
