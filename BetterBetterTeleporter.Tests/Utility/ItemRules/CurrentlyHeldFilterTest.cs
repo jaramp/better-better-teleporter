@@ -7,8 +7,8 @@ namespace BetterBetterTeleporter.Tests.Utility.ItemRules;
 [TestClass]
 public sealed class CurrentlyHeldFilterTest
 {
-    private const bool keep = true;
-    private const bool drop = false;
+    private const bool drop = true;
+    private const bool keep = false;
 
     private FakePlayerInfo player = null!;
     private FakeItemInfo clipboard = null!;
@@ -35,7 +35,7 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
-        Assert.IsTrue(ItemParser.ShouldDrop(player, clipboard, keep, rules));
+        Assert.IsTrue(player.ShouldDropItem(clipboard, keep, rules));
     }
 
     [TestMethod]
@@ -49,7 +49,7 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;
-        Assert.IsFalse(ItemParser.ShouldDrop(player, clipboard, keep, rules));
+        Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
     [TestMethod]
@@ -60,7 +60,7 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
-        Assert.IsFalse(ItemParser.ShouldDrop(player, clipboard, keep, rules));
+        Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
     [TestMethod]
@@ -71,7 +71,7 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;
-        Assert.IsFalse(ItemParser.ShouldDrop(player, clipboard, keep, rules));
+        Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
     [TestMethod]
@@ -85,7 +85,7 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
-        Assert.IsFalse(ItemParser.ShouldDrop(player, clipboard, keep, rules));
+        Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
     [TestMethod]
@@ -99,7 +99,7 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;
-        Assert.IsFalse(ItemParser.ShouldDrop(player, clipboard, keep, rules));
+        Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
     [TestMethod]
@@ -113,7 +113,7 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
-        Assert.IsFalse(ItemParser.ShouldDrop(player, clipboard, drop, rules));
+        Assert.IsFalse(player.ShouldDropItem(clipboard, drop, rules));
     }
 
     [TestMethod]
@@ -127,7 +127,7 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;
-        Assert.IsTrue(ItemParser.ShouldDrop(player, clipboard, drop, rules));
+        Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 
     [TestMethod]
@@ -138,7 +138,7 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
-        Assert.IsTrue(ItemParser.ShouldDrop(player, clipboard, drop, rules));
+        Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 
     [TestMethod]
@@ -149,7 +149,7 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;
-        Assert.IsTrue(ItemParser.ShouldDrop(player, clipboard, drop, rules));
+        Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 
     [TestMethod]
@@ -163,7 +163,7 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
-        Assert.IsTrue(ItemParser.ShouldDrop(player, clipboard, drop, rules));
+        Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 
     [TestMethod]
@@ -177,6 +177,6 @@ public sealed class CurrentlyHeldFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = emptyItemSlot;
-        Assert.IsTrue(ItemParser.ShouldDrop(player, clipboard, drop, rules));
+        Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 }

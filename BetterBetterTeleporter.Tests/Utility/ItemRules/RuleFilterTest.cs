@@ -7,8 +7,8 @@ namespace BetterBetterTeleporter.Tests.Utility.ItemRules;
 [TestClass]
 public sealed class RuleFilterTest
 {
-    private const bool keep = true;
-    private const bool drop = false;
+    private const bool drop = true;
+    private const bool keep = false;
 
     private FakePlayerInfo player = null!;
     private FakeItemInfo clipboard = null!;
@@ -39,11 +39,11 @@ public sealed class RuleFilterTest
     [DataRow("[current:not(key,[current])],key")]
     [DataRow("[current:not(clipboard,[current])],key")]
     [DataRow("[current:not([current],clipboard)],key")]
-    public void Given_Keep_When_SelfNegatedCategory_Then_ItemKept(string except)
+    public void Given_Keep_When_SelfNegatedCategory_Then_ItemNotDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
-        Assert.IsFalse(ItemParser.ShouldDrop(player, clipboard, keep, rules));
+        Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
     [TestMethod]
@@ -66,7 +66,7 @@ public sealed class RuleFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
-        Assert.IsTrue(ItemParser.ShouldDrop(player, clipboard, drop, rules));
+        Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 
     [TestMethod]
@@ -77,26 +77,26 @@ public sealed class RuleFilterTest
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
-        Assert.IsTrue(ItemParser.ShouldDrop(player, clipboard, keep, rules));
+        Assert.IsTrue(player.ShouldDropItem(clipboard, keep, rules));
     }
 
     [TestMethod]
     [DataRow("[current:not(key,shovel,[current:not(clipboard)],boombox)],bell")]
     [DataRow("[current:not(key,shovel,[current:not(airhorn,clipboard,bigbolt)],boombox)],bell")]
-    public void Given_Keep_When_InDropListExtremeNesting_Then_ItemKept(string except)
+    public void Given_Keep_When_InDropListExtremeNesting_Then_ItemNotDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
-        Assert.IsTrue(ItemParser.ShouldDrop(player, clipboard, keep, rules));
+        Assert.IsTrue(player.ShouldDropItem(clipboard, keep, rules));
     }
 
     [TestMethod]
     [DataRow("[current:not(key,shovel,clipboard,[current:not(airhorn,bigbolt)],boombox)],bell")]
     [DataRow("[current:not(key,shovel,[current:not(airhorn,bigbolt)],clipboard,boombox)],bell")]
-    public void Given_Keep_When_NegatedDropListExtremeNesting_Then_ItemKept(string except)
+    public void Given_Keep_When_NegatedDropListExtremeNesting_Then_ItemNotDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
         player.CurrentSlotIndex = clipboardItemSlot;
-        Assert.IsFalse(ItemParser.ShouldDrop(player, clipboard, keep, rules));
+        Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 }

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using BetterBetterTeleporter.Adapters;
 
 namespace BetterBetterTeleporter.Utility;
 
@@ -20,11 +18,6 @@ public static class ItemParser
             itemRules.Add(ParseItemRule(piece));
         }
         return itemRules;
-    }
-
-    public static bool ShouldDrop(IPlayerInfo player, IItemInfo item, bool behavior, List<ItemRule> rules)
-    {
-        return item != null && behavior ^ !rules.Any(rule => rule.IsMatch(player, item));
     }
 
     private static ItemRule ParseItemRule(string source)

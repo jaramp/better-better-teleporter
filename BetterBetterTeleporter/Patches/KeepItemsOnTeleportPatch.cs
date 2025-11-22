@@ -30,12 +30,12 @@ public static class KeepItemsOnTeleporterPatch
         if (!IsDroppingItemsFromTeleport(__instance)) return;
 
         var playerInfo = new PlayerInfo(__instance);
-        var (behavior, itemList) = GetTeleportConfig(__instance);
+        var (dropping, itemList) = GetTeleportConfig(__instance);
         var itemsToKeep = (GrabbableObject[])__instance.ItemSlots.Clone();
         Plugin.Logger.LogDebug($"Client {__instance.playerClientId} inventory before teleport: {Stringify(__instance.ItemSlots)}");
         for (int i = 0; i < __instance.ItemSlots.Length; i++)
         {
-            if (ItemParser.ShouldDrop(playerInfo, playerInfo.Slots[i], behavior, itemList))
+            if (playerInfo.ShouldDropItem(playerInfo.Slots[i], dropping, itemList))
                 itemsToKeep[i] = null; // Remove item from cloned inventory
             else
                 __instance.ItemSlots[i] = null; // Hide the item from DropAllHeldItems, tricking it into leaving the item in the player's inventory
@@ -84,22 +84,22 @@ public static class KeepItemsOnTeleporterPatch
     private static (bool behavior, List<ItemRule> rules) GetTeleportConfig(PlayerControllerB player)
     {
         bool isInverse = player.shipTeleporterId != 1;
-        bool isKeeping;
+        bool isDropping;
         List<ItemRule> rules;
 
         if (isInverse)
         {
             Plugin.Logger.LogDebug($"Client {player.playerClientId} inverse teleporting...");
-            isKeeping = Plugin.ModConfig.InverseTeleporterBehavior.Value == ItemTeleportBehavior.Keep;
-            rules = isKeeping ? Plugin.ModConfig.InverseTeleporterDropList : Plugin.ModConfig.InverseTeleporterKeepList;
+            isDropping = Plugin.ModConfig.InverseTeleporterBehavior.Value == ItemTeleportBehavior.Drop;
+            rules = isDropping ? Plugin.ModConfig.InverseTeleporterDropList : Plugin.ModConfig.InverseTeleporterKeepList;
         }
         else
         {
             Plugin.Logger.LogDebug($"Client {player.playerClientId} teleporting...");
-            isKeeping = Plugin.ModConfig.TeleporterBehavior.Value == ItemTeleportBehavior.Keep;
-            rules = isKeeping ? Plugin.ModConfig.TeleporterDropList : Plugin.ModConfig.TeleporterKeepList;
+            isDropping = Plugin.ModConfig.TeleporterBehavior.Value == ItemTeleportBehavior.Drop;
+            rules = isDropping ? Plugin.ModConfig.TeleporterDropList : Plugin.ModConfig.TeleporterKeepList;
         }
-        return (isKeeping, rules);
+        return (isDropping, rules);
     }
 
     private static bool IsDroppingItemsFromTeleport(PlayerControllerB player) => player.shipTeleporterId == 1 || InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player);

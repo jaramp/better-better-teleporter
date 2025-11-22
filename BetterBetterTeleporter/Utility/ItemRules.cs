@@ -5,6 +5,14 @@ using BetterBetterTeleporter.Adapters;
 
 namespace BetterBetterTeleporter.Utility;
 
+public static class ItemRules
+{
+    public static bool ShouldDropItem(this IPlayerInfo player, IItemInfo item, bool dropIfUnmatched, List<ItemRule> rules)
+    {
+        return item != null && dropIfUnmatched ^ rules.Any(rule => rule.IsMatch(player, item));
+    }
+}
+
 public abstract class ItemRule(string id)
 {
     public abstract bool IsMatch(IPlayerInfo player, IItemInfo item);
