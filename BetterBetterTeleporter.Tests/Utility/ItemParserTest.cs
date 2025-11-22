@@ -21,6 +21,31 @@ public sealed class ItemParserTest
     }
 
     [TestMethod]
+    public void Given_SingleItemWithEmptyDelimiters_When_Parsed_Then_SingleResult()
+    {
+        var actual = ItemParser.ParseConfig(",key,,");
+        Assert.HasCount(1, actual);
+        Assert.AreEqual("key", actual[0].ToString());
+    }
+
+    [TestMethod]
+    public void Given_FilterWithEmptyDelimiters_When_Parsed_Then_SingleResult()
+    {
+        var actual = ItemParser.ParseConfig("[current:not(,)]");
+        Assert.HasCount(1, actual);
+        Assert.AreEqual("current", actual[0].ToString());
+    }
+
+    [TestMethod]
+    public void Given_FilterWithItemAndEmptyDelimiters_When_Parsed_Then_ReturnsCollection()
+    {
+        var actual = ItemParser.ParseConfig("[current:not(shovel,,key)],clipboard");
+        Assert.HasCount(2, actual);
+        Assert.AreEqual("current", actual[0].ToString());
+        Assert.AreEqual("clipboard", actual[1].ToString());
+    }
+
+    [TestMethod]
     public void Given_NestedSingleRule_When_Parsed_Then_SingleResult()
     {
         var actual = ItemParser.ParseConfig("[current:not(key,shovel,clipboard)]");

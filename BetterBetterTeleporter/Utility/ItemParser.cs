@@ -51,19 +51,18 @@ public static class ItemParser
                     break;
                 case ',':
                     if (depth != 0) continue;
-                    parts.Add(source[start..i]);
+                    if (i - start > 0) parts.Add(source[start..i]);
                     start = i + 1;
                     break;
             }
         }
-        if (start <= source.Length) parts.Add(source[start..]);
+        if (start < source.Length) parts.Add(source[start..]);
         return parts;
     }
 
     private static int? IndexOfUnescaped(string source, char delimiter, char escapeChar = '\\')
     {
         if (string.IsNullOrEmpty(source)) return null;
-        source = source.Trim(delimiter);
         bool escaped = false;
         for (int i = 0; i < source.Length; i++)
         {
