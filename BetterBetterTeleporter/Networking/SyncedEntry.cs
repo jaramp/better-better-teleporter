@@ -85,7 +85,7 @@ public static class SyncedEntries
             using FastBufferWriter writer = new(chunk.Size, Allocator.Temp);
             foreach (var item in chunk.Items)
             {
-                writer.WriteValueSafe(item.Key);
+                writer.WriteByteSafe(item.Key);
                 item.Value.WriteToWriter(writer);
             }
 
@@ -149,7 +149,7 @@ public static class SyncedEntries
     public static SyncedEntry<string> BindSynced(this ConfigFile config, string section, string key, string value, ConfigDescription description)
     {
         return Add<string>(new(config.Bind(section, key, value, description), value => FastBufferWriter.GetWriteSize(value, true),
-        reader => { reader.ReadValueSafe(out string result); return result; },
+        reader => { reader.ReadValueSafe(out string result, true); return result; },
         (writer, value) => writer.WriteValueSafe(value, true)));
     }
 
