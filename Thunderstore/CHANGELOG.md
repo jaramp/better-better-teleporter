@@ -1,3 +1,22 @@
+## Version 1.1.4
+- Added `[battery]` item filter
+- Added `[charged]` item filter
+- Added `[discharged]` item filter
+- Added `[metal]` item filter
+- Added `[nonbattery]` item filter
+- Added `[nonmetal]` item filter
+- Added `[nonscrap]` item filter
+- Added `[nonweapon]` item filter
+- Added `[onehanded]` item filter
+- Added `[pocketed]` item filter
+- Added `[scrap]` item filter
+- Added `[twohanded]` item filter
+- Added `[value]` item filter
+- Added `[weapon]` item filter
+- Added `[weighted]` item filter
+- Added `[weightless]` item filter
+- Added `[worthless]` item filter
+
 ## Version 1.1.3
 
 - Added experimental item filter engine
