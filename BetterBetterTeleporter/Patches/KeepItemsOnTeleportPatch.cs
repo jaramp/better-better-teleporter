@@ -14,16 +14,6 @@ public static class KeepItemsOnTeleporterPatch
     private static readonly Dictionary<PlayerControllerB, GrabbableObject[]> tempInventories = [];
     private static readonly MethodInfo SwitchToItemSlotMethod = AccessTools.Method(typeof(PlayerControllerB), "SwitchToItemSlot");
 
-    private static readonly TeleporterConfigState TeleportConfig;
-    private static readonly TeleporterConfigState InverseConfig;
-
-    static KeepItemsOnTeleporterPatch()
-    {
-        var config = Plugin.ModConfig;
-        TeleportConfig = new TeleporterConfigState(config.TeleporterBehavior, config.TeleporterAlwaysKeep, config.TeleporterAlwaysDrop);
-        InverseConfig = new TeleporterConfigState(config.InverseTeleporterBehavior, config.InverseTeleporterAlwaysKeep, config.InverseTeleporterAlwaysDrop);
-    }
-
     private static bool IsTeleporting(PlayerControllerB player)
     {
         if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(player.actualClientId))
@@ -95,6 +85,6 @@ public static class KeepItemsOnTeleporterPatch
 
     private static TeleporterConfigState GetTeleportState(PlayerControllerB player)
     {
-        return InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player) ? InverseConfig : TeleportConfig;
+        return new(InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player));
     }
 }
