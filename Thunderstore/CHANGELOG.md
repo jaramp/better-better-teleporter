@@ -1,3 +1,8 @@
+## Version 1.1.3
+
+- Added experimental item filter engine
+- Added `[held]` item filter
+
 ## Version 1.1.2
 
 - Rewrote netcode from scratch
