@@ -110,7 +110,7 @@ There are predefined item filters you can use to describe items or groups of ite
 | `[weapon]`     | Combat items.  Opposite of `nonweapon`.                        |
 | `[weighted]`   | Items that have a weight. Opposite of `weightless`.            |
 | `[weightless]` | Items with zero weight. Opposite of `weighted`.                |
-| `[worthless]`  | Items that sell for 0 credits. Opposite of `value`.            |
+| `[worthless]`  | Items that sell for zero credits. Opposite of `value`.         |
 
 As an example, take this configuration:
 
