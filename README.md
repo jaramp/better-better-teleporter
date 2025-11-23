@@ -91,9 +91,9 @@ Disclaimer: this feature is being actively developed and may change in the futur
 
 There are predefined item filters you can use to describe items or groups of items. Here is the current list of item filters:
 
-| Category | Description                                    |
-| -------- | ---------------------------------------------- |
-| `[held]` | The item currently held in the player's hands. |
+| Filter Name | Description                                    |
+| ----------- | ---------------------------------------------- |
+| `[held]`    | The item currently held in the player's hands. |
 
 As an example, take this configuration:
 
