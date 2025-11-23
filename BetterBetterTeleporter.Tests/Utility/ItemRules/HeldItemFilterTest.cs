@@ -15,6 +15,9 @@ public sealed class HeldItemFilterTest
     private const int clipboardItemSlot = 0;
     private const int emptyItemSlot = 1;
 
+    private void EquipClipboard() { player.CurrentSlotIndex = clipboardItemSlot; clipboard.IsPocketed = false; }
+    private void PocketClipboard() { player.CurrentSlotIndex = emptyItemSlot; clipboard.IsPocketed = true; }
+
     [TestInitialize]
     public void Setup()
     {
@@ -34,7 +37,7 @@ public sealed class HeldItemFilterTest
     public void Given_Keep_When_DropHeld_Then_HeldItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = clipboardItemSlot;
+        EquipClipboard();
         Assert.IsTrue(player.ShouldDropItem(clipboard, keep, rules));
     }
 
@@ -48,7 +51,7 @@ public sealed class HeldItemFilterTest
     public void Given_Keep_When_DropHeld_Then_PocketedItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = emptyItemSlot;
+        PocketClipboard();
         Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
@@ -59,7 +62,7 @@ public sealed class HeldItemFilterTest
     public void Given_Keep_When_DropHeldExceptItem_Then_HeldItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = clipboardItemSlot;
+        EquipClipboard();
         Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
@@ -70,7 +73,7 @@ public sealed class HeldItemFilterTest
     public void Given_Keep_When_DropHeldExceptItem_Then_PocketedItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = emptyItemSlot;
+        PocketClipboard();
         Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
@@ -84,7 +87,7 @@ public sealed class HeldItemFilterTest
     public void Given_Keep_When_DropHeldExceptListContainsItem_Then_HeldItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = clipboardItemSlot;
+        EquipClipboard();
         Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
@@ -98,7 +101,7 @@ public sealed class HeldItemFilterTest
     public void Given_Keep_When_DropHeldExceptListContainsItem_Then_PocketedItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = emptyItemSlot;
+        PocketClipboard();
         Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
@@ -112,7 +115,7 @@ public sealed class HeldItemFilterTest
     public void Given_Drop_When_KeepHeld_Then_HeldItemKept(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = clipboardItemSlot;
+        EquipClipboard();
         Assert.IsFalse(player.ShouldDropItem(clipboard, drop, rules));
     }
 
@@ -126,7 +129,7 @@ public sealed class HeldItemFilterTest
     public void Given_Drop_When_KeepHeld_Then_PocketedItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = emptyItemSlot;
+        PocketClipboard();
         Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 
@@ -137,7 +140,7 @@ public sealed class HeldItemFilterTest
     public void Given_Drop_When_KeepHeldExceptItem_Then_HeldItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = clipboardItemSlot;
+        EquipClipboard();
         Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 
@@ -148,7 +151,7 @@ public sealed class HeldItemFilterTest
     public void Given_Drop_When_KeepHeldExceptItem_Then_PocketedItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = emptyItemSlot;
+        PocketClipboard();
         Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 
@@ -162,7 +165,7 @@ public sealed class HeldItemFilterTest
     public void Given_Drop_When_KeepHeldExceptListContainsItem_Then_HeldItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = clipboardItemSlot;
+        EquipClipboard();
         Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 
@@ -176,7 +179,7 @@ public sealed class HeldItemFilterTest
     public void Given_Drop_When_KeepHeldExceptListContainsItem_Then_PocketedItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = emptyItemSlot;
+        PocketClipboard();
         Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 }

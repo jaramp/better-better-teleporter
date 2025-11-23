@@ -91,9 +91,26 @@ Disclaimer: this feature is being actively developed and may change in the futur
 
 There are predefined item filters you can use to describe items or groups of items. Here is the current list of item filters:
 
-| Filter Name | Description                                    |
-| ----------- | ---------------------------------------------- |
-| `[held]`    | The item currently held in the player's hands. |
+| Filter Name    | Description                                                    |
+| -------------- | -------------------------------------------------------------- |
+| `[battery]`    | Items that have batteries. Opposite of `nonbattery`.           |
+| `[charged]`    | Battery items with remaining charge. Opposite of `discharged`. |
+| `[discharged]` | Battery items with no charge. Opposite of `charged`.           |
+| `[held]`       | The currently-held item. Opposite of `pocketed`.               |
+| `[metal]`      | Items that are conductive. Opposite of `nonmetal`.             |
+| `[nonbattery]` | Items that do not use batteries. Opposite of `batteries`.      |
+| `[nonmetal]`   | Items that are nonconductive. Opposite of `metal`.             |
+| `[nonscrap]`   | Items not considered scrap. Opposite of `scrap`.               |
+| `[nonweapon]`  | Nondamaging items. Opposite of `weapon`.                       |
+| `[onehanded]`  | Items held with one hand. Opposite of `twohanded`.             |
+| `[pocketed]`   | Items not held in hand. Opposite of `held`.                    |
+| `[scrap]`      | Items the game considers scrap. Opposite of `nonscrap`.        |
+| `[twohanded]`  | Items held with two hands. Opposite of `onehanded`.            |
+| `[value]`      | Items worth credits. Opposite of `worthless`.                  |
+| `[weapon]`     | Combat items.  Opposite of `nonweapon`.                        |
+| `[weighted]`   | Items that have a weight. Opposite of `weightless`.            |
+| `[weightless]` | Items with zero weight. Opposite of `weighted`.                |
+| `[worthless]`  | Items that sell for 0 credits. Opposite of `value`.            |
 
 As an example, take this configuration:
 

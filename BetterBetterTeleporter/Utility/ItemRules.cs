@@ -5,7 +5,6 @@ using BetterBetterTeleporter.Adapters;
 
 namespace BetterBetterTeleporter.Utility;
 
-
 public static class ItemRules
 {
     public static bool ShouldDropItem(this IPlayerInfo player, IItemInfo item, TeleporterConfigState state)
@@ -25,6 +24,23 @@ public static class ItemRules
         switch (id)
         {
             case HeldItemFilter.Id: return new HeldItemFilter(except);
+            case PocketedItemFilter.Id: return new PocketedItemFilter(except);
+            case ScrapItemFilter.Id: return new ScrapItemFilter(except);
+            case NonScrapItemFilter.Id: return new NonScrapItemFilter(except);
+            case ValueItemFilter.Id: return new ValueItemFilter(except);
+            case WorthlessItemFilter.Id: return new WorthlessItemFilter(except);
+            case MetalItemFilter.Id: return new MetalItemFilter(except);
+            case NonMetalItemFilter.Id: return new NonMetalItemFilter(except);
+            case WeaponItemFilter.Id: return new WeaponItemFilter(except);
+            case NonWeaponItemFilter.Id: return new NonWeaponItemFilter(except);
+            case BatteryItemFilter.Id: return new BatteryItemFilter(except);
+            case NonBatteryItemFilter.Id: return new NonBatteryItemFilter(except);
+            case ChargedItemFilter.Id: return new ChargedItemFilter(except);
+            case DischargedItemFilter.Id: return new DischargedItemFilter(except);
+            case OneHandedItemFilter.Id: return new OneHandedItemFilter(except);
+            case TwoHandedItemFilter.Id: return new TwoHandedItemFilter(except);
+            case WeightedItemFilter.Id: return new WeightedItemFilter(except);
+            case WeightlessItemFilter.Id: return new WeightlessItemFilter(except);
         }
         Plugin.Logger?.LogWarning($"Unknown item filter: {id}. Falling back to item name matching.");
         return new ItemNameRule(id);
@@ -60,7 +76,159 @@ public class HeldItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "held";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        var held = player.Slots[player.CurrentSlotIndex];
-        return ReferenceEquals(held, item) && base.IsMatch(player, item);
+        return !item.IsPocketed && base.IsMatch(player, item);
+    }
+}
+
+public class PocketedItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "pocketed";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return item.IsPocketed && base.IsMatch(player, item);
+    }
+}
+
+public class ScrapItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "scrap";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return item.IsScrap && base.IsMatch(player, item);
+    }
+}
+
+public class NonScrapItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "nonscrap";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return !item.IsScrap && base.IsMatch(player, item);
+    }
+}
+
+public class ValueItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "value";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return item.IsScrap && item.Value > 0 && base.IsMatch(player, item);
+    }
+}
+
+public class WorthlessItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "worthless";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return (!item.IsScrap || item.Value == 0) && base.IsMatch(player, item);
+    }
+}
+
+public class MetalItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "metal";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return item.IsMetal && base.IsMatch(player, item);
+    }
+}
+
+public class NonMetalItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "nonmetal";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return !item.IsMetal && base.IsMatch(player, item);
+    }
+}
+
+public class WeaponItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "weapon";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return item.IsWeapon && base.IsMatch(player, item);
+    }
+}
+
+public class NonWeaponItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "nonweapon";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return !item.IsWeapon && base.IsMatch(player, item);
+    }
+}
+
+public class BatteryItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "battery";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return item.HasBattery && base.IsMatch(player, item);
+    }
+}
+
+public class NonBatteryItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "nonbattery";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return !item.HasBattery && base.IsMatch(player, item);
+    }
+}
+
+public class ChargedItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "charged";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return item.HasBattery && item.BatteryCharge > 0 && base.IsMatch(player, item);
+    }
+}
+
+public class DischargedItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "discharged";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return item.HasBattery && item.BatteryCharge == 0 && base.IsMatch(player, item);
+    }
+}
+
+public class OneHandedItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "onehanded";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return !item.IsTwoHanded && base.IsMatch(player, item);
+    }
+}
+
+public class TwoHandedItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "twohanded";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return item.IsTwoHanded && base.IsMatch(player, item);
+    }
+}
+
+public class WeightedItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "weighted";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return item.Weight > 1 && base.IsMatch(player, item);
+    }
+}
+
+public class WeightlessItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "weightless";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return item.Weight <= 1 && base.IsMatch(player, item);
     }
 }
