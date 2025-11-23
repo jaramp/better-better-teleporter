@@ -1,0 +1,23 @@
+<Project>
+    <PropertyGroup>
+        <!-- NOTE: You may need to adjust this path if your game installation is different. -->
+        <GameDir>C:\Games\Steam\steamapps\common\Lethal Company</GameDir>
+        <!-- BepInEx directory for auto-copying dll into -->
+        <BepInExDir>$(AppData)\com.kesomannen.gale\lethal-company\profiles\dev\BepInEx</BepInExDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="Assembly-CSharp">
+            <HintPath>$(GameDir)\Lethal Company_Data\Managed\Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Netcode.Runtime">
+            <HintPath>$(GameDir)\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine">
+            <HintPath>$(GameDir)\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>$(GameDir)\Lethal Company_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+</Project>

@@ -3,7 +3,6 @@ using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using BetterBetterTeleporter.Integrations;
 using HarmonyLib;
-using UnityEngine;
 
 namespace BetterBetterTeleporter;
 
@@ -14,7 +13,6 @@ public class Plugin : BaseUnityPlugin
     internal static new ManualLogSource Logger { get; private set; }
     public static Plugin Instance { get; private set; }
     public static ModConfig ModConfig { get; private set; }
-    internal static MonoBehaviour CoroutineHost;
 
     internal void Awake()
     {
@@ -23,15 +21,16 @@ public class Plugin : BaseUnityPlugin
         Instance = this;
         Logger = base.Logger;
         ModConfig = new ModConfig(Config);
-
-        if (Chainloader.PluginInfos.ContainsKey("ainavt.lc.lethalconfig"))
-        {
-            LethalConfigIntegration.Initialize();
-        }
-
+        InitSoftDependencyIntegrations();
         var harmony = new Harmony(PluginInfo.PLUGIN_GUID);
         harmony.PatchAll();
 
         Logger.LogInfo($"{PluginInfo.PLUGIN_GUID} loaded successfully.");
+    }
+
+    private void InitSoftDependencyIntegrations()
+    {
+        if (Chainloader.PluginInfos.ContainsKey("ainavt.lc.lethalconfig"))
+            LethalConfigIntegration.Initialize();
     }
 }

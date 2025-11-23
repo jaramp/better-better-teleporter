@@ -26,14 +26,14 @@ internal static class LethalConfigIntegration
         // # Teleporter
         RegisterInput(Plugin.ModConfig.TeleporterCooldown.Entry);
         RegisterDropdown(Plugin.ModConfig.TeleporterBehavior.Entry);
-        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysKeep.Entry);
-        RegisterTextInput(Plugin.ModConfig.TeleporterAlwaysDrop.Entry);
+        RegisterTextArea(Plugin.ModConfig.TeleporterAlwaysKeep.Entry);
+        RegisterTextArea(Plugin.ModConfig.TeleporterAlwaysDrop.Entry);
 
         // # Inverse Teleporter
         RegisterInput(Plugin.ModConfig.InverseTeleporterCooldown.Entry);
         RegisterDropdown(Plugin.ModConfig.InverseTeleporterBehavior.Entry);
-        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysKeep.Entry);
-        RegisterTextInput(Plugin.ModConfig.InverseTeleporterAlwaysDrop.Entry);
+        RegisterTextArea(Plugin.ModConfig.InverseTeleporterAlwaysKeep.Entry);
+        RegisterTextArea(Plugin.ModConfig.InverseTeleporterAlwaysDrop.Entry);
         RegisterSlider(Plugin.ModConfig.BatteryDrainPercent.Entry, 0, 100);
 
         // # Help
@@ -73,6 +73,12 @@ internal static class LethalConfigIntegration
     private static void RegisterTextInput(ConfigEntry<string> entry)
     {
         LethalConfigManager.AddConfigItem(new TextInputFieldConfigItem(entry, requiresRestart: false));
+    }
+
+    private static void RegisterTextArea(ConfigEntry<string> entry, int lines = 3)
+    {
+        var opts = new TextInputFieldOptions { CharacterLimit = 500, NumberOfLines = 50, RequiresRestart = false };
+        LethalConfigManager.AddConfigItem(new TextInputFieldConfigItem(entry, opts));
     }
 
     private static void RegisterShowInventoryButton()

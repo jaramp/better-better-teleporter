@@ -1,12 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <!-- NOTE: You may need to adjust this path if your game installation is different. -->
-    <GameDir>C:\Games\Steam\steamapps\common\Lethal Company</GameDir>
-    <!-- Development mod profile directory to auto-copy dll into -->
-    <BepInExDir>$(AppData)\com.kesomannen.gale\lethal-company\profiles\dev\BepInEx</BepInExDir>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <TeamName>jaramp</TeamName>
     <AssemblyName>BetterBetterTeleporter</AssemblyName>
@@ -21,23 +14,7 @@
     <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
-  </ItemGroup>
-
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>$(GameDir)\Lethal Company_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Netcode.Runtime">
-      <HintPath>$(GameDir)\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>$(GameDir)\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(GameDir)\Lethal Company_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
     <Reference Include="LethalConfig">
       <HintPath>Dependencies\LethalConfig.dll</HintPath>
     </Reference>
