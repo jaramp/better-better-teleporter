@@ -19,7 +19,7 @@ public sealed class ItemNameRuleTest
         clipboard = new FakeItemInfo { Name = "clipboard", DisplayName = "ClipboardManual", TypeId = nameof(ClipboardItem) };
         var inventory = new IItemInfo?[4];
         inventory[0] = clipboard;
-        player = new FakePlayerInfo { Slots = inventory, CurrentSlotIndex = 0 };
+        player = new FakePlayerInfo { Slots = inventory, CurrentItemSlotIndex = 0 };
     }
 
     [TestMethod]

@@ -15,8 +15,8 @@ public sealed class HeldItemFilterTest
     private const int clipboardItemSlot = 0;
     private const int emptyItemSlot = 1;
 
-    private void EquipClipboard() { player.CurrentSlotIndex = clipboardItemSlot; clipboard.IsPocketed = false; }
-    private void PocketClipboard() { player.CurrentSlotIndex = emptyItemSlot; clipboard.IsPocketed = true; }
+    private void EquipClipboard() { player.CurrentItemSlotIndex = clipboardItemSlot; clipboard.IsPocketed = false; }
+    private void PocketClipboard() { player.CurrentItemSlotIndex = emptyItemSlot; clipboard.IsPocketed = true; }
 
     [TestInitialize]
     public void Setup()
@@ -24,7 +24,7 @@ public sealed class HeldItemFilterTest
         clipboard = new FakeItemInfo { Name = "clipboard", DisplayName = "ClipboardManual", TypeId = nameof(ClipboardItem) };
         var inventory = new IItemInfo?[4];
         inventory[clipboardItemSlot] = clipboard;
-        player = new FakePlayerInfo { Slots = inventory, CurrentSlotIndex = clipboardItemSlot };
+        player = new FakePlayerInfo { Slots = inventory, CurrentItemSlotIndex = clipboardItemSlot };
     }
 
     [TestMethod]

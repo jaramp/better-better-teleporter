@@ -5,29 +5,42 @@ public interface IItemInfo
     string Name { get; }
     string DisplayName { get; }
     string TypeId { get; }
-    bool IsScrap { get; }
-    int Value { get; }
-    bool IsMetal { get; }
-    bool IsWeapon { get; }
-    bool IsPocketed { get; }
-    bool HasBattery { get; }
-    float BatteryCharge { get; }
-    bool IsTwoHanded { get; }
-    float Weight { get; }
+    bool? IsScrap { get; }
+    int? Value { get; }
+    bool? IsMetal { get; }
+    bool? IsWeapon { get; }
+    bool? IsPocketed { get; }
+    bool? HasBattery { get; }
+    float? BatteryCharge { get; }
+    bool? IsTwoHanded { get; }
+    float? Weight { get; }
 }
 
 public sealed class ItemInfo(GrabbableObject source) : IItemInfo
 {
-    public string Name => source.itemProperties.name;
-    public string DisplayName => source.itemProperties.itemName;
+    public string Name => TryGet(() => source.itemProperties.name, "itemProperties.name");
+    public string DisplayName => TryGet(() => source.itemProperties.itemName, "itemProperties.itemName");
     public string TypeId => source.GetType().Name;
-    public bool IsScrap => source.itemProperties.isScrap;
-    public int Value => source.scrapValue;
-    public bool IsMetal => source.itemProperties.isConductiveMetal;
-    public bool IsWeapon => source.itemProperties.isDefensiveWeapon;
-    public bool IsPocketed => source.isPocketed;
-    public bool HasBattery => source.itemProperties.requiresBattery;
-    public float BatteryCharge => source.insertedBattery?.charge ?? 0;
-    public bool IsTwoHanded => source.itemProperties.twoHanded;
-    public float Weight => source.itemProperties.weight;
+    public bool? IsScrap => TryGet(() => source.itemProperties.isScrap, "itemProperties.isScrap");
+    public int? Value => TryGet(() => source.scrapValue, "scrapValue");
+    public bool? IsMetal => TryGet(() => source.itemProperties.isConductiveMetal, "itemProperties.isConductiveMetal");
+    public bool? IsWeapon => TryGet(() => source.itemProperties.isDefensiveWeapon, "itemProperties.isDefensiveWeapon");
+    public bool? IsPocketed => TryGet(() => source.isPocketed, "isPocketed");
+    public bool? HasBattery => TryGet(() => source.itemProperties.requiresBattery, "itemProperties.requiresBattery");
+    public float? BatteryCharge => TryGet(() => source.insertedBattery?.charge ?? 0, "insertedBattery.charge");
+    public bool? IsTwoHanded => TryGet(() => source.itemProperties.twoHanded, "itemProperties.twoHanded");
+    public float? Weight => TryGet(() => source.itemProperties.weight, "itemProperties.weight");
+
+    private static T TryGet<T>(System.Func<T> getter, string propertyName)
+    {
+        try
+        {
+            return getter();
+        }
+        catch (System.Exception e)
+        {
+            Plugin.Logger.LogError($"Failed to read GrabbableObject.'{propertyName}'. Game structure may have changed. Error: {e.Message}");
+            return default!;
+        }
+    }
 }

@@ -55,10 +55,10 @@ public abstract class ItemRule(string id)
 
 public class ItemNameRule(string name) : ItemRule(name)
 {
+    const StringComparison caseInsensitive = StringComparison.OrdinalIgnoreCase;
     private readonly string name = name;
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        const StringComparison caseInsensitive = StringComparison.OrdinalIgnoreCase;
         if (item.Name.Equals(name, caseInsensitive)) return true;        // ExtensionLadder
         if (item.TypeId.Equals(name, caseInsensitive)) return true;      // ExtensionLadderItem
         if (item.DisplayName.Equals(name, caseInsensitive)) return true; // Extension Ladder
@@ -76,7 +76,12 @@ public class HeldItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "held";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return !item.IsPocketed && base.IsMatch(player, item);
+        if (!item.IsPocketed.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return !item.IsPocketed.Value && base.IsMatch(player, item);
     }
 }
 
@@ -85,7 +90,12 @@ public class PocketedItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "pocketed";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return item.IsPocketed && base.IsMatch(player, item);
+        if (!item.IsPocketed.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return item.IsPocketed.Value && base.IsMatch(player, item);
     }
 }
 
@@ -94,7 +104,12 @@ public class ScrapItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "scrap";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return item.IsScrap && base.IsMatch(player, item);
+        if (!item.IsScrap.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return item.IsScrap.Value && base.IsMatch(player, item);
     }
 }
 
@@ -103,7 +118,12 @@ public class NonScrapItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "nonscrap";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return !item.IsScrap && base.IsMatch(player, item);
+        if (!item.IsScrap.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return !item.IsScrap.Value && base.IsMatch(player, item);
     }
 }
 
@@ -112,7 +132,12 @@ public class ValueItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "value";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return item.IsScrap && item.Value > 0 && base.IsMatch(player, item);
+        if (!item.IsScrap.HasValue || !item.Value.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return item.IsScrap.Value && item.Value.Value > 0 && base.IsMatch(player, item);
     }
 }
 
@@ -121,7 +146,12 @@ public class WorthlessItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "worthless";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return (!item.IsScrap || item.Value == 0) && base.IsMatch(player, item);
+        if (!item.IsScrap.HasValue || !item.Value.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return (!item.IsScrap.Value || item.Value.Value == 0) && base.IsMatch(player, item);
     }
 }
 
@@ -130,7 +160,12 @@ public class MetalItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "metal";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return item.IsMetal && base.IsMatch(player, item);
+        if (!item.IsMetal.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return item.IsMetal.Value && base.IsMatch(player, item);
     }
 }
 
@@ -139,7 +174,12 @@ public class NonMetalItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "nonmetal";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return !item.IsMetal && base.IsMatch(player, item);
+        if (!item.IsMetal.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return !item.IsMetal.Value && base.IsMatch(player, item);
     }
 }
 
@@ -148,7 +188,12 @@ public class WeaponItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "weapon";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return item.IsWeapon && base.IsMatch(player, item);
+        if (!item.IsWeapon.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return item.IsWeapon.Value && base.IsMatch(player, item);
     }
 }
 
@@ -157,7 +202,12 @@ public class NonWeaponItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "nonweapon";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return !item.IsWeapon && base.IsMatch(player, item);
+        if (!item.IsWeapon.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return !item.IsWeapon.Value && base.IsMatch(player, item);
     }
 }
 
@@ -166,7 +216,12 @@ public class BatteryItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "battery";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return item.HasBattery && base.IsMatch(player, item);
+        if (!item.HasBattery.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return item.HasBattery.Value && base.IsMatch(player, item);
     }
 }
 
@@ -175,7 +230,12 @@ public class NonBatteryItemFilter(List<ItemRule> except) : ItemFilter(Id, except
     public const string Id = "nonbattery";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return !item.HasBattery && base.IsMatch(player, item);
+        if (!item.HasBattery.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return !item.HasBattery.Value && base.IsMatch(player, item);
     }
 }
 
@@ -184,7 +244,12 @@ public class ChargedItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "charged";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return item.HasBattery && item.BatteryCharge > 0 && base.IsMatch(player, item);
+        if (!item.HasBattery.HasValue || !item.BatteryCharge.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return item.HasBattery.Value && item.BatteryCharge.Value > 0 && base.IsMatch(player, item);
     }
 }
 
@@ -193,7 +258,12 @@ public class DischargedItemFilter(List<ItemRule> except) : ItemFilter(Id, except
     public const string Id = "discharged";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return item.HasBattery && item.BatteryCharge == 0 && base.IsMatch(player, item);
+        if (!item.HasBattery.HasValue || !item.BatteryCharge.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return item.HasBattery.Value && item.BatteryCharge.Value == 0 && base.IsMatch(player, item);
     }
 }
 
@@ -202,7 +272,12 @@ public class OneHandedItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "onehanded";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return !item.IsTwoHanded && base.IsMatch(player, item);
+        if (!item.IsTwoHanded.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return !item.IsTwoHanded.Value && base.IsMatch(player, item);
     }
 }
 
@@ -211,7 +286,12 @@ public class TwoHandedItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "twohanded";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return item.IsTwoHanded && base.IsMatch(player, item);
+        if (!item.IsTwoHanded.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return item.IsTwoHanded.Value && base.IsMatch(player, item);
     }
 }
 
@@ -220,7 +300,12 @@ public class WeightedItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
     public const string Id = "weighted";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return item.Weight > 1 && base.IsMatch(player, item);
+        if (!item.Weight.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return item.Weight.Value > 1 && base.IsMatch(player, item);
     }
 }
 
@@ -229,6 +314,11 @@ public class WeightlessItemFilter(List<ItemRule> except) : ItemFilter(Id, except
     public const string Id = "weightless";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
-        return item.Weight <= 1 && base.IsMatch(player, item);
+        if (!item.Weight.HasValue)
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on GrabbableObject. Skipping filter.");
+            return false;
+        }
+        return item.Weight.Value <= 1 && base.IsMatch(player, item);
     }
 }

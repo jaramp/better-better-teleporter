@@ -24,7 +24,7 @@ public sealed class ItemRulesTest
         clipboard = new FakeItemInfo { Name = "clipboard", DisplayName = "ClipboardManual", TypeId = nameof(ClipboardItem) };
         var inventory = new IItemInfo?[4];
         inventory[clipboardItemSlot] = clipboard;
-        player = new FakePlayerInfo { Slots = inventory, CurrentSlotIndex = clipboardItemSlot };
+        player = new FakePlayerInfo { Slots = inventory, CurrentItemSlotIndex = clipboardItemSlot };
     }
 
     [TestMethod]

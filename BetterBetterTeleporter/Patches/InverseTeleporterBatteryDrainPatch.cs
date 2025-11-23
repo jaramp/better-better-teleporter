@@ -12,16 +12,23 @@ public static class InverseTeleporterBatteryDrainPatch
         float drainAmount = Plugin.ModConfig.BatteryDrainPercent.Value / 100f;
         if (drainAmount == 0) return;
 
-        var player = StartOfRound.Instance.allPlayerScripts[playerObj];
-        foreach (var item in player.ItemSlots)
+        try
         {
-            var battery = item?.insertedBattery;
-            if (battery != null)
+            var player = StartOfRound.Instance.allPlayerScripts[playerObj];
+            foreach (var item in player.ItemSlots)
             {
-                battery.charge = Mathf.Max(0, battery.charge - drainAmount);
-                item.SyncBatteryServerRpc((int)(battery.charge * 100));
+                var battery = item?.insertedBattery;
+                if (battery != null)
+                {
+                    battery.charge = Mathf.Max(0, battery.charge - drainAmount);
+                    item.SyncBatteryServerRpc((int)(battery.charge * 100));
+                }
             }
+            Plugin.Logger.LogDebug($"Client {playerObj} batteries drained by {drainAmount}.");
         }
-        Plugin.Logger.LogDebug($"Client {playerObj} batteries drained by {drainAmount}.");
+        catch (System.Exception e)
+        {
+            Plugin.Logger.LogError($"Failed to drain batteries after inverse teleport: {e}");
+        }
     }
 }
