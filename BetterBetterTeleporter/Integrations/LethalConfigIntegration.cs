@@ -6,6 +6,7 @@ using LethalConfig;
 using LethalConfig.ConfigItems;
 using LethalConfig.ConfigItems.Options;
 using Unity.Netcode;
+using BetterBetterTeleporter.Utility;
 
 namespace BetterBetterTeleporter.Integrations;
 
@@ -126,8 +127,8 @@ internal static class LethalConfigIntegration
                     return;
                 }
 
-                var cooldownTimeField = typeof(ShipTeleporter).GetField("cooldownTime", BindingFlags.Instance | BindingFlags.NonPublic);
-                if (cooldownTimeField?.GetValue(teleporter) as float? > 0)
+                var cooldownTimeField = ReflectionHelper.GetShipTeleporterCooldownTimeField();
+                if (cooldownTimeField != null && cooldownTimeField.GetValue(teleporter) is float cooldown && cooldown > 0)
                 {
                     hud.DisplayTip(failMsg, "The teleporter is on cooldown.", true, false);
                     return;

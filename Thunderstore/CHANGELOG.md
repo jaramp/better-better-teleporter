@@ -1,3 +1,10 @@
+## Version 1.1.5
+
+- Added `[all]` item filter
+- Added `[none]` item filter
+- Added `[gordion]` item filter
+- Added `[offgordion]` item filter
+
 ## Version 1.1.4
 - Added `[battery]` item filter
 - Added `[charged]` item filter
@@ -42,20 +49,20 @@
 
 ## Version 1.0.2
 
-- Setting default config to match unmodded game behavior.
-- Fix issue with incorrect carry weight after teleporting.
+- Setting default config to match unmodded game behavior
+- Fix issue with incorrect carry weight after teleporting
 
 ## Version 1.0.1
 
-- Hotfix to fix packaged file structure.
+- Hotfix to fix packaged file structure
 
 ## Version 1.0.0
 
 Initial Release
 
-- Reset cooldowns on orbit.
-- Customize Teleporter cooldown.
-- Customizable list of items to keep on Teleport.
-- Customize Inverse Teleporter cooldown.
-- Customizable list of items to keep on Inverse Teleport.
-- Customizable battery drain on Inverse Teleport.
+- Reset cooldowns on orbit
+- Customize Teleporter cooldown
+- Customizable list of items to keep on Teleport
+- Customize Inverse Teleporter cooldown
+- Customizable list of items to keep on Inverse Teleport
+- Customizable battery drain on Inverse Teleport

@@ -1,4 +1,3 @@
-using BetterBetterTeleporter.Adapters;
 using BetterBetterTeleporter.Tests.Fakes;
 using BetterBetterTeleporter.Utility;
 
@@ -11,16 +10,14 @@ public sealed class ItemFilterTest
     private const bool keep = false;
 
     private FakePlayerInfo player = null!;
-    private FakeItemInfo clipboard = null!;
+    private FakeClipboardItemInfo clipboard = null!;
     private const int clipboardItemSlot = 0;
 
     [TestInitialize]
     public void Setup()
     {
-        clipboard = new FakeItemInfo { Name = "clipboard", DisplayName = "ClipboardManual", TypeId = nameof(ClipboardItem) };
-        var inventory = new IItemInfo?[4];
-        inventory[clipboardItemSlot] = clipboard;
-        player = new FakePlayerInfo { Slots = inventory, CurrentSlotIndex = clipboardItemSlot };
+        clipboard = new FakeClipboardItemInfo();
+        player = new FakePlayerInfo(clipboard);
     }
 
     [TestMethod]
@@ -42,7 +39,6 @@ public sealed class ItemFilterTest
     public void Given_Keep_When_SelfNegatedCategory_Then_ItemNotDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = clipboardItemSlot;
         Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 
@@ -65,7 +61,6 @@ public sealed class ItemFilterTest
     public void Given_Drop_When_SelfNegatedCategory_Then_ItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = clipboardItemSlot;
         Assert.IsTrue(player.ShouldDropItem(clipboard, drop, rules));
     }
 
@@ -76,7 +71,6 @@ public sealed class ItemFilterTest
     public void Given_Keep_When_InAllCapsCategory_Then_ItemDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = clipboardItemSlot;
         Assert.IsTrue(player.ShouldDropItem(clipboard, keep, rules));
     }
 
@@ -86,7 +80,6 @@ public sealed class ItemFilterTest
     public void Given_Keep_When_InDropListExtremeNesting_Then_ItemNotDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = clipboardItemSlot;
         Assert.IsTrue(player.ShouldDropItem(clipboard, keep, rules));
     }
 
@@ -96,7 +89,6 @@ public sealed class ItemFilterTest
     public void Given_Keep_When_NegatedDropListExtremeNesting_Then_ItemNotDropped(string except)
     {
         var rules = ItemParser.ParseConfig(except);
-        player.CurrentSlotIndex = clipboardItemSlot;
         Assert.IsFalse(player.ShouldDropItem(clipboard, keep, rules));
     }
 }

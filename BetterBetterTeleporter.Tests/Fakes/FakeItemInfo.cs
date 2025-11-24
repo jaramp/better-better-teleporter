@@ -2,18 +2,21 @@ using BetterBetterTeleporter.Adapters;
 
 namespace BetterBetterTeleporter.Tests.Fakes;
 
-public sealed class FakeItemInfo : IItemInfo
+public sealed class FakeClipboardItemInfo : IItemInfo
 {
-    public string Name { get; set; } = "";
-    public string DisplayName { get; set; } = "";
-    public string TypeId { get; set; } = "";
-    public bool IsScrap { get; set; }
-    public int Value { get; set; }
-    public bool IsMetal { get; set; }
-    public bool IsWeapon { get; set; }
-    public bool IsPocketed { get; set; }
-    public bool HasBattery { get; set; }
-    public float BatteryCharge { get; set; }
-    public bool IsTwoHanded { get; set; }
-    public float Weight { get; set; }
+    public string? Name { get; set; } = "clipboard";
+    public string? TypeName { get; set; } = nameof(ClipboardItem);
+    public string? DisplayName { get; set; } = "Clipboard";
+    public bool? IsScrap { get; set; } = false;
+    public int? Value { get; set; } = 0;
+    public bool? IsMetal { get; set; } = false;
+    public bool? IsWeapon { get; set; } = false;
+    public bool? IsPocketed { get; set; } = false;
+    public bool? HasBattery { get; set; } = false;
+    public float? BatteryCharge { get; set; } = 0;
+    public bool? IsTwoHanded { get; set; } = false;
+    public float? Weight { get; set; } = 0;
+
+    // For test readability
+    public bool IsHeld { get => IsPocketed == false; set => IsPocketed = !value; }
 }

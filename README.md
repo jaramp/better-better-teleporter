@@ -21,12 +21,12 @@ If [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig
 | Option                      | Value         | Default | Description                                                                             |
 | --------------------------- | ------------- | ------- | --------------------------------------------------------------------------------------- |
 | ResetCooldownOnOrbit        | `Boolean`     | `false` | Resets the cooldown time on teleporters between days.                                   |
-| -                           | -             | -       | -                                                                                       |
+|                             |               |         | &nbsp;                                                                                  |
 | TeleporterCooldown          | `Integer`     | `10`    | Cooldown time (in seconds) for using the Teleporter.                                    |
 | TeleporterBehavior          | `Drop`/`Keep` | `Drop`  | Sets whether items are kept or dropped when using the Teleporter.                       |
 | TeleporterAlwaysKeep        | `ItemList`    |         | Treat these items as `Keep` regardless of Teleporter behavior.                          |
 | TeleporterAlwaysDrop        | `ItemList`    |         | Treant these items as `Drop` regardless of Teleporter behavior.                         |
-| -                           | -             | -       | -                                                                                       |
+|                             |               |         | &nbsp;                                                                                  |
 | InverseTeleporterCooldown   | `Integer`     | `210`   | Cooldown time (in seconds) for using the Inverse Teleporter.                            |
 | InverseTeleporterBehavior   | `Drop`/`Keep` | `Drop`  | Sets whether items are kept or dropped when using the Inverse Teleporter.               |
 | InverseTeleporterAlwaysKeep | `ItemList`    |         | Treat these items as `Keep` regardless of Inverse Teleporter behavior.                  |
@@ -53,25 +53,28 @@ There are two ways to specify items: by name or by filter. You can specify multi
 
 Here is a list of Lethal Company's internal item names that can be used for whitelisting/blacklisting items:
 
-|                   |                     |                   |                 |                    |
-| ----------------- | ------------------- | ----------------- | --------------- | ------------------ |
-| `7Ball`           | `ClownHorn`         | `Flask`           | `Phone`         | `SteeringWheel`    |
-| `Airhorn`         | `Cog1`              | `GarbageLid`      | `PickleJar`     | `StickyNote`       |
-| `BabyKiwiEgg`     | `ComedyMask`        | `GiftBox`         | `PillBottle`    | `StopSign`         |
-| `Bell`            | `ControlPad`        | `GoldBar`         | `PlasticCup`    | `StunGrenade`      |
-| `BeltBag`         | `Dentures`          | `GunAmmo`         | `ProFlashlight` | `TeaKettle`        |
-| `BigBolt`         | `DiyFlashbang`      | `Hairdryer`       | `RadarBooster`  | `ToiletPaperRolls` |
-| `Binoculars`      | `DustPan`           | `Jetpack`         | `Ragdoll`       | `Toothpaste`       |
-| `Boombox`         | `EasterEgg`         | `Key`             | `RedLocustHive` | `ToyCube`          |
-| `BottleBin`       | `EggBeater`         | `Knife`           | `Remote`        | `ToyTrain`         |
-| `Brush`           | `EnginePart1`       | `LockPicker`      | `Ring`          | `TragedyMask`      |
-| `Candy`           | `ExtensionLadder`   | `LungApparatus`   | `RobotToy`      | `TZPInhalant`      |
-| `CardboardBox`    | `FancyCup`          | `MagnifyingGlass` | `RubberDuck`    | `WalkieTalkie`     |
-| `CashRegister`    | `FancyLamp`         | `MapDevice`       | `Shotgun`       | `WeedKillerBottle` |
-| `CaveDwellerBaby` | `FancyPainting`     | `MetalSheet`      | `Shovel`        | `WhoopieCushion`   |
-| `ChemicalJug`     | `FishTestProp`      | `MoldPan`         | `SoccerBall`    | `YieldSign`        |
-| `Clipboard`       | `FlashLaserPointer` | `Mug`             | `SodaCanRed`    | `ZapGun`           |
-| `Clock`           | `Flashlight`        | `PerfumeBottle`   | `SprayPaint`    | `Zeddog`           |
+###
+
+|                    |     |                   |                     |                   |                    |
+| ------------------ | --- | ----------------- | ------------------- | ----------------- | ------------------ |
+| `BeltBag`          | ┊   | `7Ball`           | `Dentures`          | `MagnifyingGlass` | `StickyNote`       |
+| `Boombox`          | ┊   | `Airhorn`         | `DiyFlashbang`      | `MetalSheet`      | `StopSign`         |
+| `ExtensionLadder`  | ┊   | `BabyKiwiEgg`     | `DustPan`           | `MoldPan`         | `StunGrenade`      |
+| `Flashlight`       | ┊   | `Bell`            | `EasterEgg`         | `Mug`             | `TeaKettle`        |
+| `GunAmmo`          | ┊   | `BigBolt`         | `EggBeater`         | `PerfumeBottle`   | `ToiletPaperRolls` |
+| `Jetpack`          | ┊   | `Binoculars`      | `EnginePart1`       | `Phone`           | `Toothpaste`       |
+| `Key`              | ┊   | `BottleBin`       | `FancyCup`          | `PickleJar`       | `ToyCube`          |
+| `LockPicker`       | ┊   | `Brush`           | `FancyLamp`         | `PillBottle`      | `ToyTrain`         |
+| `ProFlashlight`    | ┊   | `Candy`           | `FancyPainting`     | `PlasticCup`      | `TragedyMask`      |
+| `RadarBooster`     | ┊   | `CashRegister`    | `FishTestProp`      | `Ragdoll`         | `WhoopieCushion`   |
+| `Shotgun`          | ┊   | `CaveDwellerBaby` | `FlashLaserPointer` | `RedLocustHive`   | `YieldSign`        |
+| `Shovel`           | ┊   | `ChemicalJug`     | `Flask`             | `Remote`          | `Zeddog`           |
+| `SprayPaint`       | ┊   | `Clipboard`       | `GarbageLid`        | `Ring`            |                    |
+| `StunGrenade`      | ┊   | `Clock`           | `GiftBox`           | `RobotToy`        |                    |
+| `TZPInhalant`      | ┊   | `ClownHorn`       | `GoldBar`           | `RubberDuck`      |                    |
+| `WalkieTalkie`     | ┊   | `Cog1`            | `Hairdryer`         | `SoccerBall`      |                    |
+| `WeedKillerBottle` | ┊   | `ComedyMask`      | `Knife`             | `SodaCanRed`      |                    |
+| `ZapGun`           | ┊   | `ControlPad`      | `LungApparatus`     | `SteeringWheel`   |                    |
 
 This is not an exhaustive list: any item should work, including from other mods.
 
@@ -91,26 +94,19 @@ Disclaimer: this feature is being actively developed and may change in the futur
 
 There are predefined item filters you can use to describe items or groups of items. Here is the current list of item filters:
 
-| Filter Name    | Description                                                    |
-| -------------- | -------------------------------------------------------------- |
-| `[battery]`    | Items that have batteries. Opposite of `nonbattery`.           |
-| `[charged]`    | Battery items with remaining charge. Opposite of `discharged`. |
-| `[discharged]` | Battery items with no charge. Opposite of `charged`.           |
-| `[held]`       | The currently-held item. Opposite of `pocketed`.               |
-| `[metal]`      | Items that are conductive. Opposite of `nonmetal`.             |
-| `[nonbattery]` | Items that do not use batteries. Opposite of `batteries`.      |
-| `[nonmetal]`   | Items that are nonconductive. Opposite of `metal`.             |
-| `[nonscrap]`   | Items not considered scrap. Opposite of `scrap`.               |
-| `[nonweapon]`  | Nondamaging items. Opposite of `weapon`.                       |
-| `[onehanded]`  | Items held with one hand. Opposite of `twohanded`.             |
-| `[pocketed]`   | Items not held in hand. Opposite of `held`.                    |
-| `[scrap]`      | Items the game considers scrap. Opposite of `nonscrap`.        |
-| `[twohanded]`  | Items held with two hands. Opposite of `onehanded`.            |
-| `[value]`      | Items worth credits. Opposite of `worthless`.                  |
-| `[weapon]`     | Combat items.  Opposite of `nonweapon`.                        |
-| `[weighted]`   | Items that have a weight. Opposite of `weightless`.            |
-| `[weightless]` | Items with zero weight. Opposite of `weighted`.                |
-| `[worthless]`  | Items that sell for zero credits. Opposite of `value`.         |
+| Filter        | Matches                               | Negated        | Negated Matches                                    |
+| ------------- | ------------------------------------- | -------------- | -------------------------------------------------- |
+| `[all]`       | All items.                            | `[none]`       | No items.                                          |
+| `[battery]`   | Items that have batteries.            | `[nonbattery]` | Items that don't have batteries.                   |
+| `[charged]`   | Battery items with remaining charge.  | `[discharged]` | Battery items with no charge.                      |
+| `[gordion]`   | All items while on company moon.      | `[offgordion]` | All items while not on company moon.               |
+| `[held]`      | Item that is currently being held.    | `[pocketed]`   | Items not held in hand.                            |
+| `[metal]`     | Items that are conductive.            | `[nonmetal]`   | Non-conductive items.                              |
+| `[scrap]`     | Items the game classifies as scrap.   | `[nonscrap]`   | Items not classified as scrap.                     |
+| `[twohanded]` | Items held with two hands.            | `[onehanded]`  | Items held with one hand.                          |
+| `[value]`     | Items that sell for credits.          | `[worthless]`  | Items that sell for zero credits (including keys). |
+| `[weapon]`    | Items the game classifies as weapons. | `[nonweapon]`  | Items not classified as weapons.                   |
+| `[weighted]`  | Items that have a weight.             | `[weightless]` | Items with zero weight.                            |
 
 As an example, take this configuration:
 
@@ -123,17 +119,21 @@ This setting makes the Inverse Teleporter drop all items except for the `Key` an
 as well as the currently-selected inventory slot (so if the player is actively holding a `GoldBar`,
 they keep it, but if the `GoldBar` is not the active inventory item, it drops).
 
-For any item filter, you can additionally specify items/filters to exclude from that filter
+For any item filter, you can additionally specify items to exclude from that filter
 using the `:not` attribute. Reusing the previous example, if you wanted to disallow the `Shovel`
-to be brought into the Inverse Teleporter even if it's currently being held, you can do this:
+and `StopSign` to be brought into the Inverse Teleporter even if it's currently being held, you can do this:
 
 ```ini
 InverseTeleporterBehavior = Drop
-InverseTeleporterAlwaysKeep = key,clipboard,[held:not(shovel)]
+InverseTeleporterAlwaysKeep = key,clipboard,[held:not(shovel,stopsign)]
 ```
 
 Now the Inverse Teleporter still keeps the `Key` and `Clipboard`, as well as the currently-held item,
-UNLESS the currently-held item is a `Shovel`, in which case it drops.
+UNLESS the currently-held item is a `Shovel` or `StopSign`, in which case it drops.
+
+You can also use filters within the `:not` attribute, and they can have their own associated `:not` attribute.
+Example: `[held:not([twohanded:not(ragdoll)])]` would be interpreted as "currently held item unless
+it's a two-handed item that is not a player's dead body".
 
 ## Dependencies
 

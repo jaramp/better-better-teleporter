@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using GameNetcodeStuff;
 using HarmonyLib;
-using UnityEngine;
 
 namespace BetterBetterTeleporter.Patches;
 

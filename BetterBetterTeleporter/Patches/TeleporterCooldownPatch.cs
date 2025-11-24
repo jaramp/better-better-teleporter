@@ -1,14 +1,13 @@
-using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
+using BetterBetterTeleporter.Utility;
+using System.Reflection;
 
 namespace BetterBetterTeleporter.Patches;
 
 [HarmonyPatch(typeof(ShipTeleporter))]
 public static class TeleporterCooldownPatch
 {
-    private static readonly FieldInfo cooldownTimeField = typeof(ShipTeleporter).GetField("cooldownTime", BindingFlags.Instance | BindingFlags.NonPublic);
-
     static TeleporterCooldownPatch()
     {
         Plugin.ModConfig.TeleporterCooldown.OnChanged += UpdateAllTeleporterCooldowns;
@@ -26,11 +25,21 @@ public static class TeleporterCooldownPatch
     {
         if (oldValue == newValue) return;
 
+        var cooldownTimeField = ReflectionHelper.GetShipTeleporterCooldownTimeField();
+        if (cooldownTimeField == null) return;
+
         var (inverse, regular) = GetCooldowns();
         foreach (ShipTeleporter tp in Object.FindObjectsOfType<ShipTeleporter>())
         {
-            tp.cooldownAmount = tp.isInverseTeleporter ? inverse : regular;
-            cooldownTimeField?.SetValue(tp, Mathf.Min(tp.cooldownAmount, (float)(cooldownTimeField?.GetValue(tp) ?? 0)));
+            try
+            {
+                tp.cooldownAmount = tp.isInverseTeleporter ? inverse : regular;
+                cooldownTimeField.SetValue(tp, Mathf.Min(tp.cooldownAmount, (float)(cooldownTimeField.GetValue(tp) ?? 0)));
+            }
+            catch (System.Exception e)
+            {
+                Plugin.Logger.LogError($"Error setting cooldown on teleporter {tp.teleporterId}: {e.Message}");
+            }
         }
     }
 
