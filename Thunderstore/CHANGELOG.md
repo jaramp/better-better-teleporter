@@ -1,6 +1,9 @@
 ## Version 1.1.5
 
-
+- Added `[all]` item filter
+- Added `[none]` item filter
+- Added `[gordion]` item filter
+- Added `[offgordion]` item filter
 
 ## Version 1.1.4
 - Added `[battery]` item filter
