@@ -39,7 +39,7 @@ public sealed class ItemInfo(GrabbableObject source) : IItemInfo
         }
         catch (System.Exception e)
         {
-            Plugin.Logger.LogError($"Failed to read GrabbableObject.'{propertyName}'. Game structure may have changed. Error: {e.Message}");
+            Plugin.Logger.LogError($"Failed to read 'GrabbableObject.{propertyName}'. Game structure may have changed. Error: {e.Message}");
             return default!;
         }
     }

@@ -25,7 +25,7 @@ public sealed class PlayerInfo(PlayerControllerB player) : IPlayerInfo
         }
         catch (System.Exception e)
         {
-            Plugin.Logger.LogError($"Failed to read PlayerControllerB.'{propertyName}'. Game structure may have changed. Error: {e.Message}");
+            Plugin.Logger.LogError($"Failed to read 'PlayerControllerB.{propertyName}'. Game structure may have changed. Error: {e.Message}");
             return default!;
         }
     }
