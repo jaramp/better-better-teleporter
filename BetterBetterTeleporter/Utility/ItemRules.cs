@@ -64,7 +64,7 @@ public class ItemNameRule(string name) : ItemRule(name)
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
         if (item.Name.Equals(name, caseInsensitive)) return true;        // ExtensionLadder
-        if (item.TypeId.Equals(name, caseInsensitive)) return true;      // ExtensionLadderItem
+        if (item.TypeName.Equals(name, caseInsensitive)) return true;      // ExtensionLadderItem
         if (item.DisplayName.Equals(name, caseInsensitive)) return true; // Extension Ladder
         return false;
     }

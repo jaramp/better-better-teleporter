@@ -5,7 +5,7 @@ namespace BetterBetterTeleporter.Tests.Fakes;
 public sealed class FakeClipboardItemInfo : IItemInfo
 {
     public string? Name { get; set; } = "clipboard";
-    public string? TypeId { get; set; } = nameof(ClipboardItem);
+    public string? TypeName { get; set; } = nameof(ClipboardItem);
     public string? DisplayName { get; set; } = "Clipboard";
     public bool? IsScrap { get; set; } = false;
     public int? Value { get; set; } = 0;

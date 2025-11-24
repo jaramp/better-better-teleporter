@@ -3,8 +3,8 @@ namespace BetterBetterTeleporter.Adapters;
 public interface IItemInfo
 {
     string Name { get; }
+    string TypeName { get; }
     string DisplayName { get; }
-    string TypeId { get; }
     bool? IsScrap { get; }
     int? Value { get; }
     bool? IsMetal { get; }
@@ -19,8 +19,8 @@ public interface IItemInfo
 public sealed class ItemInfo(GrabbableObject source) : IItemInfo
 {
     public string Name => TryGet(() => source.itemProperties.name, "itemProperties.name");
+    public string TypeName => source.GetType().Name;
     public string DisplayName => TryGet(() => source.itemProperties.itemName, "itemProperties.itemName");
-    public string TypeId => source.GetType().Name;
     public bool? IsScrap => TryGet(() => source.itemProperties.isScrap, "itemProperties.isScrap");
     public int? Value => TryGet(() => source.scrapValue, "scrapValue");
     public bool? IsMetal => TryGet(() => source.itemProperties.isConductiveMetal, "itemProperties.isConductiveMetal");
