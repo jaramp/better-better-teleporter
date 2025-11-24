@@ -96,8 +96,10 @@ There are predefined item filters you can use to describe items or groups of ite
 
 | Filter        | Matches                               | Negated        | Negated Matches                                    |
 | ------------- | ------------------------------------- | -------------- | -------------------------------------------------- |
+| `[all]`       | All items.                            | `[none]`       | No items.                                          |
 | `[battery]`   | Items that have batteries.            | `[nonbattery]` | Items that don't have batteries.                   |
 | `[charged]`   | Battery items with remaining charge.  | `[discharged]` | Battery items with no charge.                      |
+| `[gordion]`   | All items while on company moon.      | `[offgordion]` | All items while not on company moon.               |
 | `[held]`      | Item that is currently being held.    | `[pocketed]`   | Items not held in hand.                            |
 | `[metal]`     | Items that are conductive.            | `[nonmetal]`   | Non-conductive items.                              |
 | `[scrap]`     | Items the game classifies as scrap.   | `[nonscrap]`   | Items not classified as scrap.                     |

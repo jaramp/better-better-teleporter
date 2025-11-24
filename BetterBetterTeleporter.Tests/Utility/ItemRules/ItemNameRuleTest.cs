@@ -1,4 +1,3 @@
-using BetterBetterTeleporter.Adapters;
 using BetterBetterTeleporter.Tests.Fakes;
 using BetterBetterTeleporter.Utility;
 
@@ -11,15 +10,13 @@ public sealed class ItemNameRuleTest
     private const bool keep = false;
 
     private FakePlayerInfo player = null!;
-    private FakeItemInfo clipboard = null!;
+    private FakeClipboardItemInfo clipboard = null!;
 
     [TestInitialize]
     public void Setup()
     {
-        clipboard = new FakeItemInfo { Name = "clipboard", DisplayName = "ClipboardManual", TypeId = nameof(ClipboardItem) };
-        var inventory = new IItemInfo?[4];
-        inventory[0] = clipboard;
-        player = new FakePlayerInfo { Slots = inventory, CurrentItemSlotIndex = 0 };
+        clipboard = new FakeClipboardItemInfo();
+        player = new FakePlayerInfo(clipboard);
     }
 
     [TestMethod]

@@ -23,6 +23,8 @@ public static class ItemRules
         // Add new rule filters here
         switch (id)
         {
+            case AllFilter.Id: return new AllFilter(except);
+            case NoneFilter.Id: return new NoneFilter(except);
             case HeldItemFilter.Id: return new HeldItemFilter(except);
             case PocketedItemFilter.Id: return new PocketedItemFilter(except);
             case ScrapItemFilter.Id: return new ScrapItemFilter(except);
@@ -41,6 +43,8 @@ public static class ItemRules
             case TwoHandedItemFilter.Id: return new TwoHandedItemFilter(except);
             case WeightedItemFilter.Id: return new WeightedItemFilter(except);
             case WeightlessItemFilter.Id: return new WeightlessItemFilter(except);
+            case GordionFilter.Id: return new GordionFilter(except);
+            case OffGordionFilter.Id: return new OffGordionFilter(except);
         }
         Plugin.Logger?.LogWarning($"Unknown item filter: {id}. Falling back to item name matching.");
         return new ItemNameRule(id);
@@ -69,6 +73,24 @@ public class ItemNameRule(string name) : ItemRule(name)
 public abstract class ItemFilter(string id, List<ItemRule> except) : ItemRule(id)
 {
     public override bool IsMatch(IPlayerInfo player, IItemInfo item) => except.Count == 0 || !except.Any(rule => rule.IsMatch(player, item));
+}
+
+public class AllFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "all";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return base.IsMatch(player, item);
+    }
+}
+
+public class NoneFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "none";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return !base.IsMatch(player, item);
+    }
 }
 
 public class HeldItemFilter(List<ItemRule> except) : ItemFilter(Id, except)
@@ -320,5 +342,39 @@ public class WeightlessItemFilter(List<ItemRule> except) : ItemFilter(Id, except
             return false;
         }
         return item.Weight.Value <= 1 && base.IsMatch(player, item);
+    }
+}
+
+public class GordionFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "gordion";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        try
+        {
+            return !StartOfRound.Instance.inShipPhase && StartOfRound.Instance.currentLevel.levelID == 3 && base.IsMatch(player, item);
+        }
+        catch
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on StartOfRound. Skipping filter.");
+            return false;
+        }
+    }
+}
+
+public class OffGordionFilter(List<ItemRule> except) : ItemFilter(Id, except)
+{
+    public const string Id = "offgordion";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        try
+        {
+            return !StartOfRound.Instance.inShipPhase && StartOfRound.Instance.currentLevel.levelID != 3 && base.IsMatch(player, item);
+        }
+        catch
+        {
+            Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on StartOfRound. Skipping filter.");
+            return false;
+        }
     }
 }

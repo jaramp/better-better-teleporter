@@ -15,16 +15,13 @@ public sealed class ItemRulesTest
     public sealed class NegatedMatchedFilter() : ItemFilter("true/true", [new AlwaysMatchesRule()]) { }
 
     private FakePlayerInfo player = null!;
-    private FakeItemInfo clipboard = null!;
-    private const int clipboardItemSlot = 0;
+    private FakeClipboardItemInfo clipboard = null!;
 
     [TestInitialize]
     public void Setup()
     {
-        clipboard = new FakeItemInfo { Name = "clipboard", DisplayName = "ClipboardManual", TypeId = nameof(ClipboardItem) };
-        var inventory = new IItemInfo?[4];
-        inventory[clipboardItemSlot] = clipboard;
-        player = new FakePlayerInfo { Slots = inventory, CurrentItemSlotIndex = clipboardItemSlot };
+        clipboard = new FakeClipboardItemInfo();
+        player = new FakePlayerInfo(clipboard);
     }
 
     [TestMethod]
