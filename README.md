@@ -1,14 +1,16 @@
 # BetterBetterTeleporter
 
-BetterBetterTeleporter is a mod for Lethal Company that adds configurable features for both the regular Teleporter as well as the Inverse Teleporter. The default configuration matches the unmodded version of the game, so this mod will not do anything unless you configure it.
+BetterBetterTeleporter is a mod for Lethal Company that adds configurable features for both the regular Teleporter as well as the Inverse Teleporter. The default configuration matches the unmodded version of the game, so this mod will not change any behavior unless you configure it.
 
 ## Features
 
 - **Configurable Cooldowns:** Adjust the cooldown times for each teleporter.
 - **Item Teleport Behavior:** Choose whether items are kept or dropped when using the teleporters.
 - **Item Whitelists/Blacklists:** Specify comma-separated lists of items that are always kept or dropped, overriding the general item teleport behavior.
-- **Reset Cooldown on Orbit:** Automatically reset teleporter cooldowns when returning to orbit.
+- **Reset Cooldown on Orbit:** Automatically reset teleporter cooldowns when returning the ship to orbit.
 - **Inverse Teleporter Battery Drain:** An optional penalty to decrease battery charge for held items when using the Inverse Teleporter.
+- **General improvements for Teleporters**:
+  - Fixes a visual issue where teleporting a player that's already standing on the teleporter makes them disappear
 
 ## Configuration
 
@@ -88,18 +90,16 @@ If you have LethalConfig installed, there is a button at the bottom of the
 BetterBetterTeleporter config section to display the names of all items you're currently
 holding in your inventory. This should help verify if you're using the correct item name.
 
-### (EXPERIMENTAL) Specifying Items by Filter
-
-Disclaimer: this feature is being actively developed and may change in the future.
+### Specifying Items by Filter
 
 There are predefined item filters you can use to describe items or groups of items. Here is the current list of item filters:
 
-| Filter        | Matches                               | Negated        | Negated Matches                                    |
+| Filter        | Matches                               | Alternate      | Alternate Matches                                  |
 | ------------- | ------------------------------------- | -------------- | -------------------------------------------------- |
 | `[all]`       | All items.                            | `[none]`       | No items.                                          |
 | `[battery]`   | Items that have batteries.            | `[nonbattery]` | Items that don't have batteries.                   |
 | `[charged]`   | Battery items with remaining charge.  | `[discharged]` | Battery items with no charge.                      |
-| `[gordion]`   | All items while on company moon.      | `[offgordion]` | All items while not on company moon.               |
+| `[gordion]`   | All items while on company moon.      | `[gordioff]`   | All items while not on company moon.               |
 | `[held]`      | Item that is currently being held.    | `[pocketed]`   | Items not held in hand.                            |
 | `[metal]`     | Items that are conductive.            | `[nonmetal]`   | Non-conductive items.                              |
 | `[scrap]`     | Items the game classifies as scrap.   | `[nonscrap]`   | Items not classified as scrap.                     |
@@ -119,9 +119,27 @@ This setting makes the Inverse Teleporter drop all items except for the `Key` an
 as well as the currently-selected inventory slot (so if the player is actively holding a `GoldBar`,
 they keep it, but if the `GoldBar` is not the active inventory item, it drops).
 
-For any item filter, you can additionally specify items to exclude from that filter
-using the `:not` attribute. Reusing the previous example, if you wanted to disallow the `Shovel`
-and `StopSign` to be brought into the Inverse Teleporter even if it's currently being held, you can do this:
+
+#### Restricting item filters
+
+To further restrict an item filter, you can specify a list of items using `:`. If you wanted only
+a held `Key` or `LockPicker` to be brought into the Inverse Teleporter and to drop everything else
+(including keys or lockpickers that aren't being held), you can do this:
+
+```ini
+InverseTeleporterBehavior = Drop
+InverseTeleporterAlwaysKeep = [held:key,lockpicker]
+```
+
+Now the `[held]` filter will only apply to keys and lockpickers, and no longer keep the held item
+if it's something else. You could also use other filters such as `[held:[weightless]]` to apply to
+the held item only if it's also weightless.
+
+#### Excluding from item filters
+
+Alternatively for any item filter, you can specify items to exclude from that filter
+using the `:not` attribute. If you wanted to disallow the `Shovel` and `StopSign` to be
+brought into the Inverse Teleporter even if it's currently being held, you can do this:
 
 ```ini
 InverseTeleporterBehavior = Drop

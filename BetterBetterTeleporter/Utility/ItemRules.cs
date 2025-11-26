@@ -44,7 +44,7 @@ public static class ItemRules
             case WeightedItemFilter.Id: return new WeightedItemFilter(itemList);
             case WeightlessItemFilter.Id: return new WeightlessItemFilter(itemList);
             case GordionFilter.Id: return new GordionFilter(itemList);
-            case OffGordionFilter.Id: return new OffGordionFilter(itemList);
+            case GordioffFilter.Id: return new GordioffFilter(itemList);
         }
         Plugin.Logger?.LogWarning($"Unknown item filter: {id}. Falling back to item name matching.");
         return new ItemNameRule(id);
@@ -377,9 +377,9 @@ public class GordionFilter(ItemFilterList except) : ItemFilter(Id, except)
     }
 }
 
-public class OffGordionFilter(ItemFilterList except) : ItemFilter(Id, except)
+public class GordioffFilter(ItemFilterList except) : ItemFilter(Id, except)
 {
-    public const string Id = "offgordion";
+    public const string Id = "gordioff";
     public override bool IsMatch(IPlayerInfo player, IItemInfo item)
     {
         try
