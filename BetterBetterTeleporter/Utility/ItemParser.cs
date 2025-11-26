@@ -24,13 +24,16 @@ public static class ItemParser
     {
         if (source[0] != '[' || source[^1] != ']') return new ItemNameRule(Unescape(source));
 
-        var filter = source[1..^1].ToLowerInvariant().Split(":not", 2, StringSplitOptions.RemoveEmptyEntries);
-        List<ItemRule> except = [];
-        if (filter.Length > 1 && filter[1][0] == '(' && filter[1][^1] == ')')
+        var filter = source[1..^1].ToLowerInvariant().Split(":", 2, StringSplitOptions.RemoveEmptyEntries);
+
+        bool isExclusive = false;
+        List<ItemRule> itemRules = [];
+        if (filter.Length > 1)
         {
-            except = ParseConfig(filter[1][1..^1]);
+            isExclusive = filter[1].StartsWith("not(") && filter[1][^1] == ')';
+            itemRules = ParseConfig(isExclusive ? filter[1][4..^1] : filter[1]);
         }
-        return ItemRules.FromId(Unescape(filter[0]), except);
+        return ItemRules.FromId(Unescape(filter[0]), new(isExclusive, itemRules));
     }
 
     private static List<string> SplitCurrentGeneration(string source)
