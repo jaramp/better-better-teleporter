@@ -19,6 +19,7 @@ public class FixTeleporterBugsPatch
         }
         catch
         {
+            Plugin.Logger.LogWarning($"Failed to apply teleport positioning fix. Disabling future attempts.");
             HasFailedToDirtyTeleportPosition = true;
         }
     }
