@@ -14,24 +14,10 @@ public static class KeepItemsOnTeleporterPatch
     private static readonly Dictionary<PlayerControllerB, GrabbableObject[]> tempInventories = [];
     private static readonly MethodInfo SwitchToItemSlotMethod = AccessTools.Method(typeof(PlayerControllerB), "SwitchToItemSlot");
 
-    private static bool IsTeleporting(PlayerControllerB player)
-    {
-        if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(player.actualClientId))
-            return false; // Player is disconnecting
-
-        if (player.shipTeleporterId == 1)
-            return true; // Regular teleporting
-
-        if (InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player))
-            return true; // Inverse teleporting
-
-        return false; // Unknown, assume not teleporting
-    }
-
     [HarmonyPrefix]
     public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
     {
-        if (!IsTeleporting(__instance)) return;
+        if (!TeleportDetectionPatch.IsTeleporting(__instance)) return;
 
         try
         {
@@ -62,7 +48,7 @@ public static class KeepItemsOnTeleporterPatch
     [HarmonyPostfix]
     public static void DropAllHeldItemsPostfix(PlayerControllerB __instance)
     {
-        if (!IsTeleporting(__instance) || !tempInventories.ContainsKey(__instance)) return;
+        if (!tempInventories.ContainsKey(__instance)) return;
 
         // Restore player's inventory from temporary storage
         var itemsToKeep = tempInventories[__instance];
@@ -101,6 +87,6 @@ public static class KeepItemsOnTeleporterPatch
 
     private static TeleporterConfigState GetTeleportState(PlayerControllerB player)
     {
-        return new(InverseTeleporterPlayerDetectionPatch.IsInverseTeleporting(player));
+        return new(TeleportDetectionPatch.IsInverseTeleporting(player));
     }
 }

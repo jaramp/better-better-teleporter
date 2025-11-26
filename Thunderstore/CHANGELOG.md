@@ -1,9 +1,14 @@
+## Version 1.2.0
+
+- Added `[filter:item]` syntax
+- Added patch to fix a visual bug on the teleporter
+
 ## Version 1.1.5
 
 - Added `[all]` item filter
 - Added `[none]` item filter
 - Added `[gordion]` item filter
-- Added `[offgordion]` item filter
+- Added `[gordioff]` item filter
 
 ## Version 1.1.4
 - Added `[battery]` item filter
