@@ -19,6 +19,7 @@ public static class KeepItemsOnTeleporterPatch
     {
         if (!TeleportDetectionPatch.IsTeleporting(__instance)) return;
 
+        var restoreOnCatch = (GrabbableObject[])__instance.ItemSlots.Clone();
         try
         {
             var playerInfo = new PlayerInfo(__instance);
@@ -42,6 +43,10 @@ public static class KeepItemsOnTeleporterPatch
             Plugin.Logger.LogError($"Failed to intercept DropAllHeldItems (Prefix). Falling back to native behavior. Error: {e}");
             // Return true (default behavior) so the original DropAllHeldItems runs normally.
             tempInventories.Remove(__instance);
+            for (int i = 0; i < __instance.ItemSlots.Length; i++)
+            {
+                __instance.ItemSlots[i] = restoreOnCatch[i];
+            }
         }
     }
 
