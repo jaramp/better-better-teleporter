@@ -1,6 +1,7 @@
 ## Version 1.2.1
 
 - Delay visual fixes to compensate for possible lag
+- Fix issue where players that die during teleport keep items
 
 ## Version 1.2.0
 
