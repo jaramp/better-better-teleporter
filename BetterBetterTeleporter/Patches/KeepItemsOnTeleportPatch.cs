@@ -15,9 +15,10 @@ public static class KeepItemsOnTeleporterPatch
     private static readonly MethodInfo SwitchToItemSlotMethod = AccessTools.Method(typeof(PlayerControllerB), "SwitchToItemSlot");
 
     [HarmonyPrefix]
-    public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
+    public static void StoreInventoryBeforeTeleporting(PlayerControllerB __instance)
     {
         if (!TeleportDetectionPatch.IsTeleporting(__instance)) return;
+        if (__instance.isPlayerDead) return;
 
         try
         {
@@ -46,16 +47,15 @@ public static class KeepItemsOnTeleporterPatch
     }
 
     [HarmonyPostfix]
-    public static void DropAllHeldItemsPostfix(PlayerControllerB __instance)
+    public static void RestoreInventoryAfterTeleporting(PlayerControllerB __instance)
     {
-        if (!tempInventories.ContainsKey(__instance)) return;
+        if (!tempInventories.ContainsKey(__instance)) return; // No inventory to restore
 
         // Restore player's inventory from temporary storage
         var itemsToKeep = tempInventories[__instance];
         tempInventories.Remove(__instance);
 
-        if (__instance.deadBody != null)
-            return; // Player died mid-teleport
+        if (__instance.isPlayerDead) return; // Player died mid-teleport
 
         try
         {
