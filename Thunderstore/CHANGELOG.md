@@ -1,3 +1,7 @@
+## Version 1.2.1
+
+- Delay visual fixes to compensate for possible lag
+
 ## Version 1.2.0
 
 - Added `[filter:item]` syntax
