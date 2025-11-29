@@ -7,7 +7,7 @@ namespace BetterBetterTeleporter.Patches;
 
 /// <summary>
 /// This is a patch to keep track of players that are currently being teleported.
-/// Used by KeepItemsOnTeleportPatch.cs
+/// Used by FixTeleporterBugsPatch.cs and KeepItemsOnTeleportPatch.cs
 /// </summary>
 [HarmonyPatch(typeof(ShipTeleporter))]
 public static class TeleportDetectionPatch
