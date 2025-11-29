@@ -17,6 +17,9 @@ public static class TeleportDetectionPatch
         if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(player.actualClientId))
             return false; // Player is disconnecting
 
+        if (player.deadBody != null)
+            return false; // Player has died
+
         if (IsRegularTeleporting(player)) return true;
         if (IsInverseTeleporting(player)) return true;
 

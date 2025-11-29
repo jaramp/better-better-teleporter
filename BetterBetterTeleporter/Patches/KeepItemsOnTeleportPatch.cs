@@ -54,6 +54,9 @@ public static class KeepItemsOnTeleporterPatch
         var itemsToKeep = tempInventories[__instance];
         tempInventories.Remove(__instance);
 
+        if (__instance.deadBody != null)
+            return; // Player died mid-teleport
+
         try
         {
             // DropAllHeldItems resets weight: need to manually add back current inventory weight
