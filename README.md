@@ -34,7 +34,6 @@ If [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig
 | InverseTeleporterAlwaysKeep | `ItemList`    |         | Treat these items as `Keep` regardless of Inverse Teleporter behavior.                  |
 | InverseTeleporterAlwaysDrop | `ItemList`    |         | Treat these items as `Drop` regardless of Inverse Teleporter behavior.                  |
 | BatteryDrainPercent         | `Integer`     | `0`     | Percent drain on held battery items when using the Inverse Teleporter (`0` to disable). |
-|                             |               |         |                                                                                         |
 
 As an example, if you wanted an Inverse Teleporter that drops all items except for keys and walkie-talkies, and drains batteries by 25%:
 
