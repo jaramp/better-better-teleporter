@@ -15,11 +15,11 @@ public static class KeepItemsOnTeleporterPatch
     private static readonly MethodInfo SwitchToItemSlotMethod = AccessTools.Method(typeof(PlayerControllerB), "SwitchToItemSlot");
 
     [HarmonyPrefix]
-    public static void StoreInventoryBeforeTeleporting(PlayerControllerB __instance)
+    public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
     {
         if (!TeleportDetectionPatch.IsTeleporting(__instance)) return;
-        if (__instance.isPlayerDead) return;
 
+        var restoreOnCatch = (GrabbableObject[])__instance.ItemSlots.Clone();
         try
         {
             var playerInfo = new PlayerInfo(__instance);
@@ -43,19 +43,21 @@ public static class KeepItemsOnTeleporterPatch
             Plugin.Logger.LogError($"Failed to intercept DropAllHeldItems (Prefix). Falling back to native behavior. Error: {e}");
             // Return true (default behavior) so the original DropAllHeldItems runs normally.
             tempInventories.Remove(__instance);
+            for (int i = 0; i < __instance.ItemSlots.Length; i++)
+            {
+                __instance.ItemSlots[i] = restoreOnCatch[i];
+            }
         }
     }
 
     [HarmonyPostfix]
-    public static void RestoreInventoryAfterTeleporting(PlayerControllerB __instance)
+    public static void DropAllHeldItemsPostfix(PlayerControllerB __instance)
     {
-        if (!tempInventories.ContainsKey(__instance)) return; // No inventory to restore
+        if (!tempInventories.ContainsKey(__instance)) return;
 
         // Restore player's inventory from temporary storage
         var itemsToKeep = tempInventories[__instance];
         tempInventories.Remove(__instance);
-
-        if (__instance.isPlayerDead) return; // Player died mid-teleport
 
         try
         {

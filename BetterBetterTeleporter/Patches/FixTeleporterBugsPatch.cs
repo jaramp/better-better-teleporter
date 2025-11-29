@@ -15,7 +15,7 @@ public class FixTeleporterBugsPatch
     [HarmonyPatch(typeof(PlayerControllerB), "TeleportPlayer"), HarmonyPrefix]
     public static void TeleportPlayer(PlayerControllerB __instance, ref Vector3 pos)
     {
-        if (HasFailedToDirtyTeleportPosition || !TeleportDetectionPatch.IsRegularTeleporting(__instance)) return;
+        if (HasFailedToDirtyTeleportPosition || !TeleportDetectionPatch.IsRegularTeleporting()) return;
         try
         {
             pos.y -= 0.5f;
