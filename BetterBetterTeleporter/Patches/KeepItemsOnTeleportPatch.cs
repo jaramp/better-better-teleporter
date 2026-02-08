@@ -1,9 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using BetterBetterTeleporter.Adapters;
 using BetterBetterTeleporter.Utility;
 using GameNetcodeStuff;
 using HarmonyLib;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace BetterBetterTeleporter.Patches;
@@ -71,7 +73,7 @@ public static class KeepItemsOnTeleporterPatch
                 __instance.ItemSlots[i] = keptItem;
                 carryWeightDelta += keptItem.itemProperties.weight - 1f;
             }
-            __instance.carryWeight = Mathf.Clamp(__instance.carryWeight + carryWeightDelta, 1f, 10f);
+            NetworkManager.Singleton.StartCoroutine(ResetCarryWeight(__instance, carryWeightDelta));
         }
         catch (System.Exception e)
         {
@@ -88,6 +90,13 @@ public static class KeepItemsOnTeleporterPatch
         {
             Plugin.Logger.LogWarning($"Unable to verify current item is being held correctly. Error: {e}");
         }
+    }
+
+    private static IEnumerator ResetCarryWeight(PlayerControllerB __instance, float carryWeightDelta)
+    {
+        // Wait for other mods to resolve weight
+        yield return new WaitForEndOfFrame();
+        __instance.carryWeight = Mathf.Clamp(__instance.carryWeight + carryWeightDelta, 1f, 10f);
     }
 
     private static TeleporterConfigState GetTeleportState(PlayerControllerB player)

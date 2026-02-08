@@ -1,3 +1,7 @@
+## Version 1.2.2
+
+- Fix a compatibility issue with mods that modify carry weight
+
 ## Version 1.2.1
 
 - Delay visual fixes to compensate for possible lag
