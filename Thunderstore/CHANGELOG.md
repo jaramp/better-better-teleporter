@@ -1,3 +1,7 @@
+## Version 1.2.3
+
+- Fix issue with lightning strikes on conductive items after teleporting
+
 ## Version 1.2.2
 
 - Fix a compatibility issue with mods that modify carry weight
