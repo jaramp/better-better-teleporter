@@ -63,7 +63,8 @@ public static class KeepItemsOnTeleporterPatch
 
         try
         {
-            // DropAllHeldItems resets weight: need to manually add back current inventory weight
+            var isInverse = TeleportDetectionPatch.IsInverseTeleporting(__instance);
+
             float carryWeightDelta = 0f;
             for (int i = 0; i < __instance.ItemSlots.Length; i++)
             {
@@ -73,11 +74,11 @@ public static class KeepItemsOnTeleporterPatch
                 __instance.ItemSlots[i] = keptItem;
                 carryWeightDelta += keptItem.itemProperties.weight - 1f;
             }
-            NetworkManager.Singleton.StartCoroutine(ResetCarryWeight(__instance, carryWeightDelta));
+            NetworkManager.Singleton.StartCoroutine(RefreshInventory(__instance, carryWeightDelta, isInverse));
         }
         catch (System.Exception e)
         {
-            Plugin.Logger.LogError($"Failed to reset carry weight. Error: {e}");
+            Plugin.Logger.LogError($"Failed to restore inventory. Error: {e}");
         }
 
         try
@@ -92,11 +93,24 @@ public static class KeepItemsOnTeleporterPatch
         }
     }
 
-    private static IEnumerator ResetCarryWeight(PlayerControllerB __instance, float carryWeightDelta)
+    private static IEnumerator RefreshInventory(PlayerControllerB __instance, float carryWeightDelta, bool isInverse)
     {
         // Wait for other mods to resolve weight
         yield return new WaitForEndOfFrame();
+
+        // DropAllHeldItems resets weight: need to manually add back current inventory weight
         __instance.carryWeight = Mathf.Clamp(__instance.carryWeight + carryWeightDelta, 1f, 10f);
+
+        // Update inventory items to match new player position
+        for (int i = 0; i < __instance.ItemSlots.Length; i++)
+        {
+            var keptItem = __instance.ItemSlots[i];
+            if (keptItem == null) continue;
+
+            keptItem.isInElevator = !isInverse;
+            keptItem.isInFactory = isInverse;
+            keptItem.isInShipRoom = !isInverse;
+        }
     }
 
     private static TeleporterConfigState GetTeleportState(PlayerControllerB player)
