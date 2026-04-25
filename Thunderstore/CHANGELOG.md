@@ -1,3 +1,7 @@
+## Version 1.2.4
+
+- Compatibility update for v80
+
 ## Version 1.2.3
 
 - Fix issue with lightning strikes on conductive items after teleporting
