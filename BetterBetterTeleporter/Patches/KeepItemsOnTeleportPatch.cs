@@ -41,7 +41,7 @@ public static class KeepItemsOnTeleporterPatch
             // Temporarily store cloned inventory so we can restore it on Postfix
             tempInventories[__instance] = itemsToKeep;
         }
-        catch (System.Exception e)
+        catch
         {
             // Return true (default behavior) so the original DropAllHeldItemsAndSync runs normally.
             tempInventories.Remove(__instance);
