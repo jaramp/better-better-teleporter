@@ -72,8 +72,13 @@ public static class KeepItemsOnTeleporterPatch
                 if (keptItem == null) continue;
 
                 __instance.ItemSlots[i] = keptItem;
-                HUDManager.Instance.itemSlotIcons[i].enabled = true;
                 carryWeightDelta += keptItem.itemProperties.weight - 1f;
+
+                // HUDManager manages local state: only run for teleported player
+                if (__instance.actualClientId == NetworkManager.Singleton.LocalClientId)
+                {
+                    HUDManager.Instance.itemSlotIcons[i].enabled = true;
+                }
             }
             NetworkManager.Singleton.StartCoroutine(RefreshInventory(__instance, carryWeightDelta, isInverse));
         }
