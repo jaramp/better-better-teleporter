@@ -29,16 +29,22 @@ public static class TeleportDetectionPatch
     [HarmonyTranspiler]
     static IEnumerable<CodeInstruction> TeleporterTranspiler(IEnumerable<CodeInstruction> instructions)
     {
-        var dropAllHeldItemsAndSyncMethod = AccessTools.Method(typeof(PlayerControllerB), "DropAllHeldItemsAndSync");
-        var beforeMethod = AccessTools.Method(typeof(TeleportDetectionPatch), nameof(BeforeTeleporterDropAllHeldItemsAndSync));
-
+        var waitForSecondsCtor = AccessTools.Constructor(typeof(UnityEngine.WaitForSeconds), [typeof(float)]);
+        var beforeMethod = AccessTools.Method(typeof(TeleportDetectionPatch), nameof(BeforeTeleporterDropAllHeldItems));
+        int waitCount = 0;
         foreach (var instruction in instructions)
         {
-            if (instruction.Calls(dropAllHeldItemsAndSyncMethod))
-            {
-                yield return new CodeInstruction(OpCodes.Call, beforeMethod);
-            }
             yield return instruction;
+
+            if (instruction.opcode == OpCodes.Newobj && Equals(instruction.operand, waitForSecondsCtor))
+            {
+                waitCount++;
+
+                if (waitCount == 2)
+                {
+                    yield return new CodeInstruction(OpCodes.Call, beforeMethod);
+                }
+            }
         }
     }
 
@@ -46,12 +52,12 @@ public static class TeleportDetectionPatch
     [HarmonyFinalizer]
     static System.Exception TeleporterFinalizer(System.Exception __exception)
     {
-        AfterTeleporterDropAllHeldItemsAndSync();
+        AfterTeleporterDropAllHeldItems();
         return __exception;
     }
 
-    public static void BeforeTeleporterDropAllHeldItemsAndSync() => isTeleporting = true;
-    public static void AfterTeleporterDropAllHeldItemsAndSync() => isTeleporting = false;
+    public static void BeforeTeleporterDropAllHeldItems() => isTeleporting = true;
+    public static void AfterTeleporterDropAllHeldItems() => isTeleporting = true;
     public static bool IsRegularTeleporting() => isTeleporting;
 
     private static readonly HashSet<int> InverseTeleportingPlayers = [];

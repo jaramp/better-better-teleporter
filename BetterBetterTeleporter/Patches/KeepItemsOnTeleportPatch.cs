@@ -11,14 +11,14 @@ using UnityEngine;
 
 namespace BetterBetterTeleporter.Patches;
 
-[HarmonyPatch(typeof(PlayerControllerB), "DropAllHeldItemsAndSync")]
+[HarmonyPatch(typeof(PlayerControllerB), "DropAllHeldItems")]
 public static class KeepItemsOnTeleporterPatch
 {
     private static readonly Dictionary<PlayerControllerB, GrabbableObject[]> tempInventories = [];
     private static readonly MethodInfo SwitchToItemSlotMethod = AccessTools.Method(typeof(PlayerControllerB), "SwitchToItemSlot");
 
     [HarmonyPrefix]
-    public static void DropAllHeldItemsAndSyncPrefix(PlayerControllerB __instance)
+    public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
     {
         if (!TeleportDetectionPatch.IsTeleporting(__instance)) return;
 
@@ -32,10 +32,10 @@ public static class KeepItemsOnTeleporterPatch
             for (int i = 0; i < __instance.ItemSlots.Length; i++)
             {
                 if (playerInfo.ShouldDropItem(playerInfo.Slots[i], state)) itemsToKeep[i] = null;
-                else __instance.ItemSlots[i] = null; // Hide from DropAllHeldItemsAndSync to prevent dropping
+                else __instance.ItemSlots[i] = null; // Hide from DropAllHeldItems to prevent dropping
             }
 
-            // Suppress drop animation call from DropAllHeldItemsAndSync
+            // Suppress drop animation call from DropAllHeldItems
             __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
 
             // Temporarily store cloned inventory so we can restore it on Postfix
@@ -43,7 +43,7 @@ public static class KeepItemsOnTeleporterPatch
         }
         catch
         {
-            // Return true (default behavior) so the original DropAllHeldItemsAndSync runs normally.
+            // Return true (default behavior) so the original DropAllHeldItems runs normally.
             tempInventories.Remove(__instance);
             for (int i = 0; i < __instance.ItemSlots.Length; i++)
             {
@@ -53,7 +53,7 @@ public static class KeepItemsOnTeleporterPatch
     }
 
     [HarmonyPostfix]
-    public static void DropAllHeldItemsAndSyncPostfix(PlayerControllerB __instance)
+    public static void DropAllHeldItemsPostfix(PlayerControllerB __instance)
     {
         if (!tempInventories.ContainsKey(__instance)) return;
 
@@ -77,7 +77,7 @@ public static class KeepItemsOnTeleporterPatch
             }
             NetworkManager.Singleton.StartCoroutine(RefreshInventory(__instance, carryWeightDelta, isInverse));
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Plugin.Logger.LogError($"Failed to restore inventory. Error: {e}");
         }
@@ -88,7 +88,7 @@ public static class KeepItemsOnTeleporterPatch
             __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
             SwitchToItemSlotMethod.Invoke(__instance, [__instance.currentItemSlot, null]);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Plugin.Logger.LogWarning($"Unable to verify current item is being held correctly. Error: {e}");
         }
@@ -99,7 +99,7 @@ public static class KeepItemsOnTeleporterPatch
         // Wait for other mods to resolve weight
         yield return new WaitForEndOfFrame();
 
-        // DropAllHeldItemsAndSync resets weight: need to manually add back current inventory weight
+        // DropAllHeldItems resets weight: need to manually add back current inventory weight
         __instance.carryWeight = Mathf.Clamp(__instance.carryWeight + carryWeightDelta, 1f, 10f);
 
         // Update inventory items to match new player position
