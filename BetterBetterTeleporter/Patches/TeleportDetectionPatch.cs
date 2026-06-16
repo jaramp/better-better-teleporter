@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using GameNetcodeStuff;
 using HarmonyLib;
 
@@ -28,27 +29,26 @@ public static class TeleportDetectionPatch
 
     private static bool isTeleporting;
 
-    [HarmonyPatch("beamUpPlayer")]
-    [HarmonyPostfix]
-    private static void BeamUpPlayerPostfix(ref IEnumerator __result)
+    [HarmonyPatch("beamUpPlayer", MethodType.Enumerator)]
+    [HarmonyTranspiler]
+    private static IEnumerable<CodeInstruction> TeleporterTranspiler(IEnumerable<CodeInstruction> instructions)
     {
-        __result = WrappedBeamUpPlayer(__result);
-    }
+        var beforeMethod = AccessTools.Method(typeof(TeleportDetectionPatch), nameof(BeforeTeleporterDropAllHeldItems));
+        var code = new List<CodeInstruction>(instructions);
+        int stateResetCount = 0;
 
-    private static IEnumerator WrappedBeamUpPlayer(IEnumerator original)
-    {
-        Plugin.Logger.LogDebug("Enabling teleport item logic");
-        BeforeTeleporterDropAllHeldItems();
-
-        try
+        for (int i = 0; i < code.Count; i++)
         {
-            while (original.MoveNext())
-                yield return original.Current;
-        }
-        finally
-        {
-            AfterTeleporterDropAllHeldItems();
-            Plugin.Logger.LogDebug("Disabling teleport item logic");
+            var instruction = code[i];
+            yield return instruction;
+            if (instruction.opcode == OpCodes.Ldc_I4_M1 && i + 1 < code.Count && code[i + 1].opcode == OpCodes.Stfld)
+            {
+                stateResetCount++;
+                if (stateResetCount == 3)
+                {
+                    yield return new CodeInstruction(OpCodes.Call, beforeMethod);
+                }
+            }
         }
     }
 

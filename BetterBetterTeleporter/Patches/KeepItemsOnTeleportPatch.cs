@@ -101,6 +101,7 @@ public static class KeepItemsOnTeleporterPatch
             Plugin.Logger.LogWarning($"Unable to verify current item is being held correctly. Error: {e}");
         }
         Plugin.Logger.LogDebug("Finished restoring player inventory");
+        TeleportDetectionPatch.AfterTeleporterDropAllHeldItems();
     }
 
     private static IEnumerator RefreshInventory(PlayerControllerB __instance, float carryWeightDelta, bool isInverse)
