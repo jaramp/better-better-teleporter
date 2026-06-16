@@ -1,5 +1,5 @@
+using System.Collections;
 using System.Collections.Generic;
-using System.Reflection.Emit;
 using GameNetcodeStuff;
 using HarmonyLib;
 
@@ -17,6 +17,9 @@ public static class TeleportDetectionPatch
         if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(player.actualClientId))
             return false; // Player is disconnecting
 
+        if (player.isPlayerDead || player.disableInteract)
+            return false; // Player is incapacitated
+
         if (IsRegularTeleporting()) return true;
         if (IsInverseTeleporting(player)) return true;
 
@@ -25,45 +28,46 @@ public static class TeleportDetectionPatch
 
     private static bool isTeleporting;
 
-    [HarmonyPatch("beamUpPlayer", MethodType.Enumerator)]
-    [HarmonyTranspiler]
-    static IEnumerable<CodeInstruction> TeleporterTranspiler(IEnumerable<CodeInstruction> instructions)
+    [HarmonyPatch("beamUpPlayer")]
+    [HarmonyPostfix]
+    private static void BeamUpPlayerPostfix(ref IEnumerator __result)
     {
-        var waitForSecondsCtor = AccessTools.Constructor(typeof(UnityEngine.WaitForSeconds), [typeof(float)]);
-        var beforeMethod = AccessTools.Method(typeof(TeleportDetectionPatch), nameof(BeforeTeleporterDropAllHeldItems));
-        int waitCount = 0;
-        foreach (var instruction in instructions)
+        __result = WrappedBeamUpPlayer(__result);
+    }
+
+    private static IEnumerator WrappedBeamUpPlayer(IEnumerator original)
+    {
+        Plugin.Logger.LogDebug("Enabling teleport item logic");
+        BeforeTeleporterDropAllHeldItems();
+
+        try
         {
-            yield return instruction;
-
-            if (instruction.opcode == OpCodes.Newobj && Equals(instruction.operand, waitForSecondsCtor))
-            {
-                waitCount++;
-
-                if (waitCount == 2)
-                {
-                    yield return new CodeInstruction(OpCodes.Call, beforeMethod);
-                }
-            }
+            while (original.MoveNext())
+                yield return original.Current;
+        }
+        finally
+        {
+            AfterTeleporterDropAllHeldItems();
+            Plugin.Logger.LogDebug("Disabling teleport item logic");
         }
     }
 
-    [HarmonyPatch("beamUpPlayer", MethodType.Enumerator)]
-    [HarmonyFinalizer]
-    static System.Exception TeleporterFinalizer(System.Exception __exception)
-    {
-        AfterTeleporterDropAllHeldItems();
-        return __exception;
-    }
-
     public static void BeforeTeleporterDropAllHeldItems() => isTeleporting = true;
-    public static void AfterTeleporterDropAllHeldItems() => isTeleporting = true;
+    public static void AfterTeleporterDropAllHeldItems() => isTeleporting = false;
     public static bool IsRegularTeleporting() => isTeleporting;
 
     private static readonly HashSet<int> InverseTeleportingPlayers = [];
-    public static bool IsInverseTeleporting(PlayerControllerB player) => InverseTeleportingPlayers.Contains((int)player.playerClientId);
-    [HarmonyPatch("TeleportPlayerOutWithInverseTeleporter"), HarmonyPrefix]
-    public static void TeleportPlayerOutWithInverseTeleporterPrefix(int playerObj) => InverseTeleportingPlayers.Add(playerObj);
-    [HarmonyPatch("TeleportPlayerOutWithInverseTeleporter"), HarmonyPostfix]
-    public static void TeleportPlayerOutWithInverseTeleporterPostfix(int playerObj) => InverseTeleportingPlayers.Remove(playerObj);
+
+    public static bool IsInverseTeleporting(PlayerControllerB player)
+        => InverseTeleportingPlayers.Contains((int)player.playerClientId);
+
+    [HarmonyPatch("TeleportPlayerOutWithInverseTeleporter")]
+    [HarmonyPrefix]
+    public static void TeleportPlayerOutWithInverseTeleporterPrefix(int playerObj)
+        => InverseTeleportingPlayers.Add(playerObj);
+
+    [HarmonyPatch("TeleportPlayerOutWithInverseTeleporter")]
+    [HarmonyPostfix]
+    public static void TeleportPlayerOutWithInverseTeleporterPostfix(int playerObj)
+        => InverseTeleportingPlayers.Remove(playerObj);
 }

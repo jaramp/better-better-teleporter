@@ -20,7 +20,9 @@ public static class KeepItemsOnTeleporterPatch
     [HarmonyPrefix]
     public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
     {
+        Plugin.Logger.LogDebug("Checking if player is teleporting");
         if (!TeleportDetectionPatch.IsTeleporting(__instance)) return;
+        Plugin.Logger.LogDebug("Player is teleporting");
 
         var restoreOnCatch = (GrabbableObject[])__instance.ItemSlots.Clone();
         try
@@ -55,6 +57,7 @@ public static class KeepItemsOnTeleporterPatch
     [HarmonyPostfix]
     public static void DropAllHeldItemsPostfix(PlayerControllerB __instance)
     {
+        Plugin.Logger.LogDebug("Restoring player inventory");
         if (!tempInventories.ContainsKey(__instance)) return;
 
         // Restore player's inventory from temporary storage
@@ -97,6 +100,7 @@ public static class KeepItemsOnTeleporterPatch
         {
             Plugin.Logger.LogWarning($"Unable to verify current item is being held correctly. Error: {e}");
         }
+        Plugin.Logger.LogDebug("Finished restoring player inventory");
     }
 
     private static IEnumerator RefreshInventory(PlayerControllerB __instance, float carryWeightDelta, bool isInverse)
