@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -40,9 +41,8 @@ public static class KeepItemsOnTeleporterPatch
             // Temporarily store cloned inventory so we can restore it on Postfix
             tempInventories[__instance] = itemsToKeep;
         }
-        catch (System.Exception e)
+        catch
         {
-            Plugin.Logger.LogError($"Failed to intercept DropAllHeldItems (Prefix). Falling back to native behavior. Error: {e}");
             // Return true (default behavior) so the original DropAllHeldItems runs normally.
             tempInventories.Remove(__instance);
             for (int i = 0; i < __instance.ItemSlots.Length; i++)
@@ -73,10 +73,16 @@ public static class KeepItemsOnTeleporterPatch
 
                 __instance.ItemSlots[i] = keptItem;
                 carryWeightDelta += keptItem.itemProperties.weight - 1f;
+
+                // HUDManager manages local state: only run for teleported player
+                if (__instance.actualClientId == NetworkManager.Singleton.LocalClientId)
+                {
+                    HUDManager.Instance.itemSlotIcons[i].enabled = true;
+                }
             }
             NetworkManager.Singleton.StartCoroutine(RefreshInventory(__instance, carryWeightDelta, isInverse));
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Plugin.Logger.LogError($"Failed to restore inventory. Error: {e}");
         }
@@ -87,10 +93,11 @@ public static class KeepItemsOnTeleporterPatch
             __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
             SwitchToItemSlotMethod.Invoke(__instance, [__instance.currentItemSlot, null]);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Plugin.Logger.LogWarning($"Unable to verify current item is being held correctly. Error: {e}");
         }
+        TeleportDetectionPatch.AfterTeleporterDropAllHeldItems();
     }
 
     private static IEnumerator RefreshInventory(PlayerControllerB __instance, float carryWeightDelta, bool isInverse)

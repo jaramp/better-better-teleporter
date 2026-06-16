@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using GameNetcodeStuff;
@@ -17,6 +18,9 @@ public static class TeleportDetectionPatch
         if (!StartOfRound.Instance.ClientPlayerList.ContainsKey(player.actualClientId))
             return false; // Player is disconnecting
 
+        if (player.isPlayerDead || player.disableInteract)
+            return false; // Player is incapacitated
+
         if (IsRegularTeleporting()) return true;
         if (IsInverseTeleporting(player)) return true;
 
@@ -29,25 +33,23 @@ public static class TeleportDetectionPatch
     [HarmonyTranspiler]
     static IEnumerable<CodeInstruction> TeleporterTranspiler(IEnumerable<CodeInstruction> instructions)
     {
-        var dropAllHeldItemsMethod = AccessTools.Method(typeof(PlayerControllerB), "DropAllHeldItems");
         var beforeMethod = AccessTools.Method(typeof(TeleportDetectionPatch), nameof(BeforeTeleporterDropAllHeldItems));
+        var code = new List<CodeInstruction>(instructions);
+        int stateResetCount = 0;
 
-        foreach (var instruction in instructions)
+        for (int i = 0; i < code.Count; i++)
         {
-            if (instruction.Calls(dropAllHeldItemsMethod))
-            {
-                yield return new CodeInstruction(OpCodes.Call, beforeMethod);
-            }
+            var instruction = code[i];
             yield return instruction;
+            if (instruction.opcode == OpCodes.Ldc_I4_M1 && i + 1 < code.Count && code[i + 1].opcode == OpCodes.Stfld)
+            {
+                stateResetCount++;
+                if (stateResetCount == 3)
+                {
+                    yield return new CodeInstruction(OpCodes.Call, beforeMethod);
+                }
+            }
         }
-    }
-
-    [HarmonyPatch("beamUpPlayer", MethodType.Enumerator)]
-    [HarmonyFinalizer]
-    static System.Exception TeleporterFinalizer(System.Exception __exception)
-    {
-        AfterTeleporterDropAllHeldItems();
-        return __exception;
     }
 
     public static void BeforeTeleporterDropAllHeldItems() => isTeleporting = true;
