@@ -31,7 +31,7 @@ public static class TeleportDetectionPatch
 
     [HarmonyPatch("beamUpPlayer", MethodType.Enumerator)]
     [HarmonyTranspiler]
-    private static IEnumerable<CodeInstruction> TeleporterTranspiler(IEnumerable<CodeInstruction> instructions)
+    static IEnumerable<CodeInstruction> TeleporterTranspiler(IEnumerable<CodeInstruction> instructions)
     {
         var beforeMethod = AccessTools.Method(typeof(TeleportDetectionPatch), nameof(BeforeTeleporterDropAllHeldItems));
         var code = new List<CodeInstruction>(instructions);
@@ -57,17 +57,9 @@ public static class TeleportDetectionPatch
     public static bool IsRegularTeleporting() => isTeleporting;
 
     private static readonly HashSet<int> InverseTeleportingPlayers = [];
-
-    public static bool IsInverseTeleporting(PlayerControllerB player)
-        => InverseTeleportingPlayers.Contains((int)player.playerClientId);
-
-    [HarmonyPatch("TeleportPlayerOutWithInverseTeleporter")]
-    [HarmonyPrefix]
-    public static void TeleportPlayerOutWithInverseTeleporterPrefix(int playerObj)
-        => InverseTeleportingPlayers.Add(playerObj);
-
-    [HarmonyPatch("TeleportPlayerOutWithInverseTeleporter")]
-    [HarmonyPostfix]
-    public static void TeleportPlayerOutWithInverseTeleporterPostfix(int playerObj)
-        => InverseTeleportingPlayers.Remove(playerObj);
+    public static bool IsInverseTeleporting(PlayerControllerB player) => InverseTeleportingPlayers.Contains((int)player.playerClientId);
+    [HarmonyPatch("TeleportPlayerOutWithInverseTeleporter"), HarmonyPrefix]
+    public static void TeleportPlayerOutWithInverseTeleporterPrefix(int playerObj) => InverseTeleportingPlayers.Add(playerObj);
+    [HarmonyPatch("TeleportPlayerOutWithInverseTeleporter"), HarmonyPostfix]
+    public static void TeleportPlayerOutWithInverseTeleporterPostfix(int playerObj) => InverseTeleportingPlayers.Remove(playerObj);
 }
