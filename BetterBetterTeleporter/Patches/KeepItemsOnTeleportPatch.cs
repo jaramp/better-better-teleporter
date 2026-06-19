@@ -8,6 +8,7 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace BetterBetterTeleporter.Patches;
 
@@ -15,7 +16,11 @@ namespace BetterBetterTeleporter.Patches;
 public static class KeepItemsOnTeleporterPatch
 {
     private static readonly Dictionary<PlayerControllerB, GrabbableObject[]> tempInventories = [];
+    private static readonly Dictionary<PlayerControllerB, GrabbableObject> tempUtilityItem = [];
     private static readonly MethodInfo SwitchToItemSlotMethod = AccessTools.Method(typeof(PlayerControllerB), "SwitchToItemSlot");
+    private static readonly MethodInfo SendChangedWeightEvent = AccessTools.Method(typeof(StartOfRound), "SendChangedWeightEvent");
+    private static readonly FieldInfo ItemOnlySlot = AccessTools.Field(typeof(PlayerControllerB), "ItemOnlySlot");
+    private static readonly FieldInfo ItemOnlySlotIcon = AccessTools.Field(typeof(HUDManager), "itemOnlySlotIcon");
 
     [HarmonyPrefix]
     public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
@@ -35,8 +40,24 @@ public static class KeepItemsOnTeleporterPatch
                 else __instance.ItemSlots[i] = null; // Hide from DropAllHeldItems to prevent dropping
             }
 
+            if (playerInfo.ItemOnlySlot != null)
+            {
+                if (!playerInfo.ShouldDropItem(playerInfo.ItemOnlySlot, state))
+                {
+                    tempUtilityItem[__instance] = (GrabbableObject)ItemOnlySlot.GetValue(__instance);
+                    ItemOnlySlot.SetValue(__instance, null);
+                }
+            }
+
             // Suppress drop animation call from DropAllHeldItems
-            __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
+            if (__instance.currentItemSlot == 50)
+            {
+                __instance.isHoldingObject = !tempUtilityItem.ContainsKey(__instance);
+            }
+            else
+            {
+                __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
+            }
 
             // Temporarily store cloned inventory so we can restore it on Postfix
             tempInventories[__instance] = itemsToKeep;
@@ -55,31 +76,42 @@ public static class KeepItemsOnTeleporterPatch
     [HarmonyPostfix]
     public static void DropAllHeldItemsPostfix(PlayerControllerB __instance)
     {
-        if (!tempInventories.ContainsKey(__instance)) return;
-
-        // Restore player's inventory from temporary storage
-        var itemsToKeep = tempInventories[__instance];
-        tempInventories.Remove(__instance);
-
         try
         {
+            float carryWeightDelta = 0f;
             var isInverse = TeleportDetectionPatch.IsInverseTeleporting(__instance);
 
-            float carryWeightDelta = 0f;
-            for (int i = 0; i < __instance.ItemSlots.Length; i++)
+            if (tempInventories.ContainsKey(__instance))
             {
-                var keptItem = itemsToKeep[i];
-                if (keptItem == null) continue;
+                // Restore player's inventory from temporary storage
+                var itemsToKeep = tempInventories[__instance];
+                tempInventories.Remove(__instance);
 
-                __instance.ItemSlots[i] = keptItem;
-                carryWeightDelta += keptItem.itemProperties.weight - 1f;
-
-                // HUDManager manages local state: only run for teleported player
-                if (__instance.actualClientId == NetworkManager.Singleton.LocalClientId)
+                for (int i = 0; i < __instance.ItemSlots.Length; i++)
                 {
-                    HUDManager.Instance.itemSlotIcons[i].enabled = true;
+                    var keptItem = itemsToKeep[i];
+                    if (keptItem == null) continue;
+
+                    __instance.ItemSlots[i] = keptItem;
+                    carryWeightDelta += keptItem.itemProperties.weight - 1f;
+
+                    // HUDManager manages local state: only run for teleported player
+                    if (__instance.actualClientId == NetworkManager.Singleton.LocalClientId)
+                    {
+                        HUDManager.Instance.itemSlotIcons[i].enabled = true;
+                    }
                 }
             }
+
+            if (tempUtilityItem.ContainsKey(__instance))
+            {
+                var utilityItem = tempUtilityItem[__instance];
+                tempUtilityItem.Remove(__instance);
+                ItemOnlySlot.SetValue(__instance, utilityItem);
+                carryWeightDelta += utilityItem.itemProperties.weight - 1f;
+                ((Image)ItemOnlySlotIcon.GetValue(HUDManager.Instance))?.enabled = true;
+            }
+
             NetworkManager.Singleton.StartCoroutine(RefreshInventory(__instance, carryWeightDelta, isInverse));
         }
         catch (Exception e)
@@ -90,8 +122,16 @@ public static class KeepItemsOnTeleporterPatch
         try
         {
             // Force reselect current item slot to fix issues with the player appearing to not have an item equipped
-            __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
-            SwitchToItemSlotMethod.Invoke(__instance, [__instance.currentItemSlot, null]);
+            if (__instance.currentItemSlot == 50)
+            {
+                __instance.isHoldingObject = ItemOnlySlot.GetValue(__instance) != null;
+                SwitchToItemSlotMethod?.Invoke(__instance, [50, null]);
+            }
+            else
+            {
+                __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
+                SwitchToItemSlotMethod?.Invoke(__instance, [__instance.currentItemSlot, null]);
+            }
         }
         catch (Exception e)
         {
@@ -118,6 +158,8 @@ public static class KeepItemsOnTeleporterPatch
             keptItem.isInFactory = isInverse;
             keptItem.isInShipRoom = !isInverse;
         }
+
+        SendChangedWeightEvent?.Invoke(StartOfRound.Instance, null);
     }
 
     private static TeleporterConfigState GetTeleportState(PlayerControllerB player)

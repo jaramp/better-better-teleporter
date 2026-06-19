@@ -27,7 +27,7 @@ If [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig
 | TeleporterCooldown          | `Integer`     | `10`    | Cooldown time (in seconds) for using the Teleporter.                                    |
 | TeleporterBehavior          | `Drop`/`Keep` | `Drop`  | Sets whether items are kept or dropped when using the Teleporter.                       |
 | TeleporterAlwaysKeep        | `ItemList`    |         | Treat these items as `Keep` regardless of Teleporter behavior.                          |
-| TeleporterAlwaysDrop        | `ItemList`    |         | Treat these items as `Drop` regardless of Teleporter behavior.                         |
+| TeleporterAlwaysDrop        | `ItemList`    |         | Treat these items as `Drop` regardless of Teleporter behavior.                          |
 |                             |               |         | &nbsp;                                                                                  |
 | InverseTeleporterCooldown   | `Integer`     | `210`   | Cooldown time (in seconds) for using the Inverse Teleporter.                            |
 | InverseTeleporterBehavior   | `Drop`/`Keep` | `Drop`  | Sets whether items are kept or dropped when using the Inverse Teleporter.               |
@@ -93,19 +93,20 @@ holding in your inventory. This should help verify if you're using the correct i
 
 There are predefined item filters you can use to describe items or groups of items. Here is the current list of item filters:
 
-| Filter        | Matches                               | Alternate      | Alternate Matches                                  |
-| ------------- | ------------------------------------- | -------------- | -------------------------------------------------- |
-| `[all]`       | All items.                            | `[none]`       | No items.                                          |
-| `[battery]`   | Items that have batteries.            | `[nonbattery]` | Items that don't have batteries.                   |
-| `[charged]`   | Battery items with remaining charge.  | `[discharged]` | Battery items with no charge.                      |
-| `[gordion]`   | All items while on company moon.      | `[gordioff]`   | All items while not on company moon.               |
-| `[held]`      | Item that is currently being held.    | `[pocketed]`   | Items not held in hand.                            |
-| `[metal]`     | Items that are conductive.            | `[nonmetal]`   | Non-conductive items.                              |
-| `[scrap]`     | Items the game classifies as scrap.   | `[nonscrap]`   | Items not classified as scrap.                     |
-| `[twohanded]` | Items held with two hands.            | `[onehanded]`  | Items held with one hand.                          |
-| `[value]`     | Items that sell for credits.          | `[worthless]`  | Items that sell for zero credits (including keys). |
-| `[weapon]`    | Items the game classifies as weapons. | `[nonweapon]`  | Items not classified as weapons.                   |
-| `[weighted]`  | Items that have a weight.             | `[weightless]` | Items with zero weight.                            |
+| Filter        | Matches                               | Alternate       | Alternate Matches                                  |
+| ------------- | ------------------------------------- | --------------- | -------------------------------------------------- |
+| `[all]`       | All items.                            | `[none]`        | No items.                                          |
+| `[battery]`   | Items that have batteries.            | `[nonbattery]`  | Items that don't have batteries.                   |
+| `[charged]`   | Battery items with remaining charge.  | `[discharged]`  | Battery items with no charge.                      |
+| `[gordion]`   | All items while on company moon.      | `[gordioff]`    | All items while not on company moon.               |
+| `[held]`      | Item that is currently being held.    | `[pocketed]`    | Items not held in hand.                            |
+| `[metal]`     | Items that are conductive.            | `[nonmetal]`    | Non-conductive items.                              |
+| `[scrap]`     | Items the game classifies as scrap.   | `[nonscrap]`    | Items not classified as scrap.                     |
+| `[twohanded]` | Items held with two hands.            | `[onehanded]`   | Items held with one hand.                          |
+| `[utilslot]`  | Item in the utility slot (v80+).      | `[nonutilslot]` | Items not in the utility slot.                     |
+| `[value]`     | Items that sell for credits.          | `[worthless]`   | Items that sell for zero credits (including keys). |
+| `[weapon]`    | Items the game classifies as weapons. | `[nonweapon]`   | Items not classified as weapons.                   |
+| `[weighted]`  | Items that have a weight.             | `[weightless]`  | Items with zero weight.                            |
 
 As an example, take this configuration:
 

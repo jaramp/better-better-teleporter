@@ -1,4 +1,8 @@
+using System.Linq;
+using System.Reflection;
+using GameNetcodeStuff;
 using HarmonyLib;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace BetterBetterTeleporter.Patches;
@@ -6,8 +10,10 @@ namespace BetterBetterTeleporter.Patches;
 [HarmonyPatch(typeof(ShipTeleporter), "TeleportPlayerOutWithInverseTeleporter")]
 public static class InverseTeleporterBatteryDrainPatch
 {
+    private static readonly FieldInfo ItemOnlySlot = AccessTools.Field(typeof(PlayerControllerB), "ItemOnlySlot");
+
     [HarmonyPostfix]
-    public static void TeleportPlayerOutWithInverseTeleporterPostfix(int playerObj, Vector3 teleportPos)
+    public static void TeleportPlayerOutWithInverseTeleporterPostfix(int playerObj)
     {
         float drainAmount = Plugin.ModConfig.BatteryDrainPercent.Value / 100f;
         if (drainAmount == 0) return;
@@ -15,16 +21,13 @@ public static class InverseTeleporterBatteryDrainPatch
         try
         {
             var player = StartOfRound.Instance.allPlayerScripts[playerObj];
-            foreach (var item in player.ItemSlots)
+            var items = player.ItemSlots.ToList();
+            try { items.Add((GrabbableObject)ItemOnlySlot.GetValue(player)); } catch { }
+            foreach (var item in items)
             {
                 var battery = item?.insertedBattery;
-                if (battery != null)
-                {
-                    battery.charge = Mathf.Max(0, battery.charge - drainAmount);
-                    item.SyncBatteryServerRpc((int)(battery.charge * 100));
-                }
+                battery?.charge = Mathf.Max(0, battery.charge - drainAmount);
             }
-            Plugin.Logger.LogDebug($"Client {playerObj} batteries drained by {drainAmount}.");
         }
         catch (System.Exception e)
         {

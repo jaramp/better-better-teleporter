@@ -45,6 +45,8 @@ public static class ItemRules
             case WeightlessItemFilter.Id: return new WeightlessItemFilter(itemList);
             case GordionFilter.Id: return new GordionFilter(itemList);
             case GordioffFilter.Id: return new GordioffFilter(itemList);
+            case UtilitySlotFilter.Id: return new UtilitySlotFilter(itemList);
+            case InventorySlotFilter.Id: return new InventorySlotFilter(itemList);
         }
         Plugin.Logger?.LogWarning($"Unknown item filter: {id}. Falling back to item name matching.");
         return new ItemNameRule(id);
@@ -391,5 +393,23 @@ public class GordioffFilter(ItemFilterList except) : ItemFilter(Id, except)
             Plugin.Logger.LogWarning($"Unable to use filter [{Id}] due to read issues on StartOfRound. Skipping filter.");
             return false;
         }
+    }
+}
+
+public class UtilitySlotFilter(ItemFilterList except) : ItemFilter(Id, except)
+{
+    public const string Id = "utilslot";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return player.ItemOnlySlot == item;
+    }
+}
+
+public class InventorySlotFilter(ItemFilterList except) : ItemFilter(Id, except)
+{
+    public const string Id = "nonutilslot";
+    public override bool IsMatch(IPlayerInfo player, IItemInfo item)
+    {
+        return player.ItemOnlySlot != item;
     }
 }
