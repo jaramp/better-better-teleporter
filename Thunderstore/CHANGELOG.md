@@ -1,3 +1,7 @@
+## Version 1.2.5
+
+- Fix issue displaying weight after teleporting
+
 ## Version 1.2.4
 
 - Compatibility update for v80
