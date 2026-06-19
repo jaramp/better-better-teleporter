@@ -16,7 +16,7 @@ public sealed class PlayerInfo(PlayerControllerB player) : IPlayerInfo
 {
     private readonly IReadOnlyList<IItemInfo> _slots = [.. TryGet(() => player.ItemSlots.Select(item => item == null ? null : new ItemInfo(item)), "ItemSlots") ?? []];
     public IReadOnlyList<IItemInfo> Slots => _slots;
-    private readonly IItemInfo _itemOnlySlot = TryGet(() => new ItemInfo(player.ItemOnlySlot), "ItemOnlySlot", false);
+    private readonly IItemInfo _itemOnlySlot = TryGet(() => player.ItemOnlySlot == null ? null : new ItemInfo(player.ItemOnlySlot), "ItemOnlySlot", false);
     public IItemInfo ItemOnlySlot => _itemOnlySlot;
     public int CurrentItemSlotIndex => TryGet(() => player.currentItemSlot, "currentItemSlot");
 
@@ -32,7 +32,7 @@ public sealed class PlayerInfo(PlayerControllerB player) : IPlayerInfo
             {
                 Plugin.Logger.LogError($"Failed to read 'PlayerControllerB.{propertyName}'. Game structure may have changed. Error: {e.Message}");
             }
-            return default!;
+            return default;
         }
     }
 }
