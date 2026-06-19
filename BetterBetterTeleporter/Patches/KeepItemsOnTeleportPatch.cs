@@ -8,6 +8,7 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace BetterBetterTeleporter.Patches;
 
@@ -19,6 +20,7 @@ public static class KeepItemsOnTeleporterPatch
     private static readonly MethodInfo SwitchToItemSlotMethod = AccessTools.Method(typeof(PlayerControllerB), "SwitchToItemSlot");
     private static readonly MethodInfo SendChangedWeightEvent = AccessTools.Method(typeof(StartOfRound), "SendChangedWeightEvent");
     private static readonly FieldInfo ItemOnlySlot = AccessTools.Field(typeof(PlayerControllerB), "ItemOnlySlot");
+    private static readonly FieldInfo ItemOnlySlotIcon = AccessTools.Field(typeof(HUDManager), "itemOnlySlotIcon");
 
     [HarmonyPrefix]
     public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
@@ -38,13 +40,11 @@ public static class KeepItemsOnTeleporterPatch
                 else __instance.ItemSlots[i] = null; // Hide from DropAllHeldItems to prevent dropping
             }
 
-            var utilityItem = (GrabbableObject)ItemOnlySlot?.GetValue(__instance);
-            if (utilityItem != null)
+            if (playerInfo.ItemOnlySlot != null)
             {
-                var itemInfo = new ItemInfo(utilityItem);
-                if (!playerInfo.ShouldDropItem(itemInfo, state))
+                if (!playerInfo.ShouldDropItem(playerInfo.ItemOnlySlot, state))
                 {
-                    tempUtilityItem[__instance] = utilityItem;
+                    tempUtilityItem[__instance] = (GrabbableObject)ItemOnlySlot.GetValue(__instance);
                     ItemOnlySlot.SetValue(__instance, null);
                 }
             }
@@ -109,7 +109,7 @@ public static class KeepItemsOnTeleporterPatch
                 tempUtilityItem.Remove(__instance);
                 ItemOnlySlot.SetValue(__instance, utilityItem);
                 carryWeightDelta += utilityItem.itemProperties.weight - 1f;
-                HUDManager.Instance.itemOnlySlotIcon.enabled = true;
+                ((Image)ItemOnlySlotIcon.GetValue(HUDManager.Instance))?.enabled = true;
             }
 
             NetworkManager.Singleton.StartCoroutine(RefreshInventory(__instance, carryWeightDelta, isInverse));
@@ -124,12 +124,12 @@ public static class KeepItemsOnTeleporterPatch
             // Force reselect current item slot to fix issues with the player appearing to not have an item equipped
             if (__instance.currentItemSlot == 50)
             {
-                __instance.isHoldingObject = true;
+                __instance.isHoldingObject = ItemOnlySlot.GetValue(__instance) != null;
                 SwitchToItemSlotMethod?.Invoke(__instance, [50, null]);
             }
             else
             {
-                //__instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
+                __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
                 SwitchToItemSlotMethod?.Invoke(__instance, [__instance.currentItemSlot, null]);
             }
         }

@@ -1,5 +1,7 @@
-## Version 1.2.5
+## Version 1.3.0
 
+- Include utility slot in teleport logic
+- Added `[utilslot]` and `[nonutilslot]` filters
 - Fix issue displaying weight after teleporting
 
 ## Version 1.2.4
