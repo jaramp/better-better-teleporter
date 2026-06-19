@@ -9,7 +9,6 @@ public sealed class FakePlayerInfo : IPlayerInfo
     public IItemInfo? ItemOnlySlot { get; set; }
     public int CurrentItemSlotIndex => _slots[0]?.IsPocketed == true ? 1 : 0;
 
-
     public FakePlayerInfo(IItemInfo item)
     {
         _slots[0] = item;
