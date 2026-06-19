@@ -11,7 +11,6 @@ public interface IPlayerInfo
     int CurrentItemSlotIndex { get; }
 }
 
-
 public sealed class PlayerInfo(PlayerControllerB player) : IPlayerInfo
 {
     private readonly IReadOnlyList<IItemInfo> _slots = [.. TryGet(() => player.ItemSlots.Select(item => item == null ? null : new ItemInfo(item)), "ItemSlots") ?? []];
