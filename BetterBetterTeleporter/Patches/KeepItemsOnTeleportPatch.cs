@@ -118,6 +118,8 @@ public static class KeepItemsOnTeleporterPatch
             keptItem.isInFactory = isInverse;
             keptItem.isInShipRoom = !isInverse;
         }
+
+        StartOfRound.Instance.SendChangedWeightEvent();
     }
 
     private static TeleporterConfigState GetTeleportState(PlayerControllerB player)
