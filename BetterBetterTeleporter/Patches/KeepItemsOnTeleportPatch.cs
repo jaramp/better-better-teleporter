@@ -16,6 +16,7 @@ public static class KeepItemsOnTeleporterPatch
 {
     private static readonly Dictionary<PlayerControllerB, GrabbableObject[]> tempInventories = [];
     private static readonly MethodInfo SwitchToItemSlotMethod = AccessTools.Method(typeof(PlayerControllerB), "SwitchToItemSlot");
+    private static readonly MethodInfo SendChangedWeightEvent = AccessTools.Method(typeof(StartOfRound), "SendChangedWeightEvent");
 
     [HarmonyPrefix]
     public static void DropAllHeldItemsPrefix(PlayerControllerB __instance)
@@ -91,7 +92,7 @@ public static class KeepItemsOnTeleporterPatch
         {
             // Force reselect current item slot to fix issues with the player appearing to not have an item equipped
             __instance.isHoldingObject = __instance.ItemSlots[__instance.currentItemSlot] != null;
-            SwitchToItemSlotMethod.Invoke(__instance, [__instance.currentItemSlot, null]);
+            SwitchToItemSlotMethod?.Invoke(__instance, [__instance.currentItemSlot, null]);
         }
         catch (Exception e)
         {
@@ -119,7 +120,7 @@ public static class KeepItemsOnTeleporterPatch
             keptItem.isInShipRoom = !isInverse;
         }
 
-        StartOfRound.Instance.SendChangedWeightEvent();
+        SendChangedWeightEvent?.Invoke(StartOfRound.Instance, null);
     }
 
     private static TeleporterConfigState GetTeleportState(PlayerControllerB player)
