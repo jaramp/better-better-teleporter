@@ -1,3 +1,7 @@
+## Version 1.3.1
+
+- Fix base game issue with dropping utility slot item on teleport while on the ship
+
 ## Version 1.3.0
 
 - Include utility slot in teleport logic
@@ -34,6 +38,7 @@
 - Added `[gordioff]` item filter
 
 ## Version 1.1.4
+
 - Added `[battery]` item filter
 - Added `[charged]` item filter
 - Added `[discharged]` item filter
