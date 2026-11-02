@@ -4,7 +4,7 @@ using HarmonyLib;
 namespace BetterBetterTeleporter.Patches;
 
 [HarmonyPatch(typeof(PlayerControllerB), "DropHeldItem")]
-public static class DropItem_BeltItemFix
+public static class UtilitySlotDropFixPatch
 {
     [HarmonyPrefix]
     public static void DropHeldItemPrefix(PlayerControllerB __instance, GrabbableObject dropItem, ref bool setInShip, ref bool setInElevator)

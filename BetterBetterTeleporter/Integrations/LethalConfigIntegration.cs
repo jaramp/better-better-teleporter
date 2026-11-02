@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx.Configuration;
 using LethalConfig;

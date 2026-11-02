@@ -2,7 +2,6 @@ using System.Linq;
 using System.Reflection;
 using GameNetcodeStuff;
 using HarmonyLib;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace BetterBetterTeleporter.Patches;
