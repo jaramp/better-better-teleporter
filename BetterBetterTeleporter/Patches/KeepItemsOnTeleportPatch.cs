@@ -76,6 +76,8 @@ public static class KeepItemsOnTeleporterPatch
     [HarmonyPostfix]
     public static void DropAllHeldItemsPostfix(PlayerControllerB __instance)
     {
+        if (!TeleportDetectionPatch.IsTeleporting(__instance)) return;
+
         try
         {
             float carryWeightDelta = 0f;
