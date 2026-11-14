@@ -6,6 +6,9 @@ namespace BetterBetterTeleporter.Patches;
 [HarmonyPatch(typeof(PlayerControllerB), "DropHeldItem")]
 public static class UtilitySlotDropFixPatch
 {
+    [HarmonyPrepare]
+    static bool Prepare() => AccessTools.Field(typeof(PlayerControllerB), "ItemOnlySlot") != null;
+
     [HarmonyPrefix]
     public static void DropHeldItemPrefix(PlayerControllerB __instance, GrabbableObject dropItem, ref bool setInShip, ref bool setInElevator)
     {
