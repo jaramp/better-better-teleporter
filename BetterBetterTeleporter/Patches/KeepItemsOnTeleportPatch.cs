@@ -111,7 +111,11 @@ public static class KeepItemsOnTeleporterPatch
                 tempUtilityItem.Remove(__instance);
                 ItemOnlySlot.SetValue(__instance, utilityItem);
                 carryWeightDelta += utilityItem.itemProperties.weight - 1f;
-                ((Image)ItemOnlySlotIcon.GetValue(HUDManager.Instance))?.enabled = true;
+
+                if (__instance.actualClientId == NetworkManager.Singleton.LocalClientId)
+                {
+                    ((Image)ItemOnlySlotIcon.GetValue(HUDManager.Instance))?.enabled = true;
+                }
             }
 
             NetworkManager.Singleton.StartCoroutine(RefreshInventory(__instance, carryWeightDelta, isInverse));
