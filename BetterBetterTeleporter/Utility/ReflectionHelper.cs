@@ -15,7 +15,6 @@ public static class ReflectionHelper
         _cooldownTimeFieldChecked = true;
         try
         {
-            // ShipTeleporter type is available globally because the assembly is referenced.
             _cooldownTimeField = typeof(ShipTeleporter).GetField("cooldownTime", BindingFlags.Instance | BindingFlags.NonPublic);
             if (_cooldownTimeField == null)
             {

@@ -11,7 +11,8 @@ internal static class TeleportPositionPatch
 
     private static void Postfix(PlayerControllerB __instance)
     {
-        if (!TeleportDetectionPatch.IsRegularTeleporting()) return;
-        ServerPosition?.SetValue(__instance, __instance.transform.localPosition);
+        if (!__instance.isInElevator) return;
+        var localPosition = __instance.transform.localPosition;
+        ServerPosition?.SetValue(__instance, localPosition);
     }
 }
