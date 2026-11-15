@@ -9,8 +9,10 @@ BetterBetterTeleporter is a mod for Lethal Company that adds configurable featur
 - **Item Whitelists/Blacklists:** Specify comma-separated lists of items that are always kept or dropped, overriding the general item teleport behavior.
 - **Reset Cooldown on Orbit:** Automatically reset teleporter cooldowns when returning the ship to orbit.
 - **Inverse Teleporter Battery Drain:** An optional penalty to decrease battery charge for held items when using the Inverse Teleporter.
+- **Prevent teleporting dead bodies:** Choose whether the teleporter can teleport players that have already died.
 - **General improvements for Teleporters**:
   - Fixes a visual issue where teleporting a player that's already standing on the teleporter makes them disappear
+  - Fixes a v80 issue where utility items don't drop properly on the ship for other players
 
 ## Configuration
 
