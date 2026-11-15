@@ -14,6 +14,7 @@ public class ModConfig
     public SyncedEntry<ItemTeleportBehavior> TeleporterBehavior;
     public SyncedEntry<string> TeleporterAlwaysKeep;
     public SyncedEntry<string> TeleporterAlwaysDrop;
+    public SyncedEntry<bool> TeleportDeadBodies;
     public SyncedEntry<int> InverseTeleporterCooldown;
     public SyncedEntry<ItemTeleportBehavior> InverseTeleporterBehavior;
     public SyncedEntry<string> InverseTeleporterAlwaysKeep;
@@ -32,6 +33,7 @@ public class ModConfig
         TeleporterBehavior = config.BindSynced("Teleporter", "TeleporterBehavior", ItemTeleportBehavior.Drop, new ConfigDescription("Makes the Teleporter \"Drop\" or \"Keep\" items on teleport."));
         TeleporterAlwaysKeep = config.BindSynced("Teleporter", "TeleporterAlwaysKeep", "", new ConfigDescription("Keep these items regardless of Teleporter behavior (comma-separated item names).\n\nDoes nothing if TeleporterBehavior is set to \"Keep\"."));
         TeleporterAlwaysDrop = config.BindSynced("Teleporter", "TeleporterAlwaysDrop", "", new ConfigDescription("Drop these items regardless of Teleporter behavior (comma-separated item names).\n\nDoes nothing if TeleporterBehavior is set to \"Drop\"."));
+        TeleportDeadBodies = config.BindSynced("Teleporter", "TeleportDeadBodies", true, new ConfigDescription("Allows teleporting dead player bodies when using a teleporter."));
 
         // # Inverse Teleporter
         InverseTeleporterCooldown = config.BindSynced("Inverse Teleporter", "InverseTeleporterCooldown", 210, new ConfigDescription("Cooldown time (in seconds) for using the Inverse Teleporter.", new AcceptableValueRange<int>(0, int.MaxValue)));

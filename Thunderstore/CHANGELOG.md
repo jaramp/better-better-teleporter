@@ -1,3 +1,10 @@
+## Version 1.4.0
+
+- New option to enable/disable teleporting dead player bodies
+- Fixed issue with utility slot icon displaying incorrectly when another player teleports
+- Improved compatibility with older versions of the game (suppresses utility item slot patch)
+- Improved base game bug fix for incorrect teleport positions
+
 ## Version 1.3.1
 
 - Fix base game issue with dropping utility slot item on teleport while on the ship

@@ -28,6 +28,7 @@ internal static class LethalConfigIntegration
         RegisterDropdown(Plugin.ModConfig.TeleporterBehavior.Entry);
         RegisterTextArea(Plugin.ModConfig.TeleporterAlwaysKeep.Entry);
         RegisterTextArea(Plugin.ModConfig.TeleporterAlwaysDrop.Entry);
+        RegisterCheckbox(Plugin.ModConfig.TeleportDeadBodies.Entry);
 
         // # Inverse Teleporter
         RegisterInput(Plugin.ModConfig.InverseTeleporterCooldown.Entry);

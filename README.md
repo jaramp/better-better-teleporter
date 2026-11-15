@@ -28,6 +28,7 @@ If [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig
 | TeleporterBehavior          | `Drop`/`Keep` | `Drop`  | Sets whether items are kept or dropped when using the Teleporter.                       |
 | TeleporterAlwaysKeep        | `ItemList`    |         | Treat these items as `Keep` regardless of Teleporter behavior.                          |
 | TeleporterAlwaysDrop        | `ItemList`    |         | Treat these items as `Drop` regardless of Teleporter behavior.                          |
+| TeleportDeadBodies          | `Boolean`     | `true`  | Enables the ability to teleport dead player bodies.                                     |
 |                             |               |         | &nbsp;                                                                                  |
 | InverseTeleporterCooldown   | `Integer`     | `210`   | Cooldown time (in seconds) for using the Inverse Teleporter.                            |
 | InverseTeleporterBehavior   | `Drop`/`Keep` | `Drop`  | Sets whether items are kept or dropped when using the Inverse Teleporter.               |
@@ -118,7 +119,6 @@ InverseTeleporterAlwaysKeep = key,clipboard,[held]
 This setting makes the Inverse Teleporter drop all items except for the `Key` and `Clipboard`,
 as well as the currently-selected inventory slot (so if the player is actively holding a `GoldBar`,
 they keep it, but if the `GoldBar` is not the active inventory item, it drops).
-
 
 #### Restricting item filters
 
