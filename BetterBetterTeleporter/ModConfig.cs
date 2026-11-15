@@ -14,12 +14,12 @@ public class ModConfig
     public SyncedEntry<ItemTeleportBehavior> TeleporterBehavior;
     public SyncedEntry<string> TeleporterAlwaysKeep;
     public SyncedEntry<string> TeleporterAlwaysDrop;
+    public SyncedEntry<bool> TeleportDeadBodies;
     public SyncedEntry<int> InverseTeleporterCooldown;
     public SyncedEntry<ItemTeleportBehavior> InverseTeleporterBehavior;
     public SyncedEntry<string> InverseTeleporterAlwaysKeep;
     public SyncedEntry<string> InverseTeleporterAlwaysDrop;
     public SyncedEntry<int> BatteryDrainPercent;
-    public SyncedEntry<bool> TeleportDeadBodies;
 
     public ModConfig(ConfigFile config)
     {

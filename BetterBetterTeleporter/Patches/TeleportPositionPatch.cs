@@ -9,7 +9,8 @@ internal static class TeleportPositionPatch
 {
     private static readonly FieldInfo ServerPosition = AccessTools.Field(typeof(PlayerControllerB), "serverPlayerPosition");
 
-    private static void Postfix(PlayerControllerB __instance)
+    [HarmonyPostfix]
+    private static void TeleportPlayerPostfix(PlayerControllerB __instance)
     {
         if (!__instance.isInElevator) return;
         var localPosition = __instance.transform.localPosition;
